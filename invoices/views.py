@@ -175,6 +175,12 @@ class InvoiceOverView(LoginRequiredMixin, View):
             userprofile = UserProfile.objects.get(user=request.user)
         except:
             userprofile = None
+
+        try:
+            logo = userprofile.logo.read()
+        except:
+            logo = None
+
         total = 0
         years = []
         try:
@@ -197,7 +203,7 @@ class InvoiceOverView(LoginRequiredMixin, View):
         context = {'invoices': invoices,
                    'user': request.user,
                    'profile': userprofile,
-                   'logo': userprofile.logo.read(),
+                   'logo': logo,
                    'total': total,
                    'years': sorted(list(set(years)), reverse=True),
                    'selected_year': str(yr)}

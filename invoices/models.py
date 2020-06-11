@@ -4,15 +4,21 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save
 import os
+import random
+import string
 
 
 def get_path(instance, filename):
-
-    path = settings.STATICFILES_DIRS[0] + \
-        f'/logo/{instance.user.username}/{instance.user.username}_logo.svg'
+    basepath = os.path.join(
+        settings.STATICFILES_DIRS[0], f'logo/{instance.rnd_id}')
+    f = f'{instance.rnd_id}.svg'
+    path = os.path.join(basepath, f)
     if os.path.exists(path):
         os.remove(path)
-    os.makedirs(path)
+    try:
+        os.makedirs(basepath)
+    except:
+        pass
     return path
 
 
@@ -30,6 +36,8 @@ class UserProfile(models.Model):
     web = models.URLField(max_length=250,
                           default=None, null=True, unique=True, blank=True)
     bank = models.CharField(max_length=120, default='')
+    rnd_id = models.CharField(max_length=120, default=''.join(
+        random.choice(string.ascii_uppercase + string.digits) for _ in range(25)))
     logo = models.ImageField(
         upload_to=get_path, blank=True, null=True)
 

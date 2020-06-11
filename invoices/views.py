@@ -69,8 +69,6 @@ class HomeView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            print(request.session.get_expire_at_browser_close())
-            profile = UserProfile.objects.get(user=request.user)
             return redirect('invoices/')
 
         profile = None

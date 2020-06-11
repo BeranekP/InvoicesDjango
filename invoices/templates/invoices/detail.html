@@ -1,27 +1,14 @@
+{% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}
+    {% block display %}
+      <meta name="viewport" content="width=1024, height= 500" />
+    {% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1024, height= 500" />
     {% localize off %}
-    <title>Faktura č. {{invoice.iid}}</title>
+    {% block title %}Faktura č. {{invoice.iid}} {% endblock %}
     {% endlocalize %}
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'css/print.css' %}"
-      media="print"
-    />
-  </head>
-  <body>
+
+    {% block content %}
     {% localize off %}
     <div class="container px-0 mx-auto">
       <div class="jumbotron w-100 mb-0 pb-5">
@@ -274,7 +261,8 @@
         </div>
       </nav>
     </div>
-
+    {% endblock  %}
+    {% block scripts %}
     <script>
       // Turn on/off signature
       function toggleFun(e) {
@@ -284,5 +272,4 @@
         sgn.classList.toggle('d-print-none');
       }
     </script>
-  </body>
-</html>
+    {% endblock  %}

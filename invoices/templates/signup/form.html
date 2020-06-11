@@ -1,17 +1,10 @@
-<!DOCTYPE html>
-<html lang="cs-cz">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-      crossorigin="anonymous"
-    />
-    <title>Nový uživatel</title>
-  </head>
-  <body>
+{% extends "../base/base.html" %}
+{% load i18n %} {% load l10n %} {% load static %} 
+{% block title %}
+Nový uživatel
+{% endblock  %}
+{% block content %}
+{% localize off %}
     <div class="container mt-5">
       <h2 class="mt-2, pb-5">Vytvořit nového uživatele</h2>
       <form action="./" method="POST">
@@ -176,5 +169,4 @@
         </div>
       </form>
     </div>
-  </body>
-</html>
+ {% endblock  %}

@@ -1,25 +1,9 @@
+{% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}
-<!DOCTYPE html>
-<html lang="cs-cz">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-      crossorigin="anonymous"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{% static 'css/print.css' %}"
-      media="print"
-    />
-    <title>Invoice Factory - Přehled</title>
+
+  {% block title %} Invoice Factory - Přehled {% endblock %}
     
-  </head>
-  <body>
+  {% block content %} 
     <div class="container d-flex justify-content-center">
     <div class="heading d-none d-print-block text-muted">
       {% localize off %}
@@ -48,7 +32,7 @@
               <svg height="40" width="40" style=" fill: white; stroke:white;">
                 {{logo|safe}}
               </svg>
-              {% load static %}
+             
             </li>
             <li class="nav-item">
               <a class="nav-link font-weight-bold" href="./create/"
@@ -59,7 +43,7 @@
               <a
                 class="nav-link"
                 href="#"
-                onclick="window.print();return false;"
+                onclick="printPage()"
                 >Tisk přehledu</a
               >
             </li>
@@ -90,11 +74,13 @@
             id="yearSelect"
           >
             <option value="all">All</option>
-            {% for year in years %} {% ifequal year selected_year %}
-            <option value="{{year}}" selected="selected">{{year}}</option>
-            {% else %}
-            <option value="{{year}}">{{year}}</option>
-            {% endifequal %} {% endfor %}
+            {% for year in years %} 
+              {% ifequal year selected_year %}
+                <option value="{{year}}" selected="selected">{{year}}</option>
+              {% else %}
+                <option value="{{year}}">{{year}}</option>
+              {% endifequal %} 
+            {% endfor %}
           </select>
         </form>
         <span id="yearSpan" class="d-none d-print-block"></span>
@@ -147,7 +133,7 @@
                 class="badge badge-secondary d-print-none d-none d-lg-inline"
                 >CASH</span
               >
-              {%endifequal %}
+              {% endifequal %}
             </th>
 
             <td>
@@ -188,6 +174,9 @@
         </tbody>
       </table>
     </div>
+    {% endblock %}
+    
+    {% block scripts %}
     <script>
       // Submit select input after selection
       function yearSubmit() {
@@ -199,28 +188,11 @@
       yearSelect = document.getElementById('yearSelect');
       yearSpan.innerHTML = '<h3>' + yearSelect.value + '</h3>';
 
-      function moveToEdit(){
-        console.log('a')
-        //window.location.href += 'edit/' + num.toString() + '/'
+      // print page handler
+      function printPage(){
+        window.print();
+        return false;        
       }
-
-
     </script>
-    <script
-      src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-      integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
-      crossorigin="anonymous"
-    ></script>
- 
-  </body>
-</html>
+    {% endblock %}
+

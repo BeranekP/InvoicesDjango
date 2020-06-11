@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <title>Invoice Factory - Nový odběratel</title>
+  </head>
+  <body>
+    <div class="container mt-3">
+      <h2 class="mt-2, pb-5">Nový odběratel</h2>
+      <form action="./" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="recipientInput">Jméno</label>
+          <input
+            type="text"
+            class="form-control"
+            id="recipientInput"
+            name="name"
+            placeholder="John Doe"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="street">Ulice a čp.</label>
+          <input
+            type="text"
+            class="form-control"
+            id="street"
+            name="street"
+            placeholder="Street 22"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="town">Město</label>
+          <input
+            type="text"
+            class="form-control"
+            id="town"
+            name="town"
+            placeholder="London"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="zipcode">PSČ</label>
+          <input
+            type="number"
+            class="form-control"
+            id="zipcode"
+            placeholder="66666"
+            name="zipcode"
+            step="1"
+            required
+          />
+        </div>
+        <div class="form-group row">
+          <div class="col-6">
+            <label for="icInput">IČ</label>
+            <input type="text" class="form-control" id="icInput" name="ic" />
+          </div>
+          <div class="col-6">
+            <label for="dicInput">DIČ</label>
+            <input type="text" class="form-control" id="dicInput" name="dic" />
+          </div>
+        </div>
+
+        <div
+          class="form-group d-flex w-100 align-items-center justify-content-center"
+        >
+          <input
+            class="btn btn-success mt-5 w-25"
+            type="submit"
+            value="Uložit"
+          />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

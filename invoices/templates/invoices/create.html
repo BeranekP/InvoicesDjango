@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Invoice Factory - Nová faktura</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    {% load i18n %} {% load l10n %}
+    <div class="container mt-3">
+      <h2 class="mt-2, pb-5">Nová faktura</h2>
+      <form action="./" method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="recipientInput">Odběratel</label>
+          <div class="d-flex flex-row w-100 align-items-center">
+            <select
+              class="form-control"
+              id="recipientInput"
+              name="recipient"
+              required
+            >
+              <option value="" disabled selected>Vyberte odběratele</option>
+              {% for recipient in recipients %}
+              <option value="{{recipient.id}}">
+                {{recipient}}
+              </option>
+              {% endfor %}
+            </select>
+            <a
+              class="btn btn-primary ml-1"
+              href="../../recipient/create/"
+              title="Přidat odběratele"
+              >+</a
+            >
+          </div>
+        </div>
+        {% localize off %}
+        <div class="form-group">
+          <label for="invoiceID">ID</label>
+          <input
+            type="number"
+            class="form-control"
+            id="invoiceID"
+            name="id"
+            value="{{ iid }}"
+            required
+          />
+        </div>
+        {% endlocalize%}
+        <div class="form-group">
+          <label for="descriptionTextarea">Popis</label>
+          <textarea
+            class="form-control"
+            id="descriptionTextarea"
+            rows="7"
+            name="description"
+            required
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="items">Rozpis položek</label>
+          <input
+            type="checkbox"
+            class="form-check-input ml-2"
+            id="items"
+            name="hasItems"
+          />
+          <div id="itemList" class="w-100 justify-content-around"></div>
+          <div
+            id="addRow"
+            class="mt-2 mb-2 justify-content-center w-100 d-flex"
+          ></div>
+        </div>
+        <div class="form-group d-flex">
+          <div class="mr-2 w-50">
+            <label for="amountInput">Částka</label>
+            <input
+              type="number"
+              class="form-control"
+              id="amountInput"
+              placeholder="1000"
+              name="amount"
+              step="1"
+              value="{{invoice.amount|localize}}"
+              required
+            />
+          </div>
+          <div class="form-group ml-2 w-50">
+            <label for="paymentInput">Způsob platby</label>
+            <select name="payment" id="paymentInput" class="form-control">
+              <option value="bankovním převodem">bankovním převodem</option>
+              <option value="hotově">hotově</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-inline mt-3 mb-3 w-100 d-flex justify-content-between">
+          <label for="createdInput">Vystaveno</label>
+          <input
+            type="date"
+            class="form-control"
+            id="createdInput"
+            name="created"
+            value="{{ default_dates.created|date:'Y-m-d'}}"
+            required
+          />
+          <label for="dueInput">Splatnost</label>
+          <input
+            type="date"
+            class="form-control"
+            id="dueInput"
+            name="due"
+            value="{{ default_dates.due|date:'Y-m-d'}}"
+            required
+          />
+        </div>
+
+        <div
+          class="form-group d-flex w-100 align-items-center justify-content-center"
+        >
+          <a href="../" class="btn btn-warning mt-5 mr-5 w-25"
+            >Zpět na přehled</a
+          >
+          <input
+            class="btn btn-success mt-5 w-25"
+            type="submit"
+            value="Vystavit"
+          />
+        </div>
+      </form>
+    </div>
+    <script>
+      // items checkbox handler
+      itemsToggle = document.getElementById('items');
+      itemsToggle.addEventListener('change', myfun);
+
+      rowidx = 0; // row index number
+      // add "table" of invoice items
+      function myfun(e) {
+        b = 1;
+
+        if (document.getElementById('btnAddRow') != null) {
+          b = 0; // prevent duplicating buttons
+        }
+        if (itemsToggle.checked) {
+          var r = document.getElementById('itemList');
+          var row = document.createElement('div');
+          row.classList.add('w-100', 'row', 'mt-2');
+          var col1 = document.createElement('div');
+          col1.classList.add('col-3');
+          var col2 = document.createElement('div');
+          col2.classList.add('col-3');
+          var col3 = document.createElement('div');
+          col3.classList.add('col-3');
+          var col4 = document.createElement('div');
+          col4.classList.add('col-3');
+
+          r.appendChild(row);
+          row.appendChild(col1);
+          row.appendChild(col2);
+          row.appendChild(col3);
+          row.appendChild(col4);
+
+          // item name
+          var name = document.createElement('input');
+          name.classList.add('form-control');
+          name.setAttribute('type', 'text');
+          name.setAttribute('name', 'items' + rowidx.toString() + '[]');
+          name.setAttribute('placeholder', 'název');
+          name.id = 'name' + rowidx.toString();
+
+          // no of pieces
+          var pcs = document.createElement('input');
+          pcs.setAttribute('type', 'number');
+          pcs.setAttribute('name', 'items' + rowidx.toString() + '[]');
+          pcs.setAttribute('placeholder', 'ks');
+          pcs.setAttribute('oninput', 'itemUpdate()');
+          pcs.classList.add('form-control');
+          pcs.id = 'pcs' + rowidx.toString();
+
+          // price per piece
+          var price_pcs = document.createElement('input');
+          price_pcs.setAttribute('type', 'number');
+          price_pcs.setAttribute('name', 'items' + rowidx.toString() + '[]');
+          price_pcs.setAttribute('placeholder', 'Kč/ks');
+          price_pcs.classList.add('form-control');
+          price_pcs.setAttribute('oninput', 'itemUpdate()');
+          price_pcs.id = 'price_pcs' + rowidx.toString();
+
+          // total per item
+          var total = document.createElement('input');
+          total.setAttribute('type', 'number');
+          total.setAttribute('name', 'items' + rowidx.toString() + '[]');
+          total.setAttribute('placeholder', 'celkem');
+          total.classList.add('form-control', 'totalPrice');
+          total.id = 'total' + rowidx.toString();
+
+          col1.appendChild(name);
+          col2.appendChild(pcs);
+          col3.appendChild(price_pcs);
+          col4.appendChild(total);
+
+          if (b == 1) {
+            // add button for more rows if not created (first run)
+            btnroot = document.getElementById('addRow');
+            var btn = document.createElement('input');
+            btn.id = 'btnAddRow';
+            btn.setAttribute('type', 'button');
+            btn.setAttribute('value', '+');
+            btn.setAttribute('title', 'Přidat řádek');
+            btn.setAttribute('onclick', 'myfun()');
+            btn.classList.add('btn', 'btn-success');
+            btnroot.appendChild(btn);
+          }
+        } else {
+          //delete items when unchecking check box
+          var r = document.getElementById('itemList');
+          r.innerHTML = '';
+          btnroot = document.getElementById('addRow');
+          btnroot.innerHTML = '';
+        }
+        rowidx++;
+      }
+
+      // Add aritmetic functionality, auto counting totals
+      function itemUpdate(e) {
+        itemlist = document
+          .getElementById('itemList')
+          .getElementsByClassName('row');
+        price = document.getElementById('amountInput'); // total invoice price
+        s = []; // totals per item
+        Array.from(itemlist).forEach(function (item) {
+          inputs = item.getElementsByTagName('input'); // 0 - name, 1 - pcs, 2 - price_pcs, 3 - total
+          inputs[3].value = inputs[1].value * inputs[2].value;
+          s.push(Number(inputs[3].value));
+        });
+        const sum = (accumulator, currentValue) => accumulator + currentValue;
+        price.value = s.reduce(sum);
+      }
+    </script>
+  </body>
+</html>

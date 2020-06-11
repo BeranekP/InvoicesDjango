@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="cs-cz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <title>Nový uživatel</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2 class="mt-2, pb-5">Vytvořit nového uživatele</h2>
+      <form action="./" method="POST">
+        {% csrf_token %}
+        <div class="form-group row">
+            <div class="col-6">
+                <label for="recipientInput">Jméno</label>
+                <input
+                type="text"
+                class="form-control"
+                id="recipientInput"
+                name="name"
+                placeholder="John Doe"
+                required
+                />
+            </div>
+            <div class="col-6">
+                <label for="email">Email</label>
+                <input
+                type="email"
+                class="form-control"
+                id="email"
+                placeholder=""
+                name="email"
+                />
+            </div>
+            
+        </div>
+        <div class="form-group">
+          <label for="web">Web</label>
+          <input
+          type="text"
+          class="form-control"
+          id="web"
+          placeholder=""
+          name="web"
+          {% if profile.web %}
+              value="{{profile.web}}"
+          {% endif %}
+          />
+      </div>
+      <div class="row">
+      <div class="col-6">
+          <div class="form-group">
+          <label for="street">Ulice</label>
+          <input
+            type="street"
+            class="form-control"
+            id="street"
+            name="street"
+            placeholder="Street 22"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="town">Město</label>
+          <input
+          type="text"
+            class="form-control"
+            id="town"
+            name="town"
+            placeholder="London"
+            required
+          ></input>
+        </div>
+        <div class="form-group">
+          <label for="zipcode">PSČ</label>
+          <input
+            type="number"
+            class="form-control"
+            id="zipcode"
+            placeholder="66666"
+            name="zipcode"
+            step="1"
+            required
+          />
+        </div>
+      </div>
+      <div class="col-6">
+        {%load static%}
+        <div class="w-100 d-flex align-items-center justify-content-center">
+          <img src="{% static profile.logo.name %}" alt="" class="img-thumbnail mx-auto mt-3" id="logo">
+        </div>
+        <div class="custom-file d-flex justify-content-center align-items-center w-100">
+          
+          <label for="logoInput" class="custom-file-label mt-3 w-50 mx-auto" >Logo</label>
+          <input type="file" id='logoInput' class="custom-file-input" name='logo' oninput="document.getElementById('logo').src = window.URL.createObjectURL(this.files[0])">
+        </div>
+      </div>
+    </div>  
+        <div class="form-group row">
+            <div class="col-6">
+                <label for="ic">IČ</label>
+                <input
+                type="text"
+                class="form-control"
+                id="ic"
+                placeholder=""
+                name="ic"
+                required
+                />
+            </div>
+            <div class="col-6">
+                <label for="ic">DIČ</label>
+                <input
+                type="text"
+                class="form-control"
+                id="dic"
+                placeholder=""
+                name="dic"
+                />
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="bank">Bankovní účet</label>
+            <input
+              type="text"
+              class="form-control"
+              id="bank"
+              placeholder="000000/0000"
+              name="bank"
+              required
+            />
+        </div>
+        <div class="form-group">
+            <div class="row">
+                <div class="col-6">
+                    <label for="usernameInput">Uživatelské jméno</label>
+                    <input
+                        type="text"
+                        class="form-control"
+                        id="usernameInput"
+                        name="username"
+                        required
+                    />
+                </div>
+                <div class="col-6">
+                    <label for="passwordInput">Heslo</label>
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="passwordInput"
+                        name="password"
+                        required
+                    />
+                </div>
+            </div>
+        </div>
+
+        <div
+          class="form-group d-flex w-100 align-items-center justify-content-center"
+        >
+        <a href="../" class="btn btn-warning mt-5 mr-5 w-25"
+            >Zpět</a
+          >
+          <input
+            class="btn btn-success mt-5 w-25"
+            type="submit"
+            ,
+            value="Vytvořit uživatele"
+          />
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,288 @@
+{% load i18n %} {% load l10n %} {% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1024, height= 500" />
+    {% localize off %}
+    <title>Faktura č. {{invoice.iid}}</title>
+    {% endlocalize %}
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/print.css' %}"
+      media="print"
+    />
+  </head>
+  <body>
+    {% localize off %}
+    <div class="container px-0 mx-auto">
+      <div class="jumbotron w-100 mb-0 pb-5">
+        <div class="container w-100">
+          <h2 class="display-6">Faktura č. {{invoice.iid}}</h2>
+          <hr class="my-4 w-100 mx-0" />
+          <div class="row">
+            <div class="col-2 d-flex justify-content-start">
+              {% load static %}
+              <img
+                src="{% static user.logo.name %}"
+                alt=""
+                style="width: 100%;"
+              />
+            </div>
+            <div
+              class="col-4 my-1"
+              style="border-right: 1px solid rgba(0, 0, 0, 0.1);"
+            >
+              <h5 class="text-center">Dodavatel:</h5>
+              <p class="lead text-center">
+                {{user.name}} <br />
+                {{user.street}} <br />
+                {{user.zipcode}} {{user.town}}<br />
+                {% if user.ic %}
+                <br />
+                IČ: {{user.ic}} <br />
+                {% endif %} {% if user.dic %} DIČ: {{user.dic}}<br />
+                {% endif %}
+                <a href="mailto:{{user.email}}">{{user.email}}</a>
+                {% if user.web %}
+                <a href="{{user.web}}">{{user.web}}</a>
+                {% endif %}
+              </p>
+            </div>
+
+            <div class="col-6">
+              <h5 class="text-center">Odběratel:</h5>
+              <p class="lead text-center">
+                {{invoice.recipient.name}} <br />
+                {{invoice.recipient.street}} <br />
+                {{invoice.recipient.zipcode}} {{invoice.recipient.town}}<br />
+                {% if invoice.recipient.ic %}
+                <br />
+                IČ: {{invoice.recipient.ic}} <br />
+                {% endif %} {% if invoice.recipient.dic %} DIČ:
+                {{invoice.recipient.dic}} {% endif %}
+              </p>
+            </div>
+          </div>
+          <hr class="my-4 w-100" />
+        </div>
+
+        <div id="payment" class="container d-flex w-100">
+          <div
+            class="bank w-50"
+            style="border-right: 1px solid rgba(0, 0, 0, 0.1);"
+          >
+            <h5>Bankovní spojení:</h5>
+            <div class="d-flex w-100">
+              <div class="w-50">
+                Číslo účtu: <br />
+                Konstatní symbol: <br />
+                Variabilní symbol: <br />
+              </div>
+
+              <div class="w-50">
+                <strong>{{user.bank}} </strong><br />
+                0308 <br />
+                <strong>{{invoice.iid}}</strong>
+              </div>
+            </div>
+          </div>
+          <div
+            class="payment w-50 justify-content-center align-items-center pl-5"
+          >
+            <br />
+            <div class="w-100 d-flex">
+              <div class="w-50">
+                Vystaveno:<br />
+                Splatnost:<br />
+                Způsob platby:<br />
+              </div>
+              <div class="w-50">
+                {{invoice.date|date:"d. m. Y"}} <br />
+                {{invoice.datedue|date:"d. m. Y"}} <br />
+                {{invoice.payment}}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endlocalize %}
+
+        <div class="container w-100">
+          <hr class="my-4" />
+          <h5>Popis dodávky:</h5>
+          <p>
+            {{ invoice.description|linebreaksbr }}
+          </p>
+          {% if items %}
+          <hr class="my-4 w-100" />
+          <h5>Rozpis položek:</h5>
+          <table class="table table-sm table-bordered w-100">
+            <thead>
+              <tr>
+                <th
+                  style="
+                    font-weight: 500;
+                    font-style: italic;
+                    text-align: center;
+                  "
+                >
+                  Položka
+                </th>
+                <th
+                  style="
+                    font-weight: 500;
+                    font-style: italic;
+                    text-align: center;
+                  "
+                >
+                  Počet [ks]
+                </th>
+                <th
+                  style="
+                    font-weight: 500;
+                    font-style: italic;
+                    text-align: center;
+                  "
+                >
+                  Cena [Kč/ks]
+                </th>
+                <th
+                  style="
+                    font-weight: 500;
+                    font-style: italic;
+                    text-align: center;
+                  "
+                >
+                  Celkem [Kč]
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <td>{{item.item_name}}</td>
+                <td style="text-align: center;">{{item.num_items}}</td>
+                <td style="text-align: right;">{{item.price_item}}</td>
+                <td style="text-align: right;">{{item.price}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          {% endif %}
+        </div>
+
+        <div class="container w-100">
+          <hr class="my-4" />
+
+          <div class="row">
+            <div class="col-9 d-flex align-items-center">
+              <h2 class="mt-5">
+                Celkem k úhradě:
+                <span class="ml-3 px-2 border border-dark"
+                  >{{invoice.amount}} Kč</span
+                >
+              </h2>
+            </div>
+            <div class="col-3 d-flex justify-content-center align-items-center">
+              {% if invoice.payment == 'bankovním převodem' %} {% load static %}
+              <img
+                src="{%static qr%}"
+                alt=""
+                width="200"
+                class="p-2"
+                style="border: 1px solid rgba(0, 0, 0, 0.1);"
+              />
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="w-100 d-flex mt-5">
+          <span class="align-self-end d-none d-print-inline">
+            <em> Nejsem plátce DPH.</em></span
+          >
+          <div
+            class="w-50 text-center ml-auto mr-5 d-none d-print-block"
+            id="stamp"
+          >
+            <img src={% static "/sign/podpis.png" %} alt="" class="w-50 pt-3
+            mt-5 d-print-none" id="signature">
+            <p
+              class="w-50 pt-3 mt-5"
+              style="border-top: 2px dotted rgba(0, 0, 0, 0.2);"
+            >
+              Razítko a podpis dodavatele
+            </p>
+          </div>
+          <div id="footer" class="d-none d-print-block">
+            <p>
+              <em>Podnikatel je zapsán v živnostenském rejstříku MÚ Sušice.</em>
+            </p>
+          </div>
+        </div>
+      </div>
+      <nav
+        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between fixed-bottom w-75 px-5 mx-auto my-0"
+      >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item mr-5">
+              <a
+                class="nav-link font-weight-bold"
+                href="#"
+                onclick="window.print();return false;"
+                >Tisk</a
+              >
+            </li>
+            <li class="nav-item nav-link custom-control custom-switch d-flex">
+              <input
+                type="checkbox"
+                class="mr-2 custom-control-input align-self-end"
+                onchange="toggleFun()"
+                id="sign"
+              />
+              <label for="sign" class="custom-control-label align-self-start"
+                >Tisk s podpisem</label
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="../../">Zpět</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <script>
+      // Turn on/off signature
+      function toggleFun(e) {
+        btn = document.getElementById('sign'); // toggle checkbox
+
+        sgn = document.getElementById('signature'); // image
+        sgn.classList.toggle('d-print-none');
+      }
+    </script>
+  </body>
+</html>

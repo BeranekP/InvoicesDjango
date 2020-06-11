@@ -27,7 +27,6 @@ class SignupView(View):
         username = request.POST['username']
         password = request.POST['password']
         user = User.objects.create_user(username, '', password)
-        user.save()
         user_profile = UserProfile()
         user_profile.user = user
         user_profile.email = request.POST['email']
@@ -41,8 +40,9 @@ class SignupView(View):
         if request.POST['dic']:
             user_profile.dic = request.POST['dic']
         user_profile.bank = request.POST['bank']
-        user.save()
+
         user_profile.save()
+        user.save()
         return redirect('/')
 
 

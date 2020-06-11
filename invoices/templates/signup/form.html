@@ -7,7 +7,7 @@ Nový uživatel
 {% localize off %}
     <div class="container mt-5">
       <h2 class="mt-2, pb-5">Vytvořit nového uživatele</h2>
-      <form action="./" method="POST">
+      <form action="./" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form-group row">
             <div class="col-6">
@@ -90,8 +90,8 @@ Nový uživatel
         </div>
         <div class="custom-file d-flex justify-content-center align-items-center w-100">
           
-          <label for="logoInput" class="custom-file-label mt-3 w-50 mx-auto" >Logo</label>
-          <input type="file" id='logoInput' class="custom-file-input" name='logo' oninput="document.getElementById('logo').src = window.URL.createObjectURL(this.files[0])">
+          <label for="logoInput" class="custom-file-label mt-3 w-50 mx-auto" >{{profile.logo.name}}</label>
+          <input type="file" id='logoInput' class="custom-file-input" name='logo' oninput="getPreview()">
         </div>
       </div>
     </div>  
@@ -169,4 +169,10 @@ Nový uživatel
         </div>
       </form>
     </div>
- {% endblock  %}
+
+    {% block scripts %}
+    <script src="{% static 'js/getPreview.js'%}"></script>
+    {% endblock %}
+    
+{% endlocalize %}
+{% endblock  %}

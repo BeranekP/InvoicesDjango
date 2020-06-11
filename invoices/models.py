@@ -7,10 +7,12 @@ import os
 
 
 def get_path(instance, filename):
+
     path = settings.STATICFILES_DIRS[0] + \
         f'/logo/{instance.user.username}/{instance.user.username}_logo.svg'
-    if os.path.exists:
+    if os.path.exists(path):
         os.remove(path)
+    os.makedirs(path)
     return path
 
 

@@ -89,8 +89,8 @@ Upravit profil
             </div>
             <div class="custom-file d-flex justify-content-center align-items-center w-100">
               
-              <label for="logoInput" class="custom-file-label mt-3 w-50 mx-auto" >Logo</label>
-              <input type="file" id='logoInput' class="custom-file-input" name='logo' oninput="document.getElementById('logo').src = window.URL.createObjectURL(this.files[0])">
+              <label for="logoInput" class="custom-file-label mt-3 w-50 mx-auto" >Aktuální logo</label>
+              <input type="file" id='logoInput' class="custom-file-input" name='logo' oninput="getPreview()">
             </div>
           </div>
       </div>
@@ -163,6 +163,9 @@ Upravit profil
       </form>
     </div>
     {% endlocalize %}
+    {% block scripts %}
+    <script src="{% static 'js/getPreview.js'%}"></script>
+    {% endblock %}
 {% endblock  %}
 
 

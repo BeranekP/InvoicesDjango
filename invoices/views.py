@@ -12,9 +12,20 @@ from django.conf import settings
 from qrplatba import QRPlatbaGenerator
 from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
+from django.http import HttpResponse
+from django.views.decorators.http import require_GET
+import os
 
 
 # Create your views here.
+@require_GET
+def robots(request):
+    lines = [
+        "User-Agent: *",
+        "Disallow: /static/",
+    ]
+    return HttpResponse("\n".join(lines), content_type="text/plain")
+
 
 class SignupView(View):
     template_name = 'signup/form.html'
@@ -323,7 +334,8 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         profile = UserProfile.objects.get(id=id)
         context = {'profile': profile,
                    'user': request.user}
-        print(settings.AUTH_USER_MODEL)
+        print(os.path.basename(profile.logo.name))
+        print(os.path.basename(os.path.dirname(profile.logo.name)))
         return render(request, self.template_name, context)
 
     def post(self, request, id):

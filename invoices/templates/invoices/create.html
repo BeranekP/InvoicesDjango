@@ -65,7 +65,7 @@
             id="items"
             name="hasItems"
           />
-          <div id="itemList" class="w-100 justify-content-around"></div>
+          <div id="itemList" class="w-100 mx-auto"></div>
           <div
             id="addRow"
             class="mt-2 mb-2 justify-content-center w-100 d-flex"
@@ -95,34 +95,37 @@
         </div>
 
         <div class="form-inline mt-3 mb-3 w-100 d-flex justify-content-between">
-          <label for="createdInput">Vystaveno</label>
-          <input
-            type="date"
-            class="form-control"
-            id="createdInput"
-            name="created"
-            value="{{ default_dates.created|date:'Y-m-d'}}"
-            required
-          />
-          <label for="dueInput">Splatnost</label>
-          <input
-            type="date"
-            class="form-control"
-            id="dueInput"
-            name="due"
-            value="{{ default_dates.due|date:'Y-m-d'}}"
-            required
-          />
+          
+            <label for="createdInput">Vystaveno</label>
+            <input
+              type="date"
+              class="form-control"
+              id="createdInput"
+              name="created"
+              value="{{ default_dates.created|date:'Y-m-d'}}"
+              required
+            />
+         
+            <label for="dueInput">Splatnost</label>
+            <input
+              type="date"
+              class="form-control"
+              id="dueInput"
+              name="due"
+              value="{{ default_dates.due|date:'Y-m-d'}}"
+              required
+            />
+          
         </div>
 
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"
         >
-          <a href="../" class="btn btn-warning mt-5 mr-5 w-25"
+          <a href="../" class="btn btn-warning mr-5 mt-sm-1 mt-md-5 w-sm-50 w-md-25 btn-lg"
             >Zpět na přehled</a
           >
           <input
-            class="btn btn-success mt-5 w-25"
+            class="btn btn-success mt-sm-1 mt-md-5 w-md-25 w-sm-50 btn-lg"
             type="submit"
             value="Vystavit"
           />

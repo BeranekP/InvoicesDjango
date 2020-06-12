@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from invoices.models import Invoice, Recipient, UserProfile, InvoiceItem
+from invoices.models import randstring
 from django.db.models.functions import ExtractYear
 from datetime import datetime, timedelta
 from django.contrib.auth import authenticate, login, logout
@@ -37,6 +38,8 @@ class SignupView(View):
         user_profile.zipcode = request.POST['zipcode']
         user_profile.ic = request.POST['ic']
         user_profile.logo = request.FILES['logo']
+        user_profile.sign = request.FILES['sign']
+        user_profile.rnd_id = randstring(25)
         if request.POST['dic']:
             user_profile.dic = request.POST['dic']
         user_profile.bank = request.POST['bank']
@@ -335,7 +338,14 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         if request.POST['dic']:
             user_profile.dic = request.POST['dic']
         user_profile.bank = request.POST['bank']
-        user_profile.logo = request.FILES['logo']
+        try:
+            user_profile.logo = request.FILES['logo']
+        except:
+            pass
+        try:
+            user_profile.sign = request.FILES['sign']
+        except:
+            pass
         user_profile.save()
 
         return redirect('../../../invoices')

@@ -6,15 +6,24 @@ from django.db.models.signals import post_save
 import os
 import random
 import string
+import glob
+
+
+def randstring(N):
+    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(N))
 
 
 def get_path(instance, filename):
+    extension = filename.split('.')[-1]
     basepath = os.path.join(
-        settings.STATICFILES_DIRS[0], f'logo/{instance.rnd_id}')
-    f = f'{instance.rnd_id}.svg'
+        settings.STATICFILES_DIRS[0], f'assets/{instance.rnd_id}')
+    f = f'{randstring(15)}.{extension}'
     path = os.path.join(basepath, f)
-    if os.path.exists(path):
-        os.remove(path)
+
+    files = glob.glob(os.path.join(basepath, f'*.{extension}'))
+    for f in files:
+        os.remove(f)
+
     try:
         os.makedirs(basepath)
     except:
@@ -36,10 +45,10 @@ class UserProfile(models.Model):
     web = models.URLField(max_length=250,
                           default=None, null=True, unique=True, blank=True)
     bank = models.CharField(max_length=120, default='')
-    rnd_id = models.CharField(max_length=120, default=''.join(
-        random.choice(string.ascii_uppercase + string.digits) for _ in range(25)))
+    rnd_id = models.CharField(max_length=120, default=randstring(25))
     logo = models.ImageField(
         upload_to=get_path, blank=True, null=True)
+    sign = models.ImageField(upload_to=get_path, blank=True, null=True)
 
     def __str__(self):
         return ', '.join([self.name, self.user.username, self.email])

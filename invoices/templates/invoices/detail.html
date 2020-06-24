@@ -1,13 +1,14 @@
 {% extends "../base/base.html" %}
-{% load i18n %} {% load l10n %} {% load static %}{% load filename %}
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %}
     {% block display %}
       <meta name="viewport" content="width=1024, height= 500" />
     {% endblock %}
 
-    {% localize off %}
-    {% block title %}Faktura č. {{invoice.iid}} {% endblock %}
-    {% endlocalize %}
-
+    
+    {% block title %}
+      {% localize off %}Faktura č. {{invoice.iid}} {% endlocalize %}
+    {% endblock %}
+    
     {% block content %}
     {% localize off %}
     <div class="container px-0 mx-auto">
@@ -32,7 +33,7 @@
               <p class="lead text-center">
                 {{user.name}} <br />
                 {{user.street}} <br />
-                {{user.zipcode}} {{user.town}}<br />
+                {{user.zipcode|zipcode}} {{user.town}}<br />
                 {% if user.ic %}
                 <br />
                 IČ: {{user.ic}} <br />
@@ -50,7 +51,7 @@
               <p class="lead text-center">
                 {{invoice.recipient.name}} <br />
                 {{invoice.recipient.street}} <br />
-                {{invoice.recipient.zipcode}} {{invoice.recipient.town}}<br />
+                {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
                 {% if invoice.recipient.ic %}
                 <br />
                 IČ: {{invoice.recipient.ic}} <br />

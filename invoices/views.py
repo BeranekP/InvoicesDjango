@@ -334,8 +334,7 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         profile = UserProfile.objects.get(id=id)
         context = {'profile': profile,
                    'user': request.user}
-        print(os.path.basename(profile.logo.name))
-        print(os.path.basename(os.path.dirname(profile.logo.name)))
+
         return render(request, self.template_name, context)
 
     def post(self, request, id):

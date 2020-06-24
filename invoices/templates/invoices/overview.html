@@ -1,5 +1,5 @@
 {% extends "../base/base.html" %}
-{% load i18n %} {% load l10n %} {% load static %}
+{% load i18n %} {% load l10n %} {% load static %}{% load zipcode %}
 
   {% block title %} Invoice Factory - Přehled {% endblock %}
     
@@ -7,7 +7,7 @@
     <div class="container d-flex justify-content-center">
     <div class="heading d-none d-print-block text-muted">
       {% localize off %}
-      {{profile.name}}, {{profile.street}}, {{profile.zipcode}} {{profile.town}}, IČ: {{profile.ic}}, {{profile.email}}, {{profile.web}}
+      {{profile.name}}, {{profile.street}}, {{profile.zipcode|zipcode}} {{profile.town}}, IČ: {{profile.ic}}, {{profile.email}}, {{profile.web}}
       {% endlocalize %}
 
     </div>
@@ -139,7 +139,7 @@
             <td>
               <strong>{{ invoice.recipient.name }}</strong
               ><span class="d-none d-lg-inline d-print-inline"
-                >, {{invoice.recipient.street}}, {{invoice.recipient.zipcode}}
+                >, {{invoice.recipient.street}}, {{invoice.recipient.zipcode|zipcode}}
                 {{invoice.recipient.town }}</span
               >
             </td>

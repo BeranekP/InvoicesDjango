@@ -12,16 +12,10 @@ from django.conf import settings
 from qrplatba import QRPlatbaGenerator
 from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
-from django.http import HttpResponse
 from django.views.decorators.http import require_GET
 import os
 from django.template.loader import get_template
-
 from io import StringIO, BytesIO
-from django.http import HttpResponse
-from django.views.generic import View
-
-from invoices.utils import render_to_pdf
 
 
 # Create your views here.
@@ -368,26 +362,3 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         user_profile.save()
 
         return redirect('../../../invoices')
-
-
-class GeneratePDF(View):
-    def get(self, request, *args, **kwargs):
-        template = get_template('detail.html')
-        context = {
-            "invoice_id": 123,
-            "customer_name": "John Cooper",
-            "amount": 1399.99,
-            "today": "Today",
-        }
-        html = template.render(context)
-        pdf = render_to_pdf('invoice.html', context)
-        if pdf:
-            response = HttpResponse(pdf, content_type='application/pdf')
-            filename = "Invoice_%s.pdf" % ("12341231")
-            content = "inline; filename='%s'" % (filename)
-            download = request.GET.get("download")
-            if download:
-                content = "attachment; filename='%s'" % (filename)
-            response['Content-Disposition'] = content
-            return response
-        return HttpResponse("Not found")

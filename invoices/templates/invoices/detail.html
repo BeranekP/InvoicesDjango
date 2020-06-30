@@ -181,13 +181,16 @@
             </div>
             <div class="col-3 d-flex justify-content-center align-items-center">
               {% if invoice.payment == 'bankovním převodem' %} {% load static %}
-              <img
+              <!--<img
                 src="{%static qr%}"
                 alt=""
                 width="200"
                 class="p-2"
                 style="border: 1px solid rgba(0, 0, 0, 0.1);"
-              />
+              />-->
+                
+                  {{svg}}
+                
               {% endif %}
             </div>
           </div>
@@ -210,6 +213,9 @@
               Razítko a podpis dodavatele
             </p>
           </div>
+          
+        
+        
           <div id="footer" class="d-none d-print-block">
             <p>
               <em>Podnikatel je zapsán v živnostenském rejstříku MÚ Sušice.</em>
@@ -248,6 +254,8 @@
                 class="mr-2 custom-control-input align-self-end"
                 onchange="toggleFun()"
                 id="sign"
+                name="sign"
+                value=-1
               />
               <label for="sign" class="custom-control-label align-self-start"
                 >Tisk s podpisem</label
@@ -262,6 +270,7 @@
         </div>
       </nav>
     </div>
+      
     {% endblock  %}
     {% block scripts %}
     <script>
@@ -271,6 +280,7 @@
 
         sgn = document.getElementById('signature'); // image
         sgn.classList.toggle('d-print-none');
+        btn.value = -btn.value
       }
     </script>
     {% endblock  %}

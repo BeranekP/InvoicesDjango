@@ -382,9 +382,31 @@ class RecipientOverView(LoginRequiredMixin, View):
         recipients = Recipient.objects.filter(
             owner=request.user).order_by('name')
 
-        for recipient in recipients:
+        years = []
+        try:
+            yr = request.GET['yr']
+        except:
+            yr = datetime.now().year
+
+        if yr and not yr == 'all':
             invoices = Invoice.objects.filter(
-                owner=request.user, recipient=recipient).order_by('iid')
+                date__year=yr, owner=request.user).order_by('-iid')
+        else:
+            invoices = Invoice.objects.filter(
+                owner=request.user).order_by('-iid')
+
+        dates = Invoice.objects.filter(
+            owner=request.user).dates('date', 'year')
+        years = [str(date.year) for date in dates]
+
+        for recipient in recipients:
+            if yr and not yr == 'all':
+                invoices = Invoice.objects.filter(
+                    date__year=yr, owner=request.user, recipient=recipient).order_by('iid')
+            else:
+                invoices = Invoice.objects.filter(
+                    owner=request.user, recipient=recipient).order_by('iid')
+
             total = 0
             for invoice in invoices:
                 total += invoice.amount
@@ -395,6 +417,8 @@ class RecipientOverView(LoginRequiredMixin, View):
                    'profile': userprofile,
                    'logo': logo,
                    'recipients': recipients,
+                   'years': sorted(list(set(years)), reverse=True),
+                   'selected_year': str(yr)
                    }
         return render(request, self.template_name, context)
 

@@ -68,7 +68,24 @@
     <div class="container mt-5 overview" >
       <hr />
       <div class="d-flex justify-content-between align-items-center mt-5 overview" >
-        <h2 class="d-none d-lg-block d-print-block">Přehled faktur</h2>
+        <h2 class="d-none d-lg-block d-print-block">Odběratelé</h2>
+        <form action="./" method="GET" id="year" class="d-print-none">
+          <select
+            name="yr"
+            onchange="yearSubmit()"
+            class="form-control form-control-lg"
+            id="yearSelect"
+          >
+            <option value="all">All</option>
+            {% for year in years %} 
+              {% ifequal year selected_year %}
+                <option value="{{year}}" selected="selected">{{year}}</option>
+              {% else %}
+                <option value="{{year}}">{{year}}</option>
+              {% endifequal %} 
+            {% endfor %}
+          </select>
+        </form>
       </div>
       <hr />
     </div>
@@ -139,6 +156,16 @@
         </tbody>
       </table>
     </div>
+    {% endblock %}
+    
+    {% block scripts %}
+    <script>
+      // Submit select input after selection
+      function yearSubmit() {
+        dropdown = document.getElementById('year');
+        dropdown.submit();
+      }
+    </script>
     {% endblock %}
     
     

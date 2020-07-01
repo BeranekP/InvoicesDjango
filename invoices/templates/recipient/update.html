@@ -1,10 +1,11 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}{% load zipcode %}
 
-  {% block title %} Invoice Factory - Nový odběratel {% endblock %}
+  {% block title %} Invoice Factory - Editovat odběratele {% endblock %}
   {% block content %}
+  {% localize off %}
     <div class="container mt-3">
-      <h2 class="mt-2, pb-5">Nový odběratel</h2>
+      <h2 class="mt-2, pb-5">Editovat odběratele <em>{{ recipient.name }}</em></h2>
       <form action="./" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -13,9 +14,8 @@
             type="text"
             class="form-control"
             id="recipientInput"
-            name="name"
-            placeholder="John Doe"
-            required
+            name="name" 
+            value="{{recipient.name}}"
           />
         </div>
         <div class="form-group">
@@ -25,8 +25,7 @@
             class="form-control"
             id="street"
             name="street"
-            placeholder="Street 22"
-            required
+            value="{{recipient.street}}"
           />
         </div>
         <div class="form-group">
@@ -36,8 +35,8 @@
             class="form-control"
             id="town"
             name="town"
-            placeholder="London"
-            required
+            
+            value="{{recipient.town}}"
           />
         </div>
         <div class="form-group">
@@ -46,20 +45,20 @@
             type="number"
             class="form-control"
             id="zipcode"
-            placeholder="66666"
+            
             name="zipcode"
             step="1"
-            required
+            value="{{recipient.zipcode}}"
           />
         </div>
         <div class="form-group row">
           <div class="col-6">
             <label for="icInput">IČ</label>
-            <input type="text" class="form-control" id="icInput" name="ic" />
+            <input type="text" class="form-control" id="icInput" name="ic" value="{{recipient.ic|default_if_none:""}}"/>
           </div>
           <div class="col-6">
             <label for="dicInput">DIČ</label>
-            <input type="text" class="form-control" id="dicInput" name="dic" />
+            <input type="text" class="form-control" id="dicInput" name="dic" value="{{recipient.dic|default_if_none:"" }}"/>
           </div>
         </div>
 
@@ -74,4 +73,5 @@
         </div>
       </form>
     </div>
+{% endlocalize %}
 {% endblock %}

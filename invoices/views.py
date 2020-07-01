@@ -14,8 +14,7 @@ from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
 from django.views.decorators.http import require_GET
 import os
-from django.template.loader import get_template
-from io import StringIO, BytesIO
+from io import BytesIO
 
 
 # Create your views here.
@@ -333,14 +332,14 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
     template_name = 'user/profile.html'
 
     def get(self, request, id):
-        profile = UserProfile.objects.get(id=id)
+        profile = UserProfile.objects.get(id=id, user=request.user)
         context = {'profile': profile,
                    'user': request.user}
 
         return render(request, self.template_name, context)
 
     def post(self, request, id):
-        user_profile = UserProfile.objects.get(id=id)
+        user_profile = UserProfile.objects.get(id=id, user=request.user)
         user_profile.email = request.POST['email']
         user_profile.web = request.POST['web']
         user_profile.name = request.POST['name']
@@ -362,3 +361,68 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         user_profile.save()
 
         return redirect('../../../invoices')
+
+
+class RecipientOverView(LoginRequiredMixin, View):
+    template_name = 'recipient/overview.html'
+    login_url = '/'
+    redirect_field_name = 'recipient/'
+
+    def get(self, request):
+        try:
+            userprofile = UserProfile.objects.get(user=request.user)
+        except:
+            userprofile = None
+
+        try:
+            logo = userprofile.logo.read()
+        except:
+            logo = None
+
+        recipients = Recipient.objects.filter(
+            owner=request.user).order_by('name')
+
+        for recipient in recipients:
+            invoices = Invoice.objects.filter(
+                owner=request.user, recipient=recipient).order_by('iid')
+            total = 0
+            for invoice in invoices:
+                total += invoice.amount
+            recipient.invoices = invoices
+            recipient.total = total
+
+        context = {'user': request.user,
+                   'profile': userprofile,
+                   'logo': logo,
+                   'recipients': recipients,
+                   }
+        return render(request, self.template_name, context)
+
+
+class RecipientUpdateView(LoginRequiredMixin, View):
+    template_name = 'recipient/update.html'
+    login_url = '/'
+    redirect_field_name = 'recipient/'
+
+    def get(self, request, id):
+        recipient = Recipient.objects.get(id=id, owner=request.user)
+        context = {'recipient': recipient,
+                   'user': request.user}
+
+        return render(request, self.template_name, context)
+
+    def post(self, request, id):
+        recipient = Recipient.objects.get(id=id, owner=request.user)
+        recipient.name = request.POST['name']
+        recipient.street = request.POST['street']
+        recipient.town = request.POST['town']
+        recipient.zipcode = request.POST['zipcode']
+        recipient.ic = request.POST['ic']
+        if request.POST['dic']:
+            recipient.dic = request.POST['dic']
+        if request.POST['ic']:
+            recipient.ic = request.POST['ic']
+
+        recipient.save()
+
+        return redirect('/recipient')

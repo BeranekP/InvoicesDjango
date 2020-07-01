@@ -180,15 +180,8 @@
               </h2>
             </div>
             <div class="col-3 d-flex justify-content-center align-items-center">
-              {% if invoice.payment == 'bankovním převodem' %} {% load static %}
-              <!--<img
-                src="{%static qr%}"
-                alt=""
-                width="200"
-                class="p-2"
-                style="border: 1px solid rgba(0, 0, 0, 0.1);"
-              />-->
-                
+              {% if invoice.payment == 'bankovním převodem' %} 
+                             
                   {{svg}}
                 
               {% endif %}
@@ -244,7 +237,7 @@
               <a
                 class="nav-link font-weight-bold"
                 href="#"
-                onclick="window.print();return false;"
+                onclick="window.print();"
                 >Tisk</a
               >
             </li>

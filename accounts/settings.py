@@ -131,6 +131,8 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"),
                     '/var/www/static/', ]
 

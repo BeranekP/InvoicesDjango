@@ -73,7 +73,9 @@ class Recipient(models.Model):
 class Invoice(models.Model):
     recipient = models.ForeignKey(Recipient, on_delete=models.CASCADE)
     description = models.TextField(max_length=1000, default='')
-    amount = models.IntegerField(default=0)
+    amount = models.FloatField(default=0)
+    currency = models.CharField(max_length=5, default='CZK')
+    exchange_rate = models.FloatField(default=1)
     date = models.DateField(default=datetime.now, blank=True)
     datedue = models.DateField(default=datetime.now, blank=True)
     iid = models.IntegerField(default=0, null=True, blank=True)

@@ -85,6 +85,14 @@
               required
             />
           </div>
+          <div class="form-group ml-2 w-25">
+            <label for="currencyInput">Měna</label>
+            <select name="currency" id="currencyInput" class="form-control">
+            {% for rate in rates %}
+              <option value='{{rate}}'>{{rate}}</option>
+            {% endfor %}
+            </select>
+          </div>
           <div class="form-group ml-2 w-50">
             <label for="paymentInput">Způsob platby</label>
             <select name="payment" id="paymentInput" class="form-control">

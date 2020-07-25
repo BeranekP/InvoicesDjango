@@ -1,5 +1,5 @@
 {% extends "../base/base.html" %}
-{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %}
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}
     {% block display %}
       <meta name="viewport" content="width=1024, height= 500" />
     {% endblock %}
@@ -140,7 +140,9 @@
                     text-align: center;
                   "
                 >
-                  Cena [Kč/ks]
+                  Cena [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  {{invoice.currency}}
+                  {% endifequal %}/ks]
                 </th>
                 <th
                   style="
@@ -149,7 +151,9 @@
                     text-align: center;
                   "
                 >
-                  Celkem [Kč]
+                  Celkem [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  {{invoice.currency}}
+                  {% endifequal %}]
                 </th>
               </tr>
             </thead>
@@ -174,9 +178,17 @@
             <div class="col-9 d-flex align-items-center">
               <h2 class="mt-5">
                 Celkem k úhradě:
+                <span>
                 <span class="ml-3 px-2 border border-dark"
-                  >{{invoice.amount}} Kč</span
-                >
+                  >{{invoice.amount|floatformat:2}} 
+                  {% ifequal invoice.currency 'CZK' %}
+                  Kč
+                  {% else %}
+                  {{invoice.currency}}</span> 
+                  <div class='h6 mt-3 ml-5'>({{ invoice.amount |multiply:invoice.exchange_rate|floatformat:2 }} Kč; kurz ČNB k {{invoice.date|date:"d. m. Y"}}: {{invoice.exchange_rate|floatformat:2}} Kč/{{invoice.currency}})</div>
+                  {% endifequal %}
+                  </span>
+                  
               </h2>
             </div>
             <div class="col-3 d-flex justify-content-center align-items-center">

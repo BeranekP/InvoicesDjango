@@ -15,6 +15,7 @@ from django.core.files.base import ContentFile
 from django.views.decorators.http import require_GET
 import os
 from io import BytesIO
+from invoices.exchange_cnb import get_exchange_rates
 
 
 # Create your views here.
@@ -98,6 +99,7 @@ class InvoiceView(LoginRequiredMixin, View):
     def get(self, request):
         d = datetime.now()
         dt = timedelta(days=14)
+        rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
         recipients = Recipient.objects.filter(
             owner=request.user).order_by('name')
         invoices_id = Invoice.objects.filter(
@@ -108,7 +110,7 @@ class InvoiceView(LoginRequiredMixin, View):
             iid = d.year * 10000 + 1
         default_dates = {'created': d, 'due': d + dt}
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates}
+                   'user': request.user, 'default_dates': default_dates, 'rates': ['CZK', *rates.keys()]}
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -119,7 +121,16 @@ class InvoiceView(LoginRequiredMixin, View):
             owner=request.user).get(pk=int(rid))
         invoice.description = request.POST.get('description')
         invoice.amount = request.POST.get('amount')
+        currency = request.POST.get('currency')
+
         invoice.date = request.POST.get('created')
+        d = datetime.strptime(invoice.date, '%Y-%m-%d')
+        invoice.currency = request.POST.get('currency')
+        if invoice.currency != 'CZK':
+            invoice.exchange_rate = get_exchange_rates(
+                d.strftime('%d.%m.%Y'))[invoice.currency]
+        else:
+            invoice.exchange_rate = 1
         invoice.datedue = request.POST.get('due')
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
@@ -166,7 +177,7 @@ class InvoiceDetailView(LoginRequiredMixin, View):
 
         user = UserProfile.objects.get(user=invoice.owner)
 
-        generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid,
+        generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
                                       message=f'FAKTURA {invoice.iid}', due_date=invoice.datedue)
 
         img = generator.make_image()
@@ -247,7 +258,11 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
             items = InvoiceItem.objects.filter(invoice=invoice)
         else:
             items = []
-        context = {'invoice': invoice, "items": items}
+
+        #d = datetime.strptime(invoice.date, '%Y-%m-%d')
+        rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
+        context = {'invoice': invoice, "items": items,
+                   'rates': ['CZK', *rates.keys()]}
         return render(request, 'invoices/update.html', context)
 
     def post(self, request, id):
@@ -257,6 +272,13 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         invoice.amount = request.POST.get('amount')
         invoice.date = request.POST.get('created')
         invoice.datedue = request.POST.get('due')
+        d = datetime.strptime(invoice.date, '%Y-%m-%d')
+        invoice.currency = request.POST.get('currency')
+        if invoice.currency != 'CZK':
+            invoice.exchange_rate = get_exchange_rates(
+                d.strftime('%d.%m.%Y'))[invoice.currency]
+        else:
+            invoice.exchange_rate = 1
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
         invoice.owner = request.user

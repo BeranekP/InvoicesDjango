@@ -59,6 +59,7 @@ class Recipient(models.Model):
     street = models.CharField(max_length=120, default='')
     town = models.CharField(max_length=120, default='')
     zipcode = models.IntegerField(default=00000)
+    state = models.CharField(max_length=120, default='Česká republika')
     ic = models.CharField(max_length=20, default=None,
                           null=True, unique=True, blank=True)
     dic = models.CharField(max_length=20, default=None,

@@ -339,6 +339,7 @@ class RecipientView(LoginRequiredMixin, View):
         recipient.street = request.POST.get('street')
         recipient.town = request.POST.get('town')
         recipient.zipcode = request.POST.get('zipcode')
+        recipient.state = request.POST['state']
         if request.POST.get('ic'):
             recipient.ic = request.POST.get('ic')
         if request.POST.get('dic'):
@@ -464,6 +465,7 @@ class RecipientUpdateView(LoginRequiredMixin, View):
         recipient.street = request.POST['street']
         recipient.town = request.POST['town']
         recipient.zipcode = request.POST['zipcode']
+        recipient.state = request.POST['state']
         recipient.ic = request.POST['ic']
         if request.POST['dic']:
             recipient.dic = request.POST['dic']

@@ -7,7 +7,8 @@ def list2dict(list_of_lists):
 
     out = {}
     for lst in list_of_lists:
-        out.setdefault(lst[-2], float(lst[-1]))
+        out.setdefault(
+            lst[-2], float(lst[-1]))
 
     return out
 

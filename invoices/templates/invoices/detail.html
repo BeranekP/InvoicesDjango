@@ -52,6 +52,9 @@
                 {{invoice.recipient.name}} <br />
                 {{invoice.recipient.street}} <br />
                 {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
+                {% ifnotequal invoice.recipient.state 'Česká republika'%}
+                {{invoice.recipient.state}}<br />
+                {% endifnotequal %}
                 {% if invoice.recipient.ic %}
                 <br />
                 IČ: {{invoice.recipient.ic}} <br />

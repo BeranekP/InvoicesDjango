@@ -72,12 +72,14 @@
             <div class="d-flex w-100">
               <div class="w-50">
                 Číslo účtu: <br />
+                {% ifnotequal invoice.currency 'CZK' %}IBAN: <br />{% endifnotequal %}
                 Konstatní symbol: <br />
                 Variabilní symbol: <br />
               </div>
 
               <div class="w-50">
                 <strong>{{user.bank}} </strong><br />
+                {% ifnotequal invoice.currency 'CZK' %}<strong>{{iban}}</strong> <br />{% endifnotequal %}
                 0308 <br />
                 <strong>{{invoice.iid}}</strong>
               </div>

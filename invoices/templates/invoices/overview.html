@@ -95,7 +95,7 @@
         </form>
         <span id="yearSpan" class="d-none d-print-block"></span>
 
-        <h5>Součet: {{total}} </h5>
+        <h5>Součet: {{total|floatformat:2}} Kč</h5>
       </div>
       <hr />
     </div>
@@ -155,7 +155,9 @@
             </td>
             {% endlocalize %}
             <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: right;">
-              {{ invoice.amount|floatformat:2 }} {{invoice.currency}}
+              {{ invoice.amount|floatformat:2 }} {% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  {{invoice.currency}}
+                  {% endifequal %}
             </td>
 
             <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: center;">

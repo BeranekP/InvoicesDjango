@@ -179,14 +179,14 @@ class InvoiceDetailView(LoginRequiredMixin, View):
 
         generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
                                       message=f'FAKTURA {invoice.iid}', due_date=invoice.datedue)
-
+        iban = generator._account[4:-1]
         img = generator.make_image()
 
         svg_output = BytesIO()
         img.save(svg_output)
 
         context = {"invoice": invoice, "user": user,
-                   "items": items, "svg": mark_safe(svg_output.getvalue().decode())}
+                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode())}
 
         return render(request, self.template_name, context)
 
@@ -225,7 +225,8 @@ class InvoiceOverView(LoginRequiredMixin, View):
             owner=request.user).dates('date', 'year')
         years = [str(date.year) for date in dates]
         for invoice in invoices:
-            total += invoice.amount
+            total += invoice.amount * invoice.exchange_rate
+
         context = {'invoices': invoices,
                    'user': request.user,
                    'profile': userprofile,

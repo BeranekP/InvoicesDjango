@@ -110,7 +110,7 @@ class InvoiceView(LoginRequiredMixin, View):
             iid = d.year * 10000 + 1
         default_dates = {'created': d, 'due': d + dt}
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': ['CZK', *rates.keys()]}
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates}
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -126,11 +126,8 @@ class InvoiceView(LoginRequiredMixin, View):
         invoice.date = request.POST.get('created')
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
-        if invoice.currency != 'CZK':
-            invoice.exchange_rate = get_exchange_rates(
-                d.strftime('%d.%m.%Y'))[invoice.currency]
-        else:
-            invoice.exchange_rate = 1
+        invoice.exchange_rate = get_exchange_rates(
+            d.strftime('%d.%m.%Y'))[invoice.currency]
         invoice.datedue = request.POST.get('due')
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
@@ -225,7 +222,10 @@ class InvoiceOverView(LoginRequiredMixin, View):
             owner=request.user).dates('date', 'year')
         years = [str(date.year) for date in dates]
         for invoice in invoices:
-            total += invoice.amount * invoice.exchange_rate
+
+            total += invoice.amount  # *   \
+            # invoice.exchange_rate['rate'] / \
+            # invoice.exchange_rate['amount']
 
         context = {'invoices': invoices,
                    'user': request.user,
@@ -263,7 +263,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         #d = datetime.strptime(invoice.date, '%Y-%m-%d')
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': ['CZK', *rates.keys()]}
+                   'rates': rates}
         return render(request, 'invoices/update.html', context)
 
     def post(self, request, id):
@@ -275,11 +275,8 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         invoice.datedue = request.POST.get('due')
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
-        if invoice.currency != 'CZK':
-            invoice.exchange_rate = get_exchange_rates(
-                d.strftime('%d.%m.%Y'))[invoice.currency]
-        else:
-            invoice.exchange_rate = 1
+        invoice.exchange_rate = get_exchange_rates(
+            d.strftime('%d.%m.%Y'))[invoice.currency]
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
         invoice.owner = request.user
@@ -292,12 +289,9 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
                 items_db = []
             try:
                 i = 0
-                #print('ITEMS', i)
                 while True:
-                    # print('ITEMS')
 
                     items_post = request.POST.getlist('items' + str(i) + '[]')
-                    print('items' + str(i) + '[]', items_post)
                     if items_post:
                         if i <= len(items_db)-1:
                             items_db[i].item_name = items_post[0]
@@ -433,7 +427,9 @@ class RecipientOverView(LoginRequiredMixin, View):
 
             total = 0
             for invoice in invoices:
-                total += invoice.amount
+                total += invoice.amount * \
+                    invoice.exchange_rate['rate'] / \
+                    invoice.exchange_rate['amount']
             recipient.invoices = invoices
             recipient.total = total
 

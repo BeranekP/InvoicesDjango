@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.conf import settings
 from django.db.models.signals import post_save
+from picklefield.fields import PickledObjectField
 import os
 import random
 import string
@@ -76,7 +77,7 @@ class Invoice(models.Model):
     description = models.TextField(max_length=1000, default='')
     amount = models.FloatField(default=0)
     currency = models.CharField(max_length=5, default='CZK')
-    exchange_rate = models.FloatField(default=1)
+    exchange_rate = PickledObjectField()  # models.FloatField(default=1)
     date = models.DateField(default=datetime.now, blank=True)
     datedue = models.DateField(default=datetime.now, blank=True)
     iid = models.IntegerField(default=0, null=True, blank=True)

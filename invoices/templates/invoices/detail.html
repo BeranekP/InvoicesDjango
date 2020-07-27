@@ -1,5 +1,5 @@
 {% extends "../base/base.html" %}
-{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}
     {% block display %}
       <meta name="viewport" content="width=1024, height= 500" />
     {% endblock %}
@@ -190,7 +190,7 @@
                   Kč
                   {% else %}
                   {{invoice.currency}}</span> 
-                  <div class='h6 mt-3 ml-5'>({{ invoice.amount |multiply:invoice.exchange_rate|floatformat:2 }} Kč; kurz ČNB k {{invoice.date|date:"d. m. Y"}}: {{invoice.exchange_rate|floatformat:2}} Kč/{{invoice.currency}})</div>
+                  <div class='h6 mt-3 ml-5'>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
                   {% endifequal %}
                   </span>
                   

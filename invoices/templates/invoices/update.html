@@ -74,7 +74,7 @@
           <div class="form-group ml-2 w-25">
             <label for="currencyInput">Měna</label>
             <select name="currency" id="currencyInput" class="form-control">
-            {% for rate in rates %}
+            {% for rate in rates.keys %}
               {% ifequal invoice.currency rate %}
                 <option value='{{rate}}' selected="selected" >{{rate}}</option>
               {% else %}

@@ -223,9 +223,9 @@ class InvoiceOverView(LoginRequiredMixin, View):
         years = [str(date.year) for date in dates]
         for invoice in invoices:
 
-            total += invoice.amount  # *   \
-            # invoice.exchange_rate['rate'] / \
-            # invoice.exchange_rate['amount']
+            total += invoice.amount *   \
+                invoice.exchange_rate['rate'] / \
+                invoice.exchange_rate['amount']
 
         context = {'invoices': invoices,
                    'user': request.user,

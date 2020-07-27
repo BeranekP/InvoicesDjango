@@ -1,5 +1,5 @@
 {% extends "../base/base.html" %}
-{% load i18n %} {% load l10n %} {% load static %}{% load zipcode %}
+{% load i18n %} {% load l10n %} {% load static %}{% load zipcode %}{% load multiply %}{% load divide %}
 
   {% block title %} Invoice Factory - Přehled {% endblock %}
     
@@ -155,8 +155,10 @@
             </td>
             {% endlocalize %}
             <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: right;">
-              {{ invoice.amount|floatformat:2 }} {% ifequal invoice.currency 'CZK' %}Kč{% else %}
-                  {{invoice.currency}}
+              <strong>{{ invoice.amount|floatformat:2 }} {% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  {{invoice.currency}}</strong>
+                  <br>
+                  <div class="d-none  d-lg-inline d-print-inline"><small>({{ invoice.amount|multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč)</small></div>
                   {% endifequal %}
             </td>
 

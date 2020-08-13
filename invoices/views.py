@@ -13,10 +13,14 @@ from qrplatba import QRPlatbaGenerator
 from django.utils.safestring import mark_safe
 from django.core.files.base import ContentFile
 from django.views.decorators.http import require_GET
+from django.template.loader import get_template
+from django.contrib.staticfiles import finders
+from xhtml2pdf import pisa
 import os
-from io import BytesIO
+from io import BytesIO, StringIO
 from invoices.exchange_cnb import get_exchange_rates
-
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPM
 
 # Create your views here.
 @require_GET
@@ -471,3 +475,90 @@ class RecipientUpdateView(LoginRequiredMixin, View):
         recipient.save()
 
         return redirect('/recipient')
+
+
+def link_callback(uri, rel):
+    """
+    Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+    resources
+    """
+    result = finders.find(uri)
+    if result:
+        if not isinstance(result, (list, tuple)):
+            result = [result]
+
+        result = list(os.path.realpath(path) for path in result)
+        path = result[0]
+    else:
+        sUrl = settings.STATIC_URL        # Typically /static/
+        sRoot = settings.STATIC_ROOT      # Typically /home/userX/project_static/
+        mUrl = settings.MEDIA_URL         # Typically /media/
+        mRoot = settings.MEDIA_ROOT       # Typically /home/userX/project_static/media/
+
+        if uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        else:
+            return uri
+
+    # make sure that file exists
+    if not os.path.isfile(path):
+        raise Exception(
+            'media URI must start with %s or %s' % (sUrl, mUrl)
+        )
+    print('****', path)
+    return path
+
+
+class PrintInvoiceView(LoginRequiredMixin, View):
+    template_name = 'invoices/print.html'
+    login_url = '/'
+    redirect_field_name = '/'
+
+    def get(self, request, id):
+        template = get_template(self.template_name)
+        invoice = Invoice.objects.get(id=id, owner=request.user)
+        sign = request.GET['sign']
+        if invoice.has_items:
+            items = InvoiceItem.objects.filter(invoice=invoice)
+        else:
+            items = []
+
+        user = UserProfile.objects.get(user=invoice.owner)
+        generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
+                                      message=f'FAKTURA {invoice.iid}', due_date=invoice.datedue)
+        iban = generator._account[4:-1]
+        img = generator.make_image()
+
+        logo = user.logo.name
+        with open(logo) as l:
+            user_logo = l.read()
+
+        svg_output = os.path.join(os.path.dirname(
+            user.logo.name), 'conversionQR.svg')
+        img.save(svg_output)
+
+        user_logo_png = svg2rlg(user.logo.name)
+        user_qr = svg2rlg(svg_output)
+        qr_png = os.path.join(os.path.dirname(
+            user.logo.name), 'conversionQR.png')
+        logo_png = os.path.join(
+            os.path.dirname(user.logo.name), 'conversionLG.png')
+        renderPM.drawToFile(user_logo_png, logo_png, fmt="PNG")
+        renderPM.drawToFile(user_qr, qr_png, fmt="PNG")
+        print('****', sign)
+        context = {"invoice": invoice, "user": user, 'logo': logo_png,
+                   "items": items, 'iban': iban, "qr": qr_png, 'sign': sign}
+
+        html = template.render(context)
+        result = BytesIO()
+        pdf = pisa.pisaDocument(
+            BytesIO(html.encode("utf-8")), result, encoding='UTF-8', link_callback=link_callback)
+
+        if not pdf.err:
+            response = HttpResponse(
+                result.getvalue(), content_type='application/pdf')
+            response['Content-Disposition'] = f'filename="{invoice.iid}.pdf"'
+            return response
+        return None

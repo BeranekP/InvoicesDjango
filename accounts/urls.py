@@ -32,6 +32,8 @@ urlpatterns = [
             views.UserProfileUpdateView.as_view()),
     re_path(r'^recipient/edit/(?P<id>\w+)/$',
             views.RecipientUpdateView.as_view()),
+    re_path(r'^invoices/print/(?P<id>\w+)/$',
+            views.PrintInvoiceView.as_view()),
     path('invoices/create/', views.InvoiceView.as_view()),
     path('recipient/create/', views.RecipientView.as_view()),
     path('recipient/', views.RecipientOverView.as_view()),

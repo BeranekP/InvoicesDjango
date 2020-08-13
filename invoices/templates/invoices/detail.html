@@ -1,7 +1,7 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}
     {% block display %}
-      <meta name="viewport" content="width=1024, height= 500" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     {% endblock %}
 
     
@@ -12,8 +12,54 @@
     {% block content %}
     {% localize off %}
     <div class="container px-0 mx-auto">
-      <div class="jumbotron w-100 mb-0 pb-5">
-        <div class="container w-100">
+    <nav
+        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between fixed-top"
+      >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item mr-5">
+              <a
+                class="nav-link font-weight-bold"
+                href="#"
+                onclick="printPage()"
+                >Tisk</a
+              >
+            </li>
+            <li class="nav-item nav-link custom-control custom-switch d-flex">
+              <input
+                type="checkbox"
+                class="pl-5 mr-5 custom-control-input align-self-end"
+                onchange="toggleFun()"
+                id="sign"
+                name="sign"
+                value=-1
+              />
+              <label for="sign" class="ml-5 custom-control-label align-self-start"
+                >Podpis</label
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="../../">Zpět</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <div class="jumbotron w-100 mb-0 pb-5 overflow-hidden">
+        <div class="container w-100 pt-5">
           <h2 class="display-6">Faktura č. {{invoice.iid}}</h2>
           <hr class="my-4 w-100 mx-0" />
           <div class="row">
@@ -22,12 +68,11 @@
               <img
                 src="{% static user.logo.name|filename %}"
                 alt=""
-                style="width: 100%;"
+                style="max-width: 100%;"
               />
             </div>
             <div
-              class="col-4 my-1"
-              style="border-right: 1px solid rgba(0, 0, 0, 0.1);"
+              class="col-sm-10 col-lg-4 my-1"
             >
               <h5 class="text-center">Dodavatel:</h5>
               <p class="lead text-center">
@@ -46,7 +91,7 @@
               </p>
             </div>
 
-            <div class="col-6">
+            <div class="col-sm-12 col-lg-6">
               <h5 class="text-center">Odběratel:</h5>
               <p class="lead text-center">
                 {{invoice.recipient.name}} <br />
@@ -66,21 +111,20 @@
           <hr class="my-4 w-100" />
         </div>
 
-        <div id="payment" class="container d-flex w-100">
+        <div id="payment" class="row mx-auto">
           <div
-            class="bank w-50"
-            style="border-right: 1px solid rgba(0, 0, 0, 0.1);"
+            class="col-lg-6"
           >
             <h5>Bankovní spojení:</h5>
-            <div class="d-flex w-100">
-              <div class="w-50">
+            <div class="row">
+              <div class="col-5 col-lg-6">
                 Číslo účtu: <br />
                 {% ifnotequal invoice.currency 'CZK' %}IBAN: <br />{% endifnotequal %}
                 Konstatní symbol: <br />
                 Variabilní symbol: <br />
               </div>
 
-              <div class="w-50">
+              <div class="col-7 px-0 col-lg-6">
                 <strong>{{user.bank}} </strong><br />
                 {% ifnotequal invoice.currency 'CZK' %}<strong>{{iban}}</strong> <br />{% endifnotequal %}
                 0308 <br />
@@ -89,16 +133,16 @@
             </div>
           </div>
           <div
-            class="payment w-50 justify-content-center align-items-center pl-5"
+            class="col-lg-6"
           >
             <br />
-            <div class="w-100 d-flex">
-              <div class="w-50">
+            <div class="row">
+              <div class="col-6">
                 Vystaveno:<br />
                 Splatnost:<br />
                 Způsob platby:<br />
               </div>
-              <div class="w-50">
+              <div class="col-6">
                 {{invoice.date|date:"d. m. Y"}} <br />
                 {{invoice.datedue|date:"d. m. Y"}} <br />
                 {{invoice.payment}}
@@ -180,11 +224,11 @@
           <hr class="my-4" />
 
           <div class="row">
-            <div class="col-9 d-flex align-items-center">
+            <div class="col-lg-9 d-flex align-items-center">
               <h2 class="mt-5">
                 Celkem k úhradě:
                 <span>
-                <span class="ml-3 px-2 border border-dark"
+                <span class="ml-lg-3 px-2 border border-dark d-sm-flex d-md-inline"
                   >{{invoice.amount|floatformat:2}} 
                   {% ifequal invoice.currency 'CZK' %}
                   Kč
@@ -196,7 +240,7 @@
                   
               </h2>
             </div>
-            <div class="col-3 d-flex justify-content-center align-items-center">
+            <div class="col-lg-3 d-flex justify-content-center align-items-center">
               {% if invoice.payment == 'bankovním převodem' %} 
                              
                   {{svg}}
@@ -233,52 +277,7 @@
           </div>
         </div>
       </div>
-      <nav
-        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between fixed-bottom w-75 px-5 mx-auto my-0"
-      >
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-item mr-5">
-              <a
-                class="nav-link font-weight-bold"
-                href="#"
-                onclick="window.print();"
-                >Tisk</a
-              >
-            </li>
-            <li class="nav-item nav-link custom-control custom-switch d-flex">
-              <input
-                type="checkbox"
-                class="mr-2 custom-control-input align-self-end"
-                onchange="toggleFun()"
-                id="sign"
-                name="sign"
-                value=-1
-              />
-              <label for="sign" class="custom-control-label align-self-start"
-                >Tisk s podpisem</label
-              >
-            </li>
-          </ul>
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a class="nav-link" href="../../">Zpět</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
+      
     </div>
       
     {% endblock  %}
@@ -291,6 +290,12 @@
         sgn = document.getElementById('signature'); // image
         sgn.classList.toggle('d-print-none');
         btn.value = -btn.value
+      }
+
+      function printPage(){
+        sign = document.getElementById('sign')
+        id = {{invoice.pk}}
+        window.open('../../print/'+ id + '/?sign='+ sign.value)
       }
     </script>
     {% endblock  %}

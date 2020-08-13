@@ -1,0 +1,426 @@
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% localize off %}
+    <title>Tisk: Faktura {{invoice.iid}}</title>
+    {% endlocalize %}
+    <style>
+    
+    @font-face {
+        font-family: Roboto;
+        src: url("D:\python\WEB\faktury\accounts\static\fonts\Roboto-Regular.ttf");
+        }
+    @font-face {
+        font-family: RobotoBold;
+        src: url("D:\python\WEB\faktury\accounts\static\fonts\Roboto-Bold.ttf");
+        }
+    @font-face {
+        font-family: RobotoItalic;
+        src: url("D:\python\WEB\faktury\accounts\static\fonts\Roboto-Italic.ttf");
+        }
+    @page {
+        size: A4; /* DIN A4 standard, Europe */
+        margin: 10mm 10mm 10mm 10mm;
+    }
+    html,
+    body {
+        width: 210mm;
+        height: 297mm;
+        /*font-size: 11pt; */
+        font-family: 'Roboto', sans-serif;
+        background: #fff;
+        overflow: visible;
+        padding-top: 0mm;
+        padding-bottom: 0mm;
+    }
+    .display-6 {
+        font-size: 18pt;
+        margin-bottom: .5rem;
+        font-family: 'RobotoBold', sans-serif;
+        line-height: 1.2;
+        margin-block-start: 0.83em;
+        margin-block-end: 0.83em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
+    h5{
+        font-family: 'RobotoBold', sans-serif;
+        padding-bottom:2pt;
+    }
+    .row{
+       margin-left: auto;
+       margin-right: auto;
+    }
+    .col-2{
+        position:relative;
+        max-width: 16.666667%;
+        
+    }
+    .col-4{
+        position:relative;
+        max-width: 33.333333%;
+        
+    }
+    #stamp {
+      text-align:center;
+    }
+    #stamp img {
+        width: 53mm;
+        height: 33mm;
+       
+    }
+    a,
+    a:link,
+    a:visited,
+    a:hover,
+    a:active {
+        text-decoration: none;
+    }
+    #footer {
+        position: fixed;
+        left: 0vw;
+        bottom: 0;
+        font-size: 10pt;
+        font-style: italic;
+    }
+    .overview {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    .main{
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        -pdf-keep-in-frame-mode: shrink;
+        
+    }
+    .logo {
+        width: 25%;
+        padding: 5pt;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);  
+    }
+    .logo img{
+      width:auto;
+      height:auto;
+    }
+    .supplier {
+        width: 35%;
+        font-size: 11pt;
+        text-align: center;
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        vertical-align:top;
+        padding-top:1rem;
+        height:70mm;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .recipient {
+        width: 40%;
+        font-size: 11pt;
+        text-align: center;
+        vertical-align:top;
+        padding-top:1rem;
+        height:70mm;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .payment{
+      font-size: 11pt;
+      height:30mm;
+      padding-top:0;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    .payment p{
+      padding:0;
+      margin:0;
+      
+    }
+    .payment_title{
+      height:11mm;
+      padding-top:5pt;
+      margin-bottom:0;
+    }
+    .title{
+      font-size: 13pt;
+      padding-bottom: 2pt;
+      margin-bottom:0;
+    }
+    .bold{
+      font-family: 'RobotoBold', sans-serif;
+    }
+    .descr{
+      font-size: 11pt;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      padding-bottom:5pt;
+      margin:0;
+    }
+    .description{
+      padding:0;
+      margin:0;
+      
+    }
+    #signature{
+      width: 2rem;
+      
+    }
+    .amount{
+      font-size: 18pt;
+    }
+    .conversion{
+      font-size: 10pt;
+    }
+    .signline{
+      border-top: 1px dotted rgba(0, 0, 0, 0.1);
+      text-align:center;
+      padding-top: 2pt
+      }
+    
+    .item{
+      padding-top:2pt;
+      padding-left: 3pt;
+      padding-right: 3pt;
+      height: 13pt;
+      vertical-align: bottom;
+    }
+    .itemhead{
+      height: 13pt;
+      vertical-align: bottom;
+      text-align:center;
+      padding-top:2pt;
+      font-family: 'RobotoItalic', sans-serif;
+      
+    }
+    .items{
+      font-size: 11pt;
+      margin:0;
+      padding-top:0;
+      border-collapse: collapse;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      height: 35mm;
+    }
+    .placeholder{
+      padding-top:35mm;
+    }
+    .topay{
+      height:40mm;
+      font-size:20pt;
+      font-family:RobotoBold;
+     
+    }
+    .clause1{
+      height:15mm;
+      margin:0;
+    }
+    .clause2{
+      height:35mm;
+      margin:0;
+    }
+
+    .conversion{
+      font-family:RobotoItalic;
+
+    }
+
+    .qr{
+      margin: 0 auto 0 0;
+      text-align:right;
+    }
+    .right{
+    }
+    .regular{
+      font-family:Roboto;
+      font-size:16pt;
+    }
+    #total{
+    
+    }
+
+    </style>
+</head>
+<body>
+{% localize off %}
+    <h2 class="display-6">Faktura č. {{invoice.iid}}</h2>
+        <table class = 'main'>
+            <tbody>
+                <tr>
+                  <td class="logo">
+                    <img src={{logo}} alt="">
+                  </td>
+                  <td class="supplier"><div>
+                    <div>
+                      <h5 class="title">Dodavatel:</h5>
+                      <p>
+                        {{user.name}} <br />
+                        {{user.street}} <br />
+                        {{user.zipcode|zipcode}} {{user.town}}<br />
+                        {% if user.ic %}
+                        <br />
+                        IČ: {{user.ic}} <br />
+                        {% endif %} {% if user.dic %} DIČ: {{user.dic}}<br />
+                        {% endif %}
+                        <a href="mailto:{{user.email}}">{{user.email}}</a>
+                        {% if user.web %}<br />
+                        <a href="{{user.web}}">{{user.web}}</a>
+                        {% endif %}
+                      </p>
+                    </div>
+                  </td>
+                  <td class="recipient">
+                    <div>
+                      <h5 class="title">Odběratel:</h5>
+                      <p>
+                        {{invoice.recipient.name}} <br />
+                        {{invoice.recipient.street}} <br />
+                        {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
+                        {% ifnotequal invoice.recipient.state 'Česká republika'%}
+                        {{invoice.recipient.state}}<br />
+                        {% endifnotequal %}
+                        {% if invoice.recipient.ic %}
+                        <br />
+                        IČ: {{invoice.recipient.ic}} <br />
+                        {% endif %} {% if invoice.recipient.dic %} DIČ:
+                        {{invoice.recipient.dic}} {% endif %}
+                      </p>
+                    </div>            
+                  </td>
+                </tr>
+                <tr class = "payment_title">
+                  <td colspan=3>
+                    <h5 class='title'>Bankovní spojení:</h5>
+                  </td>
+                </tr>
+                <tr class = "payment">
+                  <td colspan=2>
+                    <div>
+                      
+                      <p>Číslo účtu:&nbsp; <span class='bold right'> {{user.bank}} </span></p>
+                      {% ifnotequal invoice.currency 'CZK' %}<p>IBAN:&nbsp; <span class='bold right'>{{iban}}</span></p>{% endifnotequal %}
+                      <p>Konstatní symbol:&nbsp; <span class='right'> 0308 </span></p>
+                      <p>Variabilní symbol:&nbsp; <span class='bold right'>{{invoice.iid}}</span> </p>
+                    </div>
+                  </td>
+                  <td>
+                    <div>
+                      Vystaveno:&nbsp; {{invoice.date|date:"d. m. Y"}}<br />
+                      Splatnost:&nbsp; {{invoice.datedue|date:"d. m. Y"}}<br />
+                      Způsob platby:&nbsp; {{invoice.payment}}<br />
+                    </div>
+                  </td>
+                </tr>
+             
+            </tbody>
+        </table>
+        <table class='main description'>
+          <thead>
+             <h5 class='title'>Popis dodávky:</h5>
+          </thead>
+          <tbody>
+            <p class = 'descr'>
+              {{ invoice.description }}
+            </p>
+          </tbody>
+        </table>
+        {% if items %}
+          <h5 class='title'>Rozpis položek:</h5>
+          <table class="main items">
+            <thead>
+              <tr>
+                <th class ="itemhead">
+                  Položka
+                </th>
+                <th class ="itemhead">
+                  Počet [ks]
+                </th>
+                <th class ="itemhead">
+                  Cena [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  {{invoice.currency}}
+                  {% endifequal %}/ks]
+                </th>
+                <th class ="itemhead">
+                  Celkem [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  {{invoice.currency}}
+                  {% endifequal %}]
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in items %}
+              <tr>
+                <td class ="item">{{item.item_name}}</td>
+                <td class ="item", style="text-align: center;">{{item.num_items}}</td>
+                <td class ="item" style="text-align: right;">{{item.price_item}}</td>
+                <td class ="item" style="text-align: right;">{{item.price}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <hr>
+          {% else %}
+            <div class="placeholder">
+            &nbsp;
+            </div>
+          {% endif %}
+
+        <table class = 'main'>
+          <tbody>
+            <tr class='topay'>
+              <td width="65%">
+               
+                 <span class='regular'> Celkem k úhradě: &nbsp;</span>
+                      <span id="total">
+                        {{invoice.amount|floatformat:2}} 
+                        {% ifequal invoice.currency 'CZK' %}
+                        Kč
+                      </span>
+                        {% else %}
+                      
+                        {{invoice.currency}}
+                      </span>
+                        <div class='conversion'>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
+                      {% endifequal %}
+                
+              </td>
+              <td width="35%"> 
+                  {% if invoice.payment == 'bankovním převodem' %} 
+                  <div class='qr'>
+                    <img src={{qr}} alt="" >
+                  </div>           
+                  {% endif %}
+              </td>
+            </tr>
+            <tr class='clause1'>
+              <td>
+                Nejsem plátce DPH.
+              </td>
+              <td>
+                
+              </td>
+            </tr>
+            <tr class='clause2'>
+              <td>
+                Podnikatel je zapsán v živnostenském rejstříku MÚ Sušice.
+              </td>
+              <td>
+                <div id="stamp">
+                {% ifequal sign '1' %}          
+                  <img src={{user.sign.name}} alt="" id="signature">
+                {% else %}
+                  <div id="signature">
+                  &nbsp;
+                  </div>  
+                {% endifequal %} 
+                  <p class='signline'>
+                    Razítko a podpis dodavatele
+                  </p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        {% endlocalize %}
+</body>
+</html>

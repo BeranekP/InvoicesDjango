@@ -17,7 +17,7 @@ from django.template.loader import get_template
 from django.contrib.staticfiles import finders
 from xhtml2pdf import pisa
 import os
-from io import BytesIO, StringIO
+from io import BytesIO
 from invoices.exchange_cnb import get_exchange_rates
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
@@ -130,8 +130,12 @@ class InvoiceView(LoginRequiredMixin, View):
         invoice.date = request.POST.get('created')
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
-        invoice.exchange_rate = get_exchange_rates(
-            d.strftime('%d.%m.%Y'))[invoice.currency]
+        if currency != 'CZK':
+            invoice.exchange_rate = get_exchange_rates(
+                d.strftime('%d.%m.%Y'))[invoice.currency]
+        else:
+            invoice.exchange_rate = {
+                'amount': 1, 'rate': 1.000, 'date': d.strftime('%d.%m.%Y')}
         invoice.datedue = request.POST.get('due')
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
@@ -279,8 +283,12 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         invoice.datedue = request.POST.get('due')
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
-        invoice.exchange_rate = get_exchange_rates(
-            d.strftime('%d.%m.%Y'))[invoice.currency]
+        if currency != 'CZK':
+            invoice.exchange_rate = get_exchange_rates(
+                d.strftime('%d.%m.%Y'))[invoice.currency]
+        else:
+            invoice.exchange_rate = {
+                'amount': 1, 'rate': 1.000, 'date': d.strftime('%d.%m.%Y')}
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
         invoice.owner = request.user
@@ -547,7 +555,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             os.path.dirname(user.logo.name), 'conversionLG.png')
         renderPM.drawToFile(user_logo_png, logo_png, fmt="PNG")
         renderPM.drawToFile(user_qr, qr_png, fmt="PNG")
-        print('****', sign)
+
         context = {"invoice": invoice, "user": user, 'logo': logo_png,
                    "items": items, 'iban': iban, "qr": qr_png, 'sign': sign}
 

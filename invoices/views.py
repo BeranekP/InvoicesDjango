@@ -210,12 +210,11 @@ class AdvanceView(LoginRequiredMixin, View):
             owner=request.user).get(pk=int(rid))
         invoice.description = request.POST.get('description')
         invoice.amount = request.POST.get('amount')
-        currency = request.POST.get('currency')
 
         invoice.date = request.POST.get('created')
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
-        if currency != 'CZK':
+        if invoice.currency != 'CZK':
             invoice.exchange_rate = get_exchange_rates(
                 d.strftime('%d.%m.%Y'))[invoice.currency]
         else:

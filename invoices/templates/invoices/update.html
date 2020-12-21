@@ -2,14 +2,14 @@
 {% load i18n %} {% load l10n %} {% load static %} 
 {% block title %}
   {% localize off %}
-  Upravit fakturu č. {{invoice.iid}}
+  Upravit {% if type == 'faktura' %} fakturu {% else %} zálohu {% endif %} č. {{invoice.iid}}
   {% endlocalize %}
 {% endblock  %}
 
 {% block content %}
     {% localize off %}
     <div class="container mt-3 mx-auto">
-      <h2 class="mt-2, pb-5">Upravit fakturu č. {{invoice.iid}}</h2>
+      <h2 class="mt-2, pb-5">Upravit {% if type == 'faktura' %} fakturu {% else %} zálohu {% endif %} č. {{invoice.iid}}</h2>
       <form action="./" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -45,12 +45,10 @@
           </textarea>
         </div>
         <div class="form-group">
-          <label for="items">Rozpis položek</label>
+          <label for="items">Rozpis položek </label>
           <input type="checkbox" class="form-check-input ml-2" id="items"
           name="hasItems" 
-          {% if invoice.has_items == True %} checked=true 
-          {% else %} 
-          checked=false 
+          {% if invoice.has_items == True %} checked 
           {% endif %} />
           <div id="itemList" class="w-100 justify-content-around"></div>
           <div
@@ -112,7 +110,31 @@
           <input type="date" class="form-control" id="dueInput" name="due"
           value="{{invoice.datedue|date:"Y-m-d"}}" />
         </div>
-
+        {% if type == "faktura" %}
+        <div class="form-group mt-3 mb-3 w-100">
+          <label for="advanceInput">Připojit zálohu</label>
+          <select
+              class="form-control"
+              id="advanceInput"
+              name="advance"
+              required
+            >
+              <option value="" disabled selected>Vyberte zálohu</option>
+              {% for advance in advances %}
+              <option value="{{advance.id}}" {% if  advance.id == invoice.advance.id%} selected {% endif %}>
+                {% localize off %}{{advance.iid}}{% endlocalize %}, {{advance.recipient.name}}
+              </option>
+              {% endfor %}
+            </select>
+          <div>
+          {% elif type == "záloha" %}
+            {% if invoice.linked %}
+              <div class='text-success'>Připojeno ✓ </div>
+            {% else %}
+              <div class='text-warning'>Nepřipojeno ✘	</div>
+              
+            {% endif %}
+          {% endif %}
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"
         >

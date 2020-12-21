@@ -1,12 +1,12 @@
 {% extends "../base/base.html" %}
-{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}{% load subtract %}
     {% block display %}
       <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     {% endblock %}
 
     
     {% block title %}
-      {% localize off %}Faktura č. {{invoice.iid}} {% endlocalize %}
+      {% localize off %}{{type}} č. {{invoice.iid}} {% endlocalize %}
     {% endblock %}
     
     {% block content %}
@@ -60,7 +60,7 @@
       </nav>
       <div class="jumbotron w-100 mb-0 pb-5 overflow-hidden">
         <div class="container w-100 pt-5">
-          <h2 class="display-6">Faktura č. {{invoice.iid}}</h2>
+          <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>
           <hr class="my-4 w-100 mx-0" />
           <div class="row">
             <div class="col-2 d-flex justify-content-start">
@@ -247,6 +247,13 @@
                 
               {% endif %}
             </div>
+             {% if advance %}
+              <div class='row'>
+                <div class="d-flex align-items-center">
+                  <h5 class= 'ml-lg-3 px-2'>Již uhrazeno {{advance.amount|floatformat:2}} Kč. Zbývá uhradit <span class='border border-dark px-2'><strong>{{invoice.amount|subtract:advance.amount|floatformat:2}} Kč</strong>.</span></h5>
+                </div>
+              </div>
+              {% endif %}
           </div>
         </div>
 

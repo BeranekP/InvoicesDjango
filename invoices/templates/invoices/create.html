@@ -1,13 +1,13 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}
     {% block title %}
-    Invoice Factory - Nová faktura
+    Invoice Factory - Nová {{type}}
     {% endblock %} 
 {% block content %}
 
 
     <div class="container mt-3">
-      <h2 class="mt-2, pb-5">Nová faktura</h2>
+      <h2 class="mt-2, pb-5">Nová {{type}}</h2>
       <form action="./" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -125,6 +125,24 @@
             />
           
         </div>
+      {% if type == "faktura" %}
+        <div class="form-group mt-3 mb-3 w-100">
+          <label for="advanceInput">Připojit zálohu</label>
+          <select
+              class="form-control"
+              id="advanceInput"
+              name="advance"
+              required
+            >
+              <option value="" disabled selected>Vyberte zálohu</option>
+              {% for advance in advances %}
+              <option value="{{advance.id}}">
+                {% localize off %}{{advance.iid}}{% endlocalize %}, {{advance.recipient.name}}
+              </option>
+              {% endfor %}
+            </select>
+          <div>
+      {% endif %}
 
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"
@@ -143,5 +161,17 @@
     {% endblock  %}
     {% block scripts %}
     <script src="{% static 'js/addInvoice.js'%}"></script>
+    <script>
+      date1 = document.getElementById('createdInput');
+      date2 = document.getElementById('dueInput');
+
+      date1.addEventListener('input',(e)=>{
+        d = new Date(e.target.value);
+        delta = new Date();
+        delta.setDate(d.getDate() + 14);
+        date2.value = delta.toISOString().substring(0, 10);
+      })
+      
+    </script>
     {% endblock  %}
 

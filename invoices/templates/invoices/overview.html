@@ -35,8 +35,13 @@
              
             </li>
             <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="/invoices"
+              <a class="nav-link {% ifequal type 'Přehled faktur' %} active {% endifequal %} font-weight-bold" href="/invoices"
                 >Faktury</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link {% ifequal type 'Přehled záloh' %} active {% endifequal %} font-weight-bold" href="/advance"
+                >Zálohy</a
               >
             </li>
             <li class="nav-item">
@@ -44,10 +49,15 @@
                 >Odběratelé</a
               >
             </li>
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="/invoices/create"
-                >Nová faktura</a
-              >
+            <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Nový
+              </a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/invoices/create">Faktura</a>
+                <a class="dropdown-item" href="/advance/create">Záloha</a>
+                <a class="dropdown-item" href="/recipient/create">Odběratel</a>
+              </div>
             </li>
             <li class="nav-item">
               <a
@@ -75,7 +85,7 @@
     <div class="container mt-5 overview">
       <hr />
       <div class="d-flex justify-content-between align-items-center mt-5 overview" >
-        <h2 class="d-none d-lg-block d-print-block">Přehled faktur</h2>
+        <h2 class="d-none d-lg-block d-print-block">{{type}}</h2>
         <form action="./" method="GET" id="year" class="d-print-none">
           <select
             name="yr"

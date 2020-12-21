@@ -40,14 +40,24 @@
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="/recipient"
-                >Odběratelé</a
+              <a class="nav-link font-weight-bold" href="/advance"
+                >Zálohy</a
               >
             </li>
             <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="/recipient/create"
-                >Nový odběratel</a
+              <a class="nav-link active font-weight-bold" href="/recipient"
+                >Odběratelé</a
               >
+            </li>
+            <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Nový
+              </a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/invoices/create">Faktura</a>
+                <a class="dropdown-item" href="/advance/create">Záloha</a>
+                <a class="dropdown-item" href="/recipient/create">Odběratel</a>
+              </div>
             </li>
             
           </ul>

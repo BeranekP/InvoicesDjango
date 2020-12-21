@@ -1,10 +1,10 @@
-{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}{% load subtract %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     {% localize off %}
-    <title>Tisk: Faktura {{invoice.iid}}</title>
+    <title>Tisk: {{type}} {{invoice.iid}}</title>
     {% endlocalize %}
     <style>
     
@@ -211,6 +211,11 @@
       font-family:RobotoBold;
      
     }
+    .advance{
+      font-size:12pt;
+      height:15mm;
+      margin:0;
+    }
     .clause1{
       height:15mm;
       margin:0;
@@ -243,7 +248,7 @@
 </head>
 <body>
 {% localize off %}
-    <h2 class="display-6">Faktura č. {{invoice.iid}}</h2>
+    <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>
         <table class = 'main'>
             <tbody>
                 <tr>
@@ -392,6 +397,14 @@
                   {% endif %}
               </td>
             </tr>
+            {% if invoice.advance %}
+              <tr>
+              <td class='advance' colspan=2>
+                  <span class= 'ml-lg-3 px-2'>Již uhrazeno {{invoice.advance.amount|floatformat:2}} Kč. Zbývá uhradit <span class='bold'>{{invoice.amount|subtract:invoice.advance.amount|floatformat:2}} Kč</span>.</span>
+              </td>
+              </tr>
+            {% endif %}
+            
             <tr class='clause1'>
               <td>
                 Nejsem plátce DPH.

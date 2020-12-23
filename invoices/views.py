@@ -22,6 +22,7 @@ from invoices.exchange_cnb import get_exchange_rates
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 from django.core.mail import EmailMessage
+from django.core import serializers
 
 # serve robots.txt
 @require_GET
@@ -73,7 +74,7 @@ class LoginView(View):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('/invoices')
+            return redirect('/dash')
         else:
             return redirect('/')
 
@@ -89,10 +90,53 @@ class HomeView(View):
 
     def get(self, request):
         if request.user.is_authenticated:
-            return redirect('invoices/')
+            return redirect('dash/')
 
         profile = None
         context = {'user': request.user, 'profile': profile}
+        return render(request, self.template_name, context)
+
+
+class DashView(LoginRequiredMixin, View):
+    template_name = 'dash/dash.html'
+    login_url = '/'
+    redirect_field_name = ''
+
+    def get(self, request):
+        try:
+            userprofile = UserProfile.objects.get(user=request.user)
+        except:
+            userprofile = None
+
+        try:
+            logo = userprofile.logo.read()
+        except:
+            logo = None
+
+        data = Invoice.objects.filter(
+            owner=request.user).order_by('-iid')
+        invoices = Invoice.objects.filter(
+            owner=request.user).order_by('iid')
+        graph_data = dict()
+        for invoice in invoices:
+            graph_data.setdefault(invoice.date.year, {
+                                  'labels': list(range(1, 13)),
+                                  'amount': [0 for _ in range(1, 13)],
+                                  'total': [0 for _ in range(1, 13)],
+                                  })
+            idx = graph_data[invoice.date.year]['labels'].index(
+                int(invoice.date.strftime("%m")))
+            graph_data[invoice.date.year]['amount'][idx] += invoice.amount * \
+                invoice.exchange_rate['rate'] / \
+                invoice.exchange_rate['amount']
+
+        for year in graph_data:
+            running_total = 0
+            for i, val in enumerate(graph_data[year]['amount']):
+                running_total += val
+                graph_data[year]['total'][i] = running_total
+        context = {"data": data, "logo": logo,
+                   "profile": userprofile, "total": graph_data[year]['total'][-1], "graphdata": graph_data}
         return render(request, self.template_name, context)
 
 
@@ -351,9 +395,8 @@ class InvoiceOverView(LoginRequiredMixin, View):
 
         for invoice in invoices:
 
-            total += invoice.amount *   \
-                invoice.exchange_rate['rate'] / \
-                invoice.exchange_rate['amount']
+            total += invoice.amount * \
+                invoice.exchange_rate['rate'] / invoice.exchange_rate['amount']
 
         context = {'invoices': invoices,
                    'user': request.user,
@@ -401,7 +444,7 @@ class AdvanceOverView(LoginRequiredMixin, View):
         years = [str(date.year) for date in dates]
         for invoice in invoices:
 
-            total += invoice.amount *   \
+            total += invoice.amount * \
                 invoice.exchange_rate['rate'] / \
                 invoice.exchange_rate['amount']
 

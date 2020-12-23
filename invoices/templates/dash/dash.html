@@ -1,0 +1,157 @@
+{% extends "../base/base.html" %}
+{% load static %}{% load custom_truncate %} {% load l10n %}
+
+{% block style %}
+<link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/dash.css' %}"
+    />
+{% endblock %}
+
+{% block title %}
+    Invoice Factory
+{% endblock %}
+
+{% block content %}
+<div>
+<nav
+        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between px-5 py-3"
+      >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-brand d-none d-lg-block d-print-none">
+            <a href="/dash">
+              <svg height="40" width="40" style=" fill: white; stroke:white;">
+                {{logo|safe}}
+              </svg>
+            </a> 
+            </li>
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold" href="/invoices"
+                >Faktury</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold" href="/advance"
+                >Zálohy</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold" href="/recipient"
+                >Odběratelé</a
+              >
+            </li>
+            <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Nový
+              </a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/invoices/create">Faktura</a>
+                <a class="dropdown-item" href="/advance/create">Záloha</a>
+                <a class="dropdown-item" href="/recipient/create">Odběratel</a>
+              </div>
+            </li>
+            
+          </ul>
+          <ul class="navbar-nav">
+            
+            <li class="nav-item">
+              <a href="/users/edit/{{profile.id}}" class="nav-link"
+                >{{profile.name}}</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../logout">Odhlásit se</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+</div>
+<div class="row d-flex justify-content-center">
+    <div class='history col-md-5 col-sm-12'> 
+        <ul class='last'>
+            <h6>Poslední faktury</h6>
+            {% for invoice in data|slice:":3" %}
+                    <a href="/invoices/detail/{{invoice.id}}"><li><strong>{{ invoice.iid|unlocalize }}</strong>, {{ invoice.recipient.name }}, ...{{ invoice.description|custom_truncate:25 }}..., {{ invoice.amount }} {{ invoice.currency }}</li></a>
+
+            {% endfor %}
+        </ul>
+    </div>
+    <div class='history col-md-2 col-sm-12'>
+        <div>
+            <h6 >Průběžný součet</h6>
+            <h2 class="display-6 text-center">{{total}} Kč</h2>
+        </div> 
+    </div>
+</div>
+
+<div id="chart-container">
+<canvas class='px-3 py-5 w-100' id="myChart"></canvas>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
+<script>
+function getRandomColor() {
+        var letters = '0123456789ABCDEF'.split('');
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'],
+        datasets: [
+            {% for yr, dataset in  graphdata.items %}
+            
+            {label: {{yr|safe}} + ' - Částka',
+            data: {{ dataset.amount|safe }},
+            backgroundColor: getRandomColor(),
+            borderWidth: 1},
+            
+            {%endfor%}
+            {% for yr, dataset in  graphdata.items %}
+            
+            {label: {{yr|safe}} + ' - Součet',
+            data: {{ dataset.total|safe }},
+            borderColor: getRandomColor(),
+            borderWidth: 3,
+            type: 'line',
+            fill: false},
+            {%endfor%}
+        ]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+    }
+});
+</script>
+{% endblock %}

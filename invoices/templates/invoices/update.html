@@ -48,7 +48,7 @@
           <label for="items">Rozpis položek </label>
           <input type="checkbox" class="form-check-input ml-2" id="items"
           name="hasItems" 
-          {% if invoice.has_items == True %} checked 
+          {% if invoice.has_items %} checked 
           {% endif %} />
           <div id="itemList" class="w-100 justify-content-around"></div>
           <div
@@ -117,7 +117,6 @@
               class="form-control"
               id="advanceInput"
               name="advance"
-              required
             >
               <option value="" disabled selected>Vyberte zálohu</option>
               {% for advance in advances %}

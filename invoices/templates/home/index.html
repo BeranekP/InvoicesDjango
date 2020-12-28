@@ -15,6 +15,12 @@
   "
 >
   <div class="container">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto" role="alert">
+            <p>{{ message }}</p>
+      </div>
+    {% endfor %}
+    
     <div class="jumbotron mt-5 shadow">
       <h1 class="display-4">Invoice Factory</h1>
       <p class="lead">
@@ -33,7 +39,7 @@
         >
         {% else %}
 
-        <a class="btn btn-primary btn-lg mt-3" href="/signup/" role="button"
+        <a class="btn btn-primary btn-lg mt-3 disabled" href="/signup/" role="button"
           >Registrace</a
         >
         <button
@@ -70,6 +76,7 @@
                       id="user"
                       name="username"
                       class="w-100"
+                      required
                     />
                   </div>
                 </div>
@@ -83,6 +90,7 @@
                       id="pass"
                       class="w-100"
                       name="password"
+                      required
                     />
                   </div>
                 </div>

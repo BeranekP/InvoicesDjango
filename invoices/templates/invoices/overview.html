@@ -83,8 +83,13 @@
         </div>
       </nav>
     </div>
-    <div class="container mt-5 overview">
+    <div class="container mt-5 overview"> 
       <hr />
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5" role="alert">
+            <p>{{ message }}</p>
+      </div>
+      {% endfor %}
       <div class="d-flex justify-content-between align-items-center mt-5 overview" >
         <h2 class="d-none d-lg-block d-print-block">{{type}}</h2>
         <form action="./" method="GET" id="year" class="d-print-none">
@@ -142,6 +147,13 @@
         </thead>
 
         <tbody class="">
+          {% if invoices|length == 0 %}
+          <tr>
+            <td colspan=6 class='text-center'>
+            Žádné položky pro rok {{ selected_year }}.
+            </td>
+          </tr>
+          {% endif %}
           {% for invoice in invoices %}
           <tr>
             {% localize off %}
@@ -150,10 +162,10 @@
                 >{{ invoice.iid }}</a
               >
               {% ifequal invoice.payment 'hotově' %}
-              <span
+              <sup><span title="Platba v hotovosti"
                 class="badge badge-secondary d-print-none d-none d-lg-inline"
-                >CASH</span
-              >
+                >$</span
+              ></sup>
               {% endifequal %}
             </th>
 

@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 from protected import KEY
+from django.contrib.messages import constants as message_constants
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -137,3 +138,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"),
                     '/var/www/static/', ]
 
 SESSION_COOKIE_AGE = 600
+
+MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
+                message_constants.INFO: 'info',
+                message_constants.SUCCESS: 'success',
+                message_constants.WARNING: 'warning',
+                message_constants.ERROR: 'danger'}

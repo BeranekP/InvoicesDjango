@@ -21,8 +21,8 @@ from io import BytesIO
 from invoices.exchange_cnb import get_exchange_rates
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
-from django.core.mail import EmailMessage
-from django.core import serializers
+from django.contrib import messages
+
 
 # serve robots.txt
 @require_GET
@@ -76,6 +76,7 @@ class LoginView(View):
             login(request, user)
             return redirect('/dash')
         else:
+            messages.error(request, 'Neplatné uživatelské jméno nebo heslo.')
             return redirect('/')
 
 
@@ -220,7 +221,7 @@ class InvoiceView(LoginRequiredMixin, View):
                         break
             except:
                 pass
-
+        messages.success(request, f'Faktura {invoice.iid} úspěšně vytvořena.')
         return redirect('../')
 
 
@@ -291,7 +292,7 @@ class AdvanceView(LoginRequiredMixin, View):
                         break
             except:
                 pass
-
+        messages.success(request, f'Záloha {invoice.iid} úspěšně vytvořena.')
         return redirect('../')
 
 
@@ -392,6 +393,8 @@ class InvoiceOverView(LoginRequiredMixin, View):
         dates = Invoice.objects.filter(
             owner=request.user).dates('date', 'year')
         years = [str(date.year) for date in dates]
+        if str(datetime.now().year) not in years:
+            years.insert(0, str(datetime.now().year))
 
         for invoice in invoices:
 
@@ -442,6 +445,8 @@ class AdvanceOverView(LoginRequiredMixin, View):
         dates = Advance.objects.filter(
             owner=request.user).dates('date', 'year')
         years = [str(date.year) for date in dates]
+        if str(datetime.now().year) not in years:
+            years.insert(0, str(datetime.now().year))
         for invoice in invoices:
 
             total += invoice.amount * \
@@ -467,6 +472,7 @@ class InvoiceDeleteView(LoginRequiredMixin, View):
         invoice = Invoice.objects.filter(
             owner=request.user).get(id=id)
         invoice.delete()
+        messages.warning(request, f'Faktura {invoice.iid} odstraněna.')
         return redirect('../../')
 
 
@@ -478,6 +484,7 @@ class AdvanceDeleteView(LoginRequiredMixin, View):
         invoice = Advance.objects.filter(
             owner=request.user).get(id=id)
         invoice.delete()
+        messages.warning(request, f'Záloha {invoice.iid} odstraněna.')
         return redirect('../../')
 
 
@@ -562,7 +569,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
                         break
             except:
                 pass
-
+        messages.success(request, f'Faktura {invoice.iid} aktualizována.')
         return redirect('../../')
 
 
@@ -635,7 +642,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
                         break
             except:
                 pass
-
+        messages.success(request, f'Záloha {invoice.iid} aktualizována.')
         return redirect('../../')
 
 
@@ -662,7 +669,8 @@ class RecipientView(LoginRequiredMixin, View):
             recipient.dic = request.POST.get('dic')
         recipient.owner = request.user
         recipient.save()
-
+        messages.success(
+            request, f'Odběratel <em>{recipient.name}</em> úspěšně přidán.')
         return redirect('../../invoices/create/')
 
 
@@ -700,6 +708,8 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
             pass
         user_profile.save()
 
+        messages.success(
+            request, 'Vaše údaje byly aktualizovány.')
         return redirect('../../../invoices')
 
 
@@ -791,7 +801,8 @@ class RecipientUpdateView(LoginRequiredMixin, View):
             recipient.ic = request.POST['ic']
 
         recipient.save()
-
+        messages.success(
+            request, f'Odběratel <em>{recipient.name}</em> aktualizován.')
         return redirect('/recipient')
 
 

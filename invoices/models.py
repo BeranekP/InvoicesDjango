@@ -91,6 +91,7 @@ class Advance(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True)
     has_items = models.BooleanField(default=False, null=True)
     linked = models.BooleanField(default=False, null=True)
+    paid = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return ', '.join([str(self.iid), self.recipient.name, str(self.amount), 'CZK'])
@@ -112,6 +113,7 @@ class Invoice(models.Model):
     has_items = models.BooleanField(default=False, null=True)
     advance = models.ForeignKey(
         Advance, on_delete=models.CASCADE, null=True, blank=True)
+    paid = models.DateField(blank=True, null=True)
 
     def __str__(self):
         return ', '.join([str(self.iid), self.recipient.name, str(self.amount), 'CZK'])

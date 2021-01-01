@@ -136,8 +136,12 @@ class DashView(LoginRequiredMixin, View):
             for i, val in enumerate(graph_data[year]['amount']):
                 running_total += val
                 graph_data[year]['total'][i] = running_total
+        if datetime.now().year == year:
+            total = graph_data[year]['total'][-1]
+        else:
+            total = 0
         context = {"data": data, "logo": logo,
-                   "profile": userprofile, "total": graph_data[year]['total'][-1], "graphdata": graph_data}
+                   "profile": userprofile, "total": total, "graphdata": graph_data}
         return render(request, self.template_name, context)
 
 
@@ -154,7 +158,7 @@ class InvoiceView(LoginRequiredMixin, View):
             owner=request.user).order_by('name')
         invoices_id = Invoice.objects.filter(
             owner=request.user).values_list('iid', flat=True)
-        if invoices_id:
+        if invoices_id and max(invoices_id) // 10000 == d.year:
             iid = max(list(invoices_id)) + 1
         else:
             iid = d.year * 10000 + 1
@@ -191,6 +195,7 @@ class InvoiceView(LoginRequiredMixin, View):
         invoice.payment = request.POST.get('payment')
         invoice.owner = request.user
         invoice.has_items = request.POST.get('hasItems') == 'on'
+        invoice.paid = request.POST.get('paid')
         advance_id = request.POST.get('advance')
         if advance_id:
             advance = Advance.objects.filter(
@@ -238,7 +243,7 @@ class AdvanceView(LoginRequiredMixin, View):
             owner=request.user).order_by('name')
         invoices_id = Advance.objects.filter(
             owner=request.user).values_list('iid', flat=True)
-        if invoices_id:
+        if invoices_id and max(invoices_id) // 10000 == d.year:
             iid = max(list(invoices_id)) + 1
         else:
             iid = d.year * 10000 + 1
@@ -516,6 +521,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         invoice.amount = request.POST.get('amount')
         invoice.date = request.POST.get('created')
         invoice.datedue = request.POST.get('due')
+        invoice.paid = request.POST.get('paid')
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
         if invoice.currency != 'CZK':

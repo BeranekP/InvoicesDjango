@@ -105,10 +105,13 @@
         <div class="form-inline mt-3 mb-3 w-100 d-flex justify-content-between">
           <label for="createdInput">Vystaveno</label>
           <input type="date" class="form-control" id="createdInput"
-          name="created" value="{{invoice.date|date:"Y-m-d"}}" />
+          name="created" value="{{invoice.date|date:"Y-m-d"}}" required/>
           <label for="dueInput">Splatnost</label>
           <input type="date" class="form-control" id="dueInput" name="due"
-          value="{{invoice.datedue|date:"Y-m-d"}}" />
+          value="{{invoice.datedue|date:"Y-m-d"}}" required/>
+          <label for="paidInput">Uhrazeno</label>
+          <input type="date" class="form-control" id="paidInput" name="paid"
+          value="{{invoice.paid|date:"Y-m-d"}}" />
         </div>
         {% if type == "faktura" %}
         <div class="form-group mt-3 mb-3 w-100">

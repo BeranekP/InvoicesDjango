@@ -124,7 +124,10 @@
               required
             />
           
-        </div>
+            <label for="paidInput">Uhrazeno</label>
+            <input type="date" class="form-control" id="paidInput" name="paid"
+          value="{{invoice.paid|date:"Y-m-d"}}" />
+            </div>
       {% if type == "faktura" %}
         <div class="form-group mt-3 mb-3 w-100">
           <label for="advanceInput">Připojit zálohu</label>

@@ -712,11 +712,50 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
             user_profile.sign = request.FILES['sign']
         except:
             pass
-        user_profile.save()
 
+        user = User.objects.get(id=request.user.id)
+        password1 = request.POST['password']
+        password2 = request.POST['password-confirm']
+        if password1 and password2:
+            if password1 == password2:
+                user.set_password(password1)
+                user.save()
+                messages.success(
+                    request, 'Heslo změněno.')
+            else:
+                messages.warning(request, 'Hesla se neshodují.')
+                return redirect('../../../invoices')
+
+        user_profile.save()
         messages.success(
             request, 'Vaše údaje byly aktualizovány.')
         return redirect('../../../invoices')
+
+
+class MailCopy(LoginRequiredMixin, View):
+    login_url = '/'
+    redirect_field_name = 'overview/'
+
+    def post(self, request):
+        user_profile = UserProfile.objects.get(user=request.user)
+        print(request.POST)
+        try:
+            mail = bool(request.POST['mailcopy'])
+        except:
+            mail = False
+
+        if mail:
+            user_profile.mailcopy = True
+            messages.success(
+                request, f'Kopie faktur budou zasílány na adresu {user_profile.email}.')
+        else:
+            user_profile.mailcopy = False
+            messages.warning(
+                request, mark_safe(f'Kopie faktur <strong>nebudou</strong> zasílány na adresu {user_profile.email}.'))
+
+        user_profile.save()
+
+        return redirect('../invoices')
 
 
 class RecipientOverView(LoginRequiredMixin, View):

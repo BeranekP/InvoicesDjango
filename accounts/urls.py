@@ -52,6 +52,7 @@ urlpatterns = [
     path('logout/', views.LogoutView.as_view()),
     path('signup/', views.SignupView.as_view()),
     path('dash/', views.DashView.as_view()),
+    path('mailcopy/', views.MailCopy.as_view()),
     path('', views.HomeView.as_view()),
     path('robots.txt', views.robots),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

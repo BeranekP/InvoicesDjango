@@ -793,6 +793,8 @@ class RecipientOverView(LoginRequiredMixin, View):
         dates = Invoice.objects.filter(
             owner=request.user).dates('date', 'year')
         years = [str(date.year) for date in dates]
+        if str(datetime.now().year) not in years:
+            years.insert(0, str(datetime.now().year))
 
         for recipient in recipients:
             if yr and not yr == 'all':

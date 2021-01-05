@@ -21,7 +21,12 @@ from io import BytesIO
 from invoices.exchange_cnb import get_exchange_rates
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import (
+    Mail, Bcc, Attachment, FileContent, FileName, FileType, Disposition, ContentId)
+import base64
 from django.contrib import messages
+from protected import SENDGRID_API_KEY, EMAIL  # ,OTHER_EMAIL
 
 
 # serve robots.txt
@@ -892,7 +897,7 @@ def link_callback(uri, rel):
         raise Exception(
             'media URI must start with %s or %s' % (sUrl, mUrl)
         )
-    print('****', path)
+    #print('****', path)
     return path
 
 
@@ -945,7 +950,67 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             response = HttpResponse(
                 result.getvalue(), content_type='application/pdf')
             response['Content-Disposition'] = f'filename="{invoice.iid}.pdf"'
+            if user.mailcopy and user.email:
+                bytes = result.getvalue()
+                encoded_file = base64.b64encode(bytes).decode()
+                base64_png = base64.b64encode(
+                    open(qr_png, "rb").read()).decode()
+                message = Mail(
+                    from_email=EMAIL,
+                    to_emails=EMAIL,
+                    subject=f'Faktura č. {invoice.iid}',
+                    html_content=f'''
+                    Faktura za provedené služby je přílohou tohoto emailu.
+                    <table style='width:75%;border: 1px solid black; margin-top:10px;border-collapse:collapse;'>
+                        <tr style="padding: 5px 10px">
+                            <td>
+                                <h3 style='padding-left:5px; padding-bottom:10px; border-bottom: 1px solid black;'>Faktura č. {invoice.iid}</h3>
+                                <ul style='list-style: none;'>
+                                    <li>{invoice.recipient.name}</li>
+                                    <li>{invoice.recipient.street}, {invoice.recipient.zipcode} {invoice.recipient.town}</li>
 
+                                    <li style='padding-top:10px;padding-bottom:10px;'><em>{invoice.description}</em></li>
+                                    
+                                    <li style='padding-top:10px;padding-bottom:10px;'><h4>Splatnost: {invoice.datedue.strftime("%d.%m.%Y")}</h4></li>
+
+                                    <li><h4>Celkem: {invoice.amount} {invoice.currency}</h4></li>
+                                </ul>
+                            </td>
+                            <td>
+                                <img src="cid:qr_code"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style='font-size:8px;padding-top:10px;'><em>Tento email je generován automaticky.</em></div>
+                    '''
+                )
+                attachedFile = Attachment(
+                    FileContent(encoded_file),
+                    FileName(f"Faktura_{invoice.iid}.pdf"),
+                    FileType('application/pdf'),
+                    Disposition('attachment')
+                )
+                attached_qr = Attachment(
+                    FileContent(base64_png),
+                    FileName('qrplatba.png'),
+                    FileType('image/png'),
+                    Disposition('inline'),
+                    ContentId('qr_code')
+                )
+
+                message.attachment = attachedFile
+                message.attachment = attached_qr
+                #message.bcc = Bcc(OTHER_EMAIL)
+
+                try:
+                    sg = SendGridAPIClient(SENDGRID_API_KEY)
+                    res = sg.send(message)
+                    messages.success(request, f'Email odeslán.')
+                except Exception as e:
+                    messages.warning(
+                        request, f'Při odesílání emailu došlo k chybě.')
+                    print('**', e)
             return response
 
         return None

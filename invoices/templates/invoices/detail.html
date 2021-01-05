@@ -86,13 +86,13 @@
                 <div class="dropdown-divider"></div>
                 <a class=" mx-2 dropdown-item" href="/users/edit/{{user.id}}">Profil</a>
                 <div class="mx-2 dropdown-item custom-control custom-checkbox">
-                <form action="../mailcopy/" method='POST' id="mailcopy-form">{% csrf_token %}
+                <form action="../../../mailcopy/" method='POST' id="mailcopy-form">{% csrf_token %}
                   <input
                   type="checkbox"
                   class="custom-control-input align-self-end "
                   id="mailcopy"
                   name="mailcopy"
-                  {% if profile.mailcopy %}
+                  {% if user.mailcopy %}
                   value=true
                   checked
                   {% else %}
@@ -113,6 +113,11 @@
           </ul>
         </div>
       </nav>
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 d-print-none" role="alert">
+            <p>{{ message }}</p>
+      </div>
+      {% endfor %}
       <div class="jumbotron w-100 mb-0 pb-5 overflow-hidden">
         <div class="container w-100 pt-5">
           <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>

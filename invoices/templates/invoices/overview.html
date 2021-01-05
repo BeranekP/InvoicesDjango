@@ -3,6 +3,7 @@
   {% block style %}
      <link rel="stylesheet" type="text/css" href="{% static 'css/contextual.theme.css' %}"/>
      <link rel="stylesheet" type="text/css" href="{% static 'css/contextual.css' %}"/>
+     <link rel="stylesheet" type="text/css" href="{% static 'css/overview.css' %}"/>
      <script src="{% static 'js/contextual.js' %}"></script>
   {% endblock style %}
  
@@ -206,15 +207,7 @@
           <tr id="{{ invoice.id }}" class="invoice" title='Klikněte pravým tlačítkem myši.'>
             {% localize off %}
             <td scope="row" style="text-align: center;">
-              <!--<a href="./detail/{{ invoice.id }}" title="Zobrazit fakturu">-->
               {{ invoice.iid }}
-              <!--</a>-->
-              {% ifequal invoice.payment 'hotově' %}
-              <sup><span title="Platba v hotovosti"
-                class="badge badge-secondary d-print-none d-none d-lg-inline"
-                >$</span
-              ></sup>
-              {% endifequal %}
             </td>
 
             <td>
@@ -242,6 +235,14 @@
 
             <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: center;">
               {{ invoice.paid|date:"d. m. Y"}}
+            </td>
+          </tr>
+          <tr id="hidden-{{invoice.id}}" class='hidden'>
+            <td colspan=5>
+                <ul>
+                  <li><strong>Popis</strong>: <em>{{invoice.description}}</em></li>
+                  <li><strong>Platba</strong>: <em>{{invoice.payment}}</em></li>
+                </ul>
             </td>
           </tr>
           {% endfor %}
@@ -301,6 +302,14 @@
             });
           })(rows[row].id);
         });
+    }
+    for (let row=0; row<rows.length; row++){
+      rows[row].addEventListener('click', e => {
+         (function(id){
+          let hidden_row = document.getElementById(id);
+          hidden_row.classList.toggle('open');
+         })('hidden-'.concat(rows[row].id));
+          });
     }
     </script>
     <script src="{% static 'js/mailCopy.js' %}"></script>

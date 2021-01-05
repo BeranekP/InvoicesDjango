@@ -3,6 +3,7 @@
   {% block style %}
      <link rel="stylesheet" type="text/css" href="{% static 'css/contextual.theme.css' %}"/>
      <link rel="stylesheet" type="text/css" href="{% static 'css/contextual.css' %}"/>
+     <link rel="stylesheet" type="text/css" href="{% static 'css/overview.css' %}"/>
      <script src="{% static 'js/contextual.js' %}"></script>
   {% endblock %}
   {% block title %} Invoice Factory - Odběratelé {% endblock %}
@@ -188,7 +189,7 @@
               {{ recipient.total}} Kč 
             </td>
           </tr>
-          <tr id="hidden-{{recipient.id}}" class='d-none'>
+          <tr id="hidden-{{recipient.id}}" class='hidden'>
             <td colspan=4>
             {% for invoice in recipient.invoices %}
                 <a href="/invoices/detail/{{invoice.pk}}" class = 'btn btn-outline-secondary mx-1 '> {{ invoice.iid|unlocalize }} </a>
@@ -233,9 +234,8 @@
     for (let row=0; row<rows.length; row++){
       rows[row].addEventListener('click', e => {
          (function(id){
-          console.log(id)
           let hidden_row = document.getElementById(id);
-          hidden_row.classList.toggle('d-none');
+          hidden_row.classList.toggle('open');
          })('hidden-'.concat(rows[row].id));
           });
     }

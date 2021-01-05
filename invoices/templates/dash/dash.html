@@ -105,26 +105,28 @@
         </div>
       </nav>
 </div>
-<div class="row d-flex justify-content-center">
-    <div class='history col-md-5 col-sm-12'> 
-        <ul class='last'>
-            <h6>Poslední faktury</h6>
-            {% for invoice in data|slice:":3" %}
-                    <a href="/invoices/detail/{{invoice.id}}"><li><strong>{{ invoice.iid|unlocalize }}</strong>, {{ invoice.recipient.name }}, ...{{ invoice.description|custom_truncate:25 }}..., {{ invoice.amount }} {{ invoice.currency }}</li></a>
+<div class="container">
+  <div class="row d-flex justify-content-center">
+      <div class='history col-md-8 col-sm-12'> 
+          <ul class='last'>
+              <h6>Poslední faktury</h6>
+              {% for invoice in data|slice:":3" %}
+                      <a href="/invoices/detail/{{invoice.id}}"><li><strong>{{ invoice.iid|unlocalize }}</strong>, {{ invoice.recipient.name }}, ...{{ invoice.description|custom_truncate:35 }}..., {{ invoice.amount }} {{ invoice.currency }}</li></a>
 
-            {% endfor %}
-        </ul>
-    </div>
-    <div class='history col-md-2 col-sm-12'>
-        <div>
-            <h6 >Průběžný součet</h6>
-            <h2 class="display-6 text-center">{{total}} Kč</h2>
-        </div> 
-    </div>
-</div>
+              {% endfor %}
+          </ul>
+      </div>
+      <div class='history col-md-3 col-sm-12'>
+          <div>
+              <h6 >Průběžný součet {% now "Y" %}</h6>
+              <h2 class="display-6 text-center">{{total|safe}} Kč</h2>
+          </div> 
+      </div>
+  </div>
 
-<div id="chart-container">
-<canvas class='px-3 py-5 w-100' id="myChart"></canvas>
+  <div id="chart-container w-100" class="row">
+    <canvas class='px-3 py-5' id="myChart" width="100"></canvas>
+  </div>
 </div>
 
 {% endblock %}
@@ -150,7 +152,7 @@ var myChart = new Chart(ctx, {
             {% for yr, dataset in  graphdata.items %}
             
             {label: {{yr|safe}} + ' - Částka',
-            data: {{ dataset.amount|safe }},
+            data: [{% for v in dataset.amount %} JSON.parse({{v|safe}}),  {% endfor %}],
             backgroundColor: getRandomColor(),
             borderWidth: 1},
             
@@ -158,10 +160,12 @@ var myChart = new Chart(ctx, {
             {% for yr, dataset in  graphdata.items %}
             
             {label: {{yr|safe}} + ' - Součet',
-            data: {{ dataset.total|safe }},
+            data: [{% for v in dataset.total %} JSON.parse({{v|safe}}),  {% endfor %}],
             borderColor: getRandomColor(),
             borderWidth: 3,
             type: 'line',
+            lineTension: 0,
+            borderJoinStyle: "round",
             fill: false},
             {%endfor%}
         ]
@@ -170,12 +174,34 @@ var myChart = new Chart(ctx, {
         scales: {
             yAxes: [{
                 ticks: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    fontSize:18,
+                    fontStyle: "bold",
                 }
-            }]
+            }],
+            xAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    fontSize:18,
+                    fontStyle: "bold",
+                }
+            }],
+
+        },
+        legend: {
+                labels: {
+                fontSize:18,
+                fontStyle: "bold",
+                }
+            },
+        tooltips:{
+                bodyFontSize:18,
+                fontStyle: "bold",
         },
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: true,
+        devicePixelRatio:2,
+
     }
 });
 </script>

@@ -122,26 +122,31 @@ class DashView(LoginRequiredMixin, View):
         for invoice in invoices:
             graph_data.setdefault(invoice.date.year, {
                                   'labels': list(range(1, 13)),
-                                  'amount': [0 for _ in range(1, 13)],
-                                  'total': [0 for _ in range(1, 13)],
+                                  'amount': ['null' for _ in range(1, 13)],
+                                  'total': ['null' for _ in range(1, 13)],
                                   })
             idx = graph_data[invoice.date.year]['labels'].index(
                 int(invoice.date.strftime("%m")))
-            graph_data[invoice.date.year]['amount'][idx] += invoice.amount * \
-                invoice.exchange_rate['rate'] / \
-                invoice.exchange_rate['amount']
+            if graph_data[invoice.date.year]['amount'][idx] != 'null':
+                graph_data[invoice.date.year]['amount'][idx] += invoice.amount * invoice.exchange_rate['rate'] / \
+                    invoice.exchange_rate['amount']
+            else:
+                graph_data[invoice.date.year]['amount'][idx] = invoice.amount * invoice.exchange_rate['rate'] / \
+                    invoice.exchange_rate['amount']
 
         for year in graph_data:
             running_total = 0
             for i, val in enumerate(graph_data[year]['amount']):
-                running_total += val
+                if val != 'null':
+                    running_total += val
                 graph_data[year]['total'][i] = running_total
+
         if datetime.now().year == year:
             total = graph_data[year]['total'][-1]
         else:
             total = 0
         context = {"data": data, "logo": logo,
-                   "profile": userprofile, "total": total, "graphdata": graph_data}
+                   "profile": userprofile, "total": total if total != 'null' else 0, "graphdata": graph_data}
         return render(request, self.template_name, context)
 
 
@@ -195,7 +200,9 @@ class InvoiceView(LoginRequiredMixin, View):
         invoice.payment = request.POST.get('payment')
         invoice.owner = request.user
         invoice.has_items = request.POST.get('hasItems') == 'on'
-        invoice.paid = request.POST.get('paid')
+        paid = request.POST.get('paid')
+        if paid:
+            invoice.paid = paid
         advance_id = request.POST.get('advance')
         if advance_id:
             advance = Advance.objects.filter(
@@ -521,7 +528,9 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         invoice.amount = request.POST.get('amount')
         invoice.date = request.POST.get('created')
         invoice.datedue = request.POST.get('due')
-        invoice.paid = request.POST.get('paid')
+        paid = request.POST.get('paid')
+        if paid:
+            invoice.paid = paid
         d = datetime.strptime(invoice.date, '%Y-%m-%d')
         invoice.currency = request.POST.get('currency')
         if invoice.currency != 'CZK':

@@ -137,7 +137,7 @@ MEDIA_URL = '/media/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"),
                     '/var/www/static/', ]
 
-SESSION_COOKIE_AGE = 600
+SESSION_COOKIE_AGE = 60 * 60 * 24
 
 MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
                 message_constants.INFO: 'info',

@@ -161,6 +161,7 @@ class InvoiceView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/create/'
 
     def get(self, request):
+        self.ref = request.META['HTTP_REFERER']
         d = datetime.now()
         dt = timedelta(days=14)
         rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
@@ -178,7 +179,7 @@ class InvoiceView(LoginRequiredMixin, View):
             owner=request.user, linked=False)
 
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'faktura', 'advances': advances}
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': self.ref}
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -239,7 +240,7 @@ class InvoiceView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Faktura {invoice.iid} úspěšně vytvořena.')
-        return redirect('../')
+        return redirect(self.ref)
 
 
 class AdvanceView(LoginRequiredMixin, View):
@@ -248,6 +249,7 @@ class AdvanceView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/create/'
 
     def get(self, request):
+        self.ref = request.META['HTTP_REFERER']
         d = datetime.now()
         dt = timedelta(days=14)
         rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
@@ -261,7 +263,7 @@ class AdvanceView(LoginRequiredMixin, View):
             iid = d.year * 10000 + 1
         default_dates = {'created': d, 'due': d + dt}
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'záloha'}
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'záloha', 'ref': self.ref}
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -310,7 +312,7 @@ class AdvanceView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Záloha {invoice.iid} úspěšně vytvořena.')
-        return redirect('../')
+        return redirect(self.ref)
 
 
 class InvoiceDetailView(LoginRequiredMixin, View):
@@ -319,6 +321,7 @@ class InvoiceDetailView(LoginRequiredMixin, View):
     template_name = 'invoices/detail.html'
 
     def get(self, request, id):
+        ref = request.META['HTTP_REFERER']
         invoice = Invoice.objects.filter(
             owner=request.user).get(id=id)
         if invoice.advance:
@@ -342,7 +345,7 @@ class InvoiceDetailView(LoginRequiredMixin, View):
         img.save(svg_output)
 
         context = {"invoice": invoice, "user": user,
-                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Faktura", 'advance': advance}
+                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Faktura", 'advance': advance, 'ref': ref}
 
         return render(request, self.template_name, context)
 
@@ -355,6 +358,7 @@ class AdvanceDetailView(LoginRequiredMixin, View):
     def get(self, request, id):
         invoice = Advance.objects.filter(
             owner=request.user).get(id=id)
+        ref = request.META['HTTP_REFERER']
 
         if invoice.has_items:
             items = InvoiceItem.objects.filter(invoice=invoice)
@@ -372,7 +376,7 @@ class AdvanceDetailView(LoginRequiredMixin, View):
         img.save(svg_output)
 
         context = {"invoice": invoice, "user": user,
-                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Záloha"}
+                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Záloha", 'ref': ref}
 
         return render(request, self.template_name, context)
 
@@ -486,11 +490,12 @@ class InvoiceDeleteView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/'
 
     def post(self, request, id):
+        ref = request.META['HTTP_REFERER']
         invoice = Invoice.objects.filter(
             owner=request.user).get(id=id)
         invoice.delete()
         messages.warning(request, f'Faktura {invoice.iid} odstraněna.')
-        return redirect('../../')
+        return redirect(ref)
 
 
 class AdvanceDeleteView(LoginRequiredMixin, View):
@@ -498,11 +503,12 @@ class AdvanceDeleteView(LoginRequiredMixin, View):
     redirect_field_name = 'advances/'
 
     def post(self, request, id):
+        ref = request.META['HTTP_REFERER']
         invoice = Advance.objects.filter(
             owner=request.user).get(id=id)
         invoice.delete()
         messages.warning(request, f'Záloha {invoice.iid} odstraněna.')
-        return redirect('../../')
+        return redirect(ref)
 
 
 class InvoiceUpdateView(LoginRequiredMixin, View):
@@ -510,6 +516,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/'
 
     def get(self, request, id):
+        self.ref = request.META['HTTP_REFERER']
         invoice = Invoice.objects.filter(
             owner=request.user).get(id=id)
         if invoice.has_items:
@@ -523,7 +530,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         # d = datetime.strptime(invoice.date, '%Y-%m-%d')
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': rates, 'type': 'faktura', 'advances': advances}
+                   'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': self.ref}
         return render(request, 'invoices/update.html', context)
 
     def post(self, request, id):
@@ -590,7 +597,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Faktura {invoice.iid} aktualizována.')
-        return redirect('../../')
+        return redirect(self.ref)
 
 
 class AdvanceUpdateView(LoginRequiredMixin, View):
@@ -598,6 +605,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
     redirect_field_name = 'advance/'
 
     def get(self, request, id):
+        self.ref = request.META['HTTP_REFERER']
         invoice = Advance.objects.filter(
             owner=request.user).get(id=id)
         if invoice.has_items:
@@ -608,7 +616,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
         # d = datetime.strptime(invoice.date, '%Y-%m-%d')
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': rates, 'type': 'záloha'}
+                   'rates': rates, 'type': 'záloha', 'ref': self.ref}
         return render(request, 'invoices/update.html', context)
 
     def post(self, request, id):
@@ -663,7 +671,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Záloha {invoice.iid} aktualizována.')
-        return redirect('../../')
+        return redirect(self.ref)
 
 
 class RecipientView(LoginRequiredMixin, View):
@@ -672,7 +680,8 @@ class RecipientView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/'
 
     def get(self, request):
-        context = {}
+        self.ref = request.META['HTTP_REFERER']
+        context = {'ref': self.ref}
         return render(request, self.template_name, context)
 
     def post(self, request):
@@ -691,7 +700,7 @@ class RecipientView(LoginRequiredMixin, View):
         recipient.save()
         messages.success(
             request, f'Odběratel <em>{recipient.name}</em> úspěšně přidán.')
-        return redirect('../../invoices/create/')
+        return redirect(self.ref)
 
 
 class UserProfileUpdateView(LoginRequiredMixin, View):
@@ -700,9 +709,11 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
     template_name = 'user/profile.html'
 
     def get(self, request, id):
+        self.ref = request.META['HTTP_REFERER']
         profile = UserProfile.objects.get(id=id, user=request.user)
         context = {'profile': profile,
-                   'user': request.user}
+                   'user': request.user,
+                   'ref': self.ref}
 
         return render(request, self.template_name, context)
 
@@ -738,12 +749,12 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
                     request, 'Heslo změněno.')
             else:
                 messages.warning(request, 'Hesla se neshodují.')
-                return redirect('../../../invoices')
+                return redirect(self.ref)
 
         user_profile.save()
         messages.success(
             request, 'Vaše údaje byly aktualizovány.')
-        return redirect('../../../invoices')
+        return redirect(self.ref)
 
 
 class MailCopy(LoginRequiredMixin, View):
@@ -751,8 +762,8 @@ class MailCopy(LoginRequiredMixin, View):
     redirect_field_name = 'overview/'
 
     def post(self, request):
+        ref = request.META['HTTP_REFERER']
         user_profile = UserProfile.objects.get(user=request.user)
-        print(request.POST)
         try:
             mail = bool(request.POST['mailcopy'])
         except:
@@ -769,7 +780,7 @@ class MailCopy(LoginRequiredMixin, View):
 
         user_profile.save()
 
-        return redirect('../invoices')
+        return redirect(ref)
 
 
 class RecipientOverView(LoginRequiredMixin, View):
@@ -842,9 +853,11 @@ class RecipientUpdateView(LoginRequiredMixin, View):
     redirect_field_name = 'recipient/'
 
     def get(self, request, id):
+        self.ref = request.META['HTTP_REFERER']
         recipient = Recipient.objects.get(id=id, owner=request.user)
         context = {'recipient': recipient,
-                   'user': request.user}
+                   'user': request.user,
+                   'ref': self.ref}
 
         return render(request, self.template_name, context)
 
@@ -864,7 +877,7 @@ class RecipientUpdateView(LoginRequiredMixin, View):
         recipient.save()
         messages.success(
             request, f'Odběratel <em>{recipient.name}</em> aktualizován.')
-        return redirect('/recipient')
+        return redirect(self.ref)
 
 
 def link_callback(uri, rel):

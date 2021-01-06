@@ -39,8 +39,10 @@ def robots(request):
     return HttpResponse("\n".join(lines), content_type="text/plain")
 
 
-class SignupView(View):
+class SignupView(LoginRequiredMixin, View):
     template_name = 'signup/form.html'
+    login_url = '/'
+    redirect_field_name = ''
 
     def get(self, request):
         if request.user.is_authenticated:

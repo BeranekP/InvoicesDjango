@@ -163,7 +163,7 @@ class InvoiceView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/create/'
 
     def get(self, request):
-        self.ref = request.META['HTTP_REFERER']
+        ref = request.META['HTTP_REFERER']
         d = datetime.now()
         dt = timedelta(days=14)
         rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
@@ -181,8 +181,10 @@ class InvoiceView(LoginRequiredMixin, View):
             owner=request.user, linked=False)
 
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': self.ref}
-        return render(request, self.template_name, context)
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': ref}
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+        return response
 
     def post(self, request):
 
@@ -211,6 +213,13 @@ class InvoiceView(LoginRequiredMixin, View):
         paid = request.POST.get('paid')
         if paid:
             invoice.paid = paid
+            d_paid = datetime.strptime(paid, '%Y-%m-%d')
+            if invoice.currency != 'CZK':
+                invoice.paid_exchange_rate = get_exchange_rates(
+                    d_paid.strftime('%d.%m.%Y'))[invoice.currency]
+            else:
+                invoice.paid_exchange_rate = {
+                    'amount': 1, 'rate': 1.000, 'date': d_paid.strftime('%d.%m.%Y')}
         advance_id = request.POST.get('advance')
         if advance_id:
             advance = Advance.objects.filter(
@@ -242,7 +251,8 @@ class InvoiceView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Faktura {invoice.iid} úspěšně vytvořena.')
-        return redirect(self.ref)
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 class AdvanceView(LoginRequiredMixin, View):
@@ -251,7 +261,7 @@ class AdvanceView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/create/'
 
     def get(self, request):
-        self.ref = request.META['HTTP_REFERER']
+        ref = request.META['HTTP_REFERER']
         d = datetime.now()
         dt = timedelta(days=14)
         rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
@@ -265,8 +275,10 @@ class AdvanceView(LoginRequiredMixin, View):
             iid = d.year * 10000 + 1
         default_dates = {'created': d, 'due': d + dt}
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'záloha', 'ref': self.ref}
-        return render(request, self.template_name, context)
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'záloha', 'ref': ref}
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+        return response
 
     def post(self, request):
 
@@ -314,7 +326,8 @@ class AdvanceView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Záloha {invoice.iid} úspěšně vytvořena.')
-        return redirect(self.ref)
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 class InvoiceDetailView(LoginRequiredMixin, View):
@@ -516,9 +529,10 @@ class AdvanceDeleteView(LoginRequiredMixin, View):
 class InvoiceUpdateView(LoginRequiredMixin, View):
     login_url = '/'
     redirect_field_name = 'invoices/'
+    template_name = 'invoices/update.html'
 
     def get(self, request, id):
-        self.ref = request.META['HTTP_REFERER']
+        ref = request.META['HTTP_REFERER']
         invoice = Invoice.objects.filter(
             owner=request.user).get(id=id)
         if invoice.has_items:
@@ -532,8 +546,11 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         # d = datetime.strptime(invoice.date, '%Y-%m-%d')
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': self.ref}
-        return render(request, 'invoices/update.html', context)
+                   'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': ref}
+
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+        return response
 
     def post(self, request, id):
         invoice = Invoice.objects.filter(
@@ -543,10 +560,18 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         invoice.date = request.POST.get('created')
         invoice.datedue = request.POST.get('due')
         paid = request.POST.get('paid')
+        invoice.currency = request.POST.get('currency')
+        d = datetime.strptime(invoice.date, '%Y-%m-%d')
         if paid:
             invoice.paid = paid
-        d = datetime.strptime(invoice.date, '%Y-%m-%d')
-        invoice.currency = request.POST.get('currency')
+            d_paid = datetime.strptime(paid, '%Y-%m-%d')
+            if invoice.currency != 'CZK':
+                invoice.paid_exchange_rate = get_exchange_rates(
+                    d_paid.strftime('%d.%m.%Y'))[invoice.currency]
+            else:
+                invoice.paid_exchange_rate = {
+                    'amount': 1, 'rate': 1.000, 'date': d_paid.strftime('%d.%m.%Y')}
+
         if invoice.currency != 'CZK':
             invoice.exchange_rate = get_exchange_rates(
                 d.strftime('%d.%m.%Y'))[invoice.currency]
@@ -599,15 +624,17 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Faktura {invoice.iid} aktualizována.')
-        return redirect(self.ref)
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 class AdvanceUpdateView(LoginRequiredMixin, View):
     login_url = '/'
     redirect_field_name = 'advance/'
+    template_name = 'invoices/update.html'
 
     def get(self, request, id):
-        self.ref = request.META['HTTP_REFERER']
+        ref = request.META['HTTP_REFERER']
         invoice = Advance.objects.filter(
             owner=request.user).get(id=id)
         if invoice.has_items:
@@ -615,11 +642,13 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
         else:
             items = []
 
-        # d = datetime.strptime(invoice.date, '%Y-%m-%d')
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': rates, 'type': 'záloha', 'ref': self.ref}
-        return render(request, 'invoices/update.html', context)
+                   'rates': rates, 'type': 'záloha', 'ref': ref}
+
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+        return response
 
     def post(self, request, id):
         invoice = Advance.objects.filter(
@@ -636,6 +665,17 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
         else:
             invoice.exchange_rate = {
                 'amount': 1, 'rate': 1.000, 'date': d.strftime('%d.%m.%Y')}
+        paid = request.POST.get('paid')
+        if paid:
+            invoice.paid = paid
+            d_paid = datetime.strptime(paid, '%Y-%m-%d')
+            if invoice.currency != 'CZK':
+                invoice.paid_exchange_rate = get_exchange_rates(
+                    d_paid.strftime('%d.%m.%Y'))[invoice.currency]
+            else:
+                invoice.paid_exchange_rate = {
+                    'amount': 1, 'rate': 1.000, 'date': d_paid.strftime('%d.%m.%Y')}
+
         invoice.iid = request.POST.get('id')
         invoice.payment = request.POST.get('payment')
         invoice.owner = request.user
@@ -673,7 +713,8 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Záloha {invoice.iid} aktualizována.')
-        return redirect(self.ref)
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 class RecipientView(LoginRequiredMixin, View):
@@ -682,9 +723,11 @@ class RecipientView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/'
 
     def get(self, request):
-        self.ref = request.META['HTTP_REFERER']
-        context = {'ref': self.ref}
-        return render(request, self.template_name, context)
+        ref = request.META['HTTP_REFERER']
+        context = {'ref': ref}
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+        return response
 
     def post(self, request):
 
@@ -701,8 +744,9 @@ class RecipientView(LoginRequiredMixin, View):
         recipient.owner = request.user
         recipient.save()
         messages.success(
-            request, f'Odběratel <em>{recipient.name}</em> úspěšně přidán.')
-        return redirect(self.ref)
+            request, mark_safe(f'Odběratel <em>{recipient.name}</em> úspěšně přidán.'))
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 class UserProfileUpdateView(LoginRequiredMixin, View):
@@ -711,13 +755,14 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
     template_name = 'user/profile.html'
 
     def get(self, request, id):
-        self.ref = request.META['HTTP_REFERER']
+        ref = request.META['HTTP_REFERER']
         profile = UserProfile.objects.get(id=id, user=request.user)
         context = {'profile': profile,
                    'user': request.user,
-                   'ref': self.ref}
-
-        return render(request, self.template_name, context)
+                   'ref': ref}
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+        return response
 
     def post(self, request, id):
         user_profile = UserProfile.objects.get(id=id, user=request.user)
@@ -751,12 +796,13 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
                     request, 'Heslo změněno.')
             else:
                 messages.warning(request, 'Hesla se neshodují.')
-                return redirect(self.ref)
+                return redirect(ref)
 
         user_profile.save()
         messages.success(
             request, 'Vaše údaje byly aktualizovány.')
-        return redirect(self.ref)
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 class MailCopy(LoginRequiredMixin, View):
@@ -855,13 +901,16 @@ class RecipientUpdateView(LoginRequiredMixin, View):
     redirect_field_name = 'recipient/'
 
     def get(self, request, id):
-        self.ref = request.META['HTTP_REFERER']
+        ref = request.META['HTTP_REFERER']
         recipient = Recipient.objects.get(id=id, owner=request.user)
         context = {'recipient': recipient,
                    'user': request.user,
-                   'ref': self.ref}
+                   'ref': ref}
 
-        return render(request, self.template_name, context)
+        response = render(request, self.template_name, context)
+        response.set_cookie(key='ref', value=ref)
+
+        return response
 
     def post(self, request, id):
         recipient = Recipient.objects.get(id=id, owner=request.user)
@@ -870,7 +919,7 @@ class RecipientUpdateView(LoginRequiredMixin, View):
         recipient.town = request.POST['town']
         recipient.zipcode = request.POST['zipcode']
         recipient.state = request.POST['state']
-        recipient.ic = request.POST['ic']
+
         if request.POST['dic']:
             recipient.dic = request.POST['dic']
         if request.POST['ic']:
@@ -878,8 +927,9 @@ class RecipientUpdateView(LoginRequiredMixin, View):
 
         recipient.save()
         messages.success(
-            request, f'Odběratel <em>{recipient.name}</em> aktualizován.')
-        return redirect(self.ref)
+            request, mark_safe(f'Odběratel <em>{recipient.name}</em> aktualizován.'))
+        ref = request.COOKIES.get('ref')
+        return redirect(ref)
 
 
 def link_callback(uri, rel):

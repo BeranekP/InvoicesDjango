@@ -215,11 +215,9 @@
             </td>
             {% endlocalize %}
             <td class="" style="text-align: right;">
-              <strong>{{ invoice.amount|floatformat:2 }} {% ifequal invoice.currency 'CZK' %}Kč{% else %}
+              <strong>{{ invoice.amount|floatformat:2 }} {% if invoice.currency == 'CZK' %}Kč{% else %}
                   {{invoice.currency}}</strong>
-                  <br>
-                  <div class="d-none  d-lg-inline d-print-inline"><small>({{ invoice.amount|multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč)</small></div>
-                  {% endifequal %}
+                  {% endif %}
             </td>
 
             <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: center;">
@@ -233,9 +231,14 @@
           <tr id="hidden-{{invoice.id}}" class='hidden'>
             <td colspan=5>
                 <ul>
-                  <li class="d-print-none"><strong>Vytvořeno:</strong> <em>{{ invoice.date|date:"d. m. Y"}}</em></li>
+                  <li><strong>Vytvořeno:</strong> <em>{{ invoice.date|date:"d. m. Y"}}</em></li>
                   <li><strong>Popis</strong>: <em>{{invoice.description}}</em></li>
                   <li><strong>Platba</strong>: <em>{{invoice.payment}}</em></li>
+                  {% if invoice.paid and invoice.currency != 'CZK' %}
+                    <li><em>Pozn. {{ invoice.amount |multiply:invoice.paid_exchange_rate.rate|divide:invoice.paid_exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.paid_exchange_rate.date}}: {{invoice.paid_exchange_rate.rate|floatformat:3}} Kč/{{invoice.paid_exchange_rate.amount}} {{invoice.currency}}</em></li>
+                  {% elif invoice.currency != 'CZK' %}
+                    <li><em>Pozn. {{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}}</em></li>
+                  {% endif %}
                 </ul>
             </td>
           </tr>

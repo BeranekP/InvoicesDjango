@@ -1,5 +1,17 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}{% load zipcode %}
+{% block style %}
+<style>
+body{
+  background: #343a40;
+  color: #f8f9fa;
+}
+.form-control{
+background-color: #f1f1f1;
+}
+
+</style>
+{% endblock %}
 
   {% block title %} Invoice Factory - Editovat odběratele {% endblock %}
   {% block content %}
@@ -75,11 +87,11 @@
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"
         >
-          <a href="{{ref}}" class="btn btn-warning mt-5 mr-5 w-25"
+          <a href="{{ref}}" class="btn btn-outline-light mt-5 mr-5 w-25"
             >Zpět</a
           >
           <input
-            class="btn btn-success mt-5 w-25"
+            class="btn btn-outline-success mt-5 w-25"
             type="submit"
             value="Uložit"
           />

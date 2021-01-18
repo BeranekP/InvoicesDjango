@@ -66,6 +66,19 @@
                 <a class="dropdown-item" href="/recipient/create">Odběratel</a>
               </div>
             </li>
+            <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Fomuláře
+              </a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#" onclick=printPage(0,"invoice")> 
+                    <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Faktura
+                </a> 
+                <a class="dropdown-item" href="#" onclick=printPage(0,"advance")> 
+                     <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Záloha
+                </a> 
+              </div>
+            </li>
             
           </ul>
           <ul class="navbar-nav">
@@ -93,7 +106,7 @@
                   {% endif %}
                   />
                   <label for="mailcopy" class="custom-control-label align-self-start"
-                  >Faktury e-mailem</label
+                  >Faktury e-mailem <img src="{% static 'ico/baseline_attach_email_black_18dp.png' %}" alt=""></label
                   >
                 </form>
                 </div>
@@ -107,16 +120,21 @@
         </div>
       </nav>
     </div>
-    <div class="container mt-5 overview" >
-      <hr />
+    <div>
       {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5" role="alert">
+      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 fixed-top alert-dismissible fade show" role="alert">
             <p>{{ message }}</p>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
       </div>
       {% endfor %}
-      <div class="d-flex justify-content-between align-items-center mt-5 overview" >
+    </div>
+    <div class="container-fluid d-flex justify-content-between align-items-center mt-5 overview" >
+      <hr />
+      <div class="w-75 d-flex justify-content-between align-items-center mt-5 overview" >
         <h2 class="d-none d-lg-block d-print-block">Odběratelé</h2>
-        <form action="./" method="GET" id="year" class="d-print-none">
+        <form action="./" method="GET" id="year" class="d-print-none d-block">
           <select
             name="yr"
             onchange="yearSubmit()"
@@ -136,7 +154,7 @@
       </div>
       <hr />
     </div>
-    <div class="container">
+    <div class="container-fluid">
       <table class="table mt-2">
         <thead class="thead-dark">
           <tr>
@@ -254,6 +272,9 @@
       }
       };
       
+      function printPage(val, type){
+        window.open('/print/?sign='+ val + '&asset='+ type)
+      }
     </script>
     <script src="{% static 'js/mailCopy.js' %}"></script>
     {% endblock %}

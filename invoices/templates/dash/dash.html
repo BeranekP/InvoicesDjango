@@ -64,7 +64,19 @@
                 <a class="dropdown-item" href="/recipient/create">Odběratel</a>
               </div>
             </li>
-            
+            <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Fomuláře
+              </a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#" onclick=printPage(0,"invoice")> 
+                    <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Faktura
+                </a> 
+                <a class="dropdown-item" href="#" onclick=printPage(0,"advance")> 
+                     <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Záloha
+                </a> 
+              </div>
+            </li>
           </ul>
           <ul class="navbar-nav">
             
@@ -91,13 +103,16 @@
                   {% endif %}
                   />
                   <label for="mailcopy" class="custom-control-label align-self-start"
-                  >Faktury e-mailem</label
+                  >Faktury e-mailem <img src="{% static 'ico/baseline_attach_email_black_18dp.png' %}" alt=""></label
                   >
                 </form>
-                </div>
                 
+                </div>
+
+              
               </div>
-            </li>
+            
+            
             <li class="nav-item">
               <a class="nav-link" href="../logout">Odhlásit se</a>
             </li>
@@ -105,32 +120,42 @@
         </div>
       </nav>
 </div>
-<div class="container">
-  {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 d-print-none" role="alert">
+<div>
+      {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 fixed-top alert-dismissible fade show" role="alert">
             <p>{{ message }}</p>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
       </div>
-  {% endfor %}
-  <div class="row d-flex justify-content-center">
-      <div class='history col-md-8 col-sm-12'> 
+      {% endfor %}
+</div>
+<div class="container-fluid justify-content-center">
+  <div class="row d-flex justify-content-around mt-3">
+      <div class='history col-md-8 col-sm-12 '> 
           <ul class='last'>
               <h6>Poslední faktury</h6>
               {% for invoice in data|slice:":3" %}
-                      <a href="/invoices/detail/{{invoice.id}}"><li><strong>{{ invoice.iid|unlocalize }}</strong>, {{ invoice.recipient.name }}, ...{{ invoice.description|custom_truncate:35 }}..., {{ invoice.amount }} {{ invoice.currency }}</li></a>
-
+                <li class='d-flex align-items-center '>
+                      <a href="/invoices/detail/{{invoice.id}}" class='w-100'><div class="d-sm-block d-lg-inline"><strong>{{ invoice.iid|unlocalize }}</strong></div> <div class="d-sm-block d-lg-inline">{{ invoice.recipient.name }} </div> <em class="text-secondary">{{ invoice.description|custom_truncate:10 }}</em> <div class="d-sm-block d-flex float-right">{{ invoice.amount }} {{ invoice.currency }}</div></a>
+                </li>
               {% endfor %}
           </ul>
       </div>
-      <div class='history col-md-3 col-sm-12'>
-          <div>
-              <h6 >Průběžný součet {% now "Y" %}</h6>
-              <h2 class="display-6 text-center">{{total|safe}} Kč</h2>
+      <div class='history col-md-3 col-sm-12 d-flex justify-content-center align-items-center'>
+          <div class='pt-3'>
+              <h6 class="w-100">Průběžný součet {% now "Y" %}</h6>
+              <h2 class="display-6 text-center w-100">{{total|safe}} Kč</h2>
           </div> 
       </div>
   </div>
-
-  <div id="chart-container w-100" class="row">
-    <canvas class='px-3 py-5' id="myChart" width="100"></canvas>
+  <div class="row justify-content-around ">
+    <div id="chart-container" class="col-md-8 col-sm-12 ">
+      <canvas id="myChart" class=""></canvas>
+    </div>
+    <div  class="col-md-3 col-sm-12 ml-2">
+    
+    </div>
   </div>
 </div>
 
@@ -149,6 +174,8 @@ function getRandomColor() {
 
 
 var ctx = document.getElementById('myChart').getContext('2d');
+var fontSize = 12;
+var year = new Date().getFullYear()
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -159,6 +186,7 @@ var myChart = new Chart(ctx, {
             {label: {{yr|safe}} + ' - Částka',
             data: [{% for v in dataset.amount %} JSON.parse({{v|safe}}),  {% endfor %}],
             backgroundColor: getRandomColor(),
+            hidden: {{yr|safe}} == year ? false: true,
             borderWidth: 1},
             
             {%endfor%}
@@ -171,7 +199,9 @@ var myChart = new Chart(ctx, {
             type: 'line',
             lineTension: 0,
             borderJoinStyle: "round",
+            hidden: {{yr|safe}} == year ? false: true,
             fill: false},
+            
             {%endfor%}
         ]
     },
@@ -180,14 +210,14 @@ var myChart = new Chart(ctx, {
             yAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    fontSize:18,
+                    fontSize:fontSize,
                     fontStyle: "bold",
                 }
             }],
             xAxes: [{
                 ticks: {
                     beginAtZero: true,
-                    fontSize:18,
+                    fontSize:fontSize,
                     fontStyle: "bold",
                 }
             }],
@@ -195,20 +225,23 @@ var myChart = new Chart(ctx, {
         },
         legend: {
                 labels: {
-                fontSize:18,
+                fontSize:fontSize,
                 fontStyle: "bold",
                 }
             },
         tooltips:{
-                bodyFontSize:18,
+                bodyFontSize:fontSize,
                 fontStyle: "bold",
         },
         responsive: true,
-        maintainAspectRatio: true,
+        maintainAspectRatio: false,
         devicePixelRatio:2,
 
     }
 });
+function printPage(val, type){
+        window.open('/print/?sign='+ val + '&asset='+ type)
+      }
 </script>
 <script src="{% static 'js/mailCopy.js' %}"></script>
 {% endblock %}

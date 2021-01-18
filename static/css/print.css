@@ -1,0 +1,55 @@
+@media print {
+  @page {
+    size: A4;
+    /* DIN A4 standard, Europe */
+    margin: 10mm 15mm 20mm 15mm;
+  }
+
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+    /*font-size: 11px; */
+    background: #fff;
+    overflow: visible;
+    padding-top: 0mm;
+    padding-bottom: 0mm;
+  }
+
+  #stamp {
+    position: fixed;
+    left: 85vw;
+    bottom: 8vh;
+  }
+
+  #stamp img {
+    position: relative;
+    display: block;
+    margin-left: 0vw;
+    margin-right: auto;
+    margin-bottom: -2vh;
+    width: 50%;
+  }
+
+  a,
+  a:link,
+  a:visited,
+  a:hover,
+  a:active {
+    text-decoration: none;
+  }
+
+  #footer {
+    position: fixed;
+    left: 0vw;
+    bottom: 0;
+    font-size: 10;
+    font-style: italic;
+  }
+
+  .overview {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+
+}

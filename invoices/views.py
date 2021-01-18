@@ -971,40 +971,55 @@ class PrintInvoiceView(LoginRequiredMixin, View):
     login_url = '/'
     redirect_field_name = '/'
 
-    def get(self, request, id):
+    def get(self, request, id=None):
         template = get_template(self.template_name)
-        invoice = Invoice.objects.get(id=id, owner=request.user)
         sign = request.GET['sign']
-        if invoice.has_items:
-            items = InvoiceItem.objects.filter(invoice=invoice)
+        try:
+            asset = request.GET['asset']
+        except:
+            asset = None
+        name = "faktura"
+        if asset == 'advance':
+            name = 'záloha'
+        if id:
+            invoice = Invoice.objects.get(id=id, owner=request.user)
+            if invoice.has_items:
+                items = InvoiceItem.objects.filter(invoice=invoice)
+            else:
+                items = []
+
+            user = UserProfile.objects.get(user=invoice.owner)
+            generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
+                                          message=f'{name.upper()} {invoice.iid}', due_date=invoice.datedue)
+            iban = generator._account[4:-1]
+            img = generator.make_image()
+            svg_output = os.path.join(os.path.dirname(
+                user.logo.name), 'conversionQR.svg')
+            img.save(svg_output)
+            user_qr = svg2rlg(svg_output)
+            qr_png = os.path.join(os.path.dirname(
+                user.logo.name), 'conversionQR.png')
+            renderPM.drawToFile(user_qr, qr_png, fmt="PNG")
+
         else:
+            user = UserProfile.objects.get(user=request.user)
+            invoice = Invoice()
+            invoice.iid = ''
+            invoice.payment = ''
+            invoice.date = None
+            invoice.datedue = None
+            qr_png = None
+            iban = None
             items = []
 
-        user = UserProfile.objects.get(user=invoice.owner)
-        generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
-                                      message=f'FAKTURA {invoice.iid}', due_date=invoice.datedue)
-        iban = generator._account[4:-1]
-        img = generator.make_image()
-
-        logo = user.logo.name
-        with open(logo) as l:
-            user_logo = l.read()
-
-        svg_output = os.path.join(os.path.dirname(
-            user.logo.name), 'conversionQR.svg')
-        img.save(svg_output)
-
         user_logo_png = svg2rlg(user.logo.name)
-        user_qr = svg2rlg(svg_output)
-        qr_png = os.path.join(os.path.dirname(
-            user.logo.name), 'conversionQR.png')
+
         logo_png = os.path.join(
             os.path.dirname(user.logo.name), 'conversionLG.png')
         renderPM.drawToFile(user_logo_png, logo_png, fmt="PNG")
-        renderPM.drawToFile(user_qr, qr_png, fmt="PNG")
 
         context = {"invoice": invoice, "user": user, 'logo': logo_png,
-                   "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': "Faktura"}
+                   "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': name.title()}
 
         html = template.render(context)
         result = BytesIO()
@@ -1014,7 +1029,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
         if not pdf.err:
             response = HttpResponse(
                 result.getvalue(), content_type='application/pdf')
-            response['Content-Disposition'] = f'filename="{invoice.iid}.pdf"'
+            response['Content-Disposition'] = f'filename="{invoice.iid if invoice.iid else name}.pdf"'
             if user.mailcopy and user.email:
                 bytes = result.getvalue()
                 encoded_file = base64.b64encode(bytes).decode()
@@ -1023,9 +1038,9 @@ class PrintInvoiceView(LoginRequiredMixin, View):
                 message = Mail(
                     from_email=EMAIL,
                     to_emails=EMAIL,
-                    subject=f'Faktura č. {invoice.iid}',
+                    subject=f'{name.title()} č. {invoice.iid}',
                     html_content=f'''
-                    Faktura za provedené služby je přílohou tohoto emailu.
+                    {name.title()} za provedené služby je přílohou tohoto emailu.
                     <table style='width:75%;border: 1px solid black; margin-top:10px;border-collapse:collapse;'>
                         <tr style="padding: 5px 10px">
                             <td>
@@ -1052,7 +1067,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
                 )
                 attachedFile = Attachment(
                     FileContent(encoded_file),
-                    FileName(f"Faktura_{invoice.iid}.pdf"),
+                    FileName(f"{name.title()}_{invoice.iid}.pdf"),
                     FileType('application/pdf'),
                     Disposition('attachment')
                 )

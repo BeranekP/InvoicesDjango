@@ -59,6 +59,19 @@
                 <a class="dropdown-item" href="/recipient/create">Odběratel</a>
               </div>
             </li>
+            <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Fomuláře
+              </a>
+              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="#" onclick=printBlankPage(0,"invoice")> 
+                    <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Faktura
+                </a> 
+                <a class="dropdown-item" href="#" onclick=printBlankPage(0,"advance")> 
+                     <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Záloha
+                </a> 
+              </div>
+            </li>
             <li class="nav-item font-weight-bold">
               <a
                 class="nav-link"
@@ -83,6 +96,7 @@
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item disabled" href="#">{{user.name}}</a>
+                <a class="dropdown-item disabled text-info" href="#">{{user.email}}</a>
                 <div class="dropdown-divider"></div>
                 <a class=" mx-2 dropdown-item" href="/users/edit/{{user.id}}">Profil</a>
                 <div class="mx-2 dropdown-item custom-control custom-checkbox">
@@ -100,7 +114,7 @@
                   {% endif %}
                   />
                   <label for="mailcopy" class="custom-control-label align-self-start"
-                  >Faktury e-mailem</label
+                  >Faktury e-mailem <img src="{% static 'ico/baseline_attach_email_black_18dp.png' %}" alt=""></label
                   >
                 </form>
                 </div>
@@ -113,11 +127,16 @@
           </ul>
         </div>
       </nav>
+    <div>
       {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 d-print-none" role="alert">
+      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 fixed-top alert-dismissible fade show" role="alert">
             <p>{{ message }}</p>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
       </div>
       {% endfor %}
+    </div>
       <div class="jumbotron w-100 mb-0 pb-5 overflow-hidden">
         <div class="container w-100 pt-5">
           <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>
@@ -284,7 +303,7 @@
           <hr class="my-4" />
 
           <div class="row">
-            <div class="col-lg-9 d-flex align-items-center">
+            <div class="col-lg-9 d-flex align-items-center text-center">
               <h2 class="mt-5">
                 Celkem k úhradě:
                 <span>
@@ -354,6 +373,9 @@
         sign = document.getElementById('sign')
         id = {{invoice.pk}}
         window.open('../../print/'+ id + '/?sign='+ val)
+      }
+      function printBlankPage(val, type){
+        window.open('/print/?sign='+ val + '&asset='+ type)
       }
     </script>
     <script src="{% static 'js/mailCopy.js' %}"></script>

@@ -1,5 +1,17 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}
+{% block style %}
+<style>
+body{
+  background: #343a40;
+  color: #f8f9fa;
+}
+.form-control{
+background-color: #f1f1f1;
+}
+
+</style>
+{% endblock %}
     {% block title %}
     Invoice Factory - Nová {{type}}
     {% endblock %} 
@@ -27,7 +39,7 @@
               {% endfor %}
             </select>
             <a
-              class="btn btn-primary ml-1"
+              class="btn btn-outline-info ml-1"
               href="../../recipient/create/"
               title="Přidat odběratele"
               >+</a
@@ -149,11 +161,11 @@
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"
         >
-          <a href="{{ref}}" class="btn btn-warning mr-5 mt-sm-1 mt-md-5 w-sm-50 w-md-25 btn-lg"
+          <a href="{{ref}}" class="btn btn-outline-light mr-5 mt-sm-1 mt-md-5 w-sm-50 w-md-25 btn-lg"
             >Zpět</a
           >
           <input
-            class="btn btn-success mt-sm-1 mt-md-5 w-md-25 w-sm-50 btn-lg"
+            class="btn btn-outline-success mt-sm-1 mt-md-5 w-md-25 w-sm-50 btn-lg"
             type="submit"
             value="Vystavit"
           />

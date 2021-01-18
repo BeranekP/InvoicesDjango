@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     {% localize off %}
-    <title>Tisk: {{type}} {{invoice.iid}}</title>
+    <title>Tisk: {{type}} {% if invoice %}{{invoice.iid}}{% endif %}</title>
     {% endlocalize %}
     <style>
     
@@ -248,7 +248,7 @@
 </head>
 <body>
 {% localize off %}
-    <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>
+    <h2 class="display-6">{{type}} {% if invoice %}č. {{invoice.iid}}{% endif %}</h2>
         <table class = 'main'>
             <tbody>
                 <tr>
@@ -377,16 +377,18 @@
                
                  <span class='regular'> Celkem k úhradě: &nbsp;</span>
                       <span id="total">
+                      {% if invoice.amount %}
                         {{invoice.amount|floatformat:2}} 
                         {% ifequal invoice.currency 'CZK' %}
                         Kč
+                     
                       </span>
                         {% else %}
-                      
                         {{invoice.currency}}
-                      </span>
+                      </span>                  
                         <div class='conversion'>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
                       {% endifequal %}
+                      {% endif %}
                 
               </td>
               <td width="35%"> 

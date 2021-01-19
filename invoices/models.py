@@ -61,9 +61,12 @@ class UserProfile(models.Model):
 
 
 class Recipient(models.Model):
-    name = models.CharField(max_length=120, default='')
-    street = models.CharField(max_length=120, default='')
-    town = models.CharField(max_length=120, default='')
+    name = models.CharField(max_length=120, null=True, blank=True)
+    surname = models.CharField(max_length=120, null=True, blank=True)
+    form = models.CharField(max_length=10, choices=[
+                            ('person', 'person'), ('company', 'company')], null=True, blank=True)
+    street = models.CharField(max_length=120, null=True, blank=True)
+    town = models.CharField(max_length=120, null=True, blank=True)
     zipcode = models.IntegerField(default=00000)
     state = models.CharField(max_length=120, default='Česká republika')
     ic = models.CharField(max_length=20, default=None,
@@ -74,7 +77,7 @@ class Recipient(models.Model):
         User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
-        return ', '.join([self.name, self.street, self.town, str(self.zipcode)])
+        return ', '.join([self.surname, self.name, self.street, self.town, str(self.zipcode)])
 
 
 class Advance(models.Model):

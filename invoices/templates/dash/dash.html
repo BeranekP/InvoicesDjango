@@ -137,7 +137,7 @@
               <h6>Poslední faktury</h6>
               {% for invoice in data|slice:":3" %}
                 <li class='d-flex align-items-center '>
-                      <a href="/invoices/detail/{{invoice.id}}" class='w-100'><div class="d-sm-block d-lg-inline"><strong>{{ invoice.iid|unlocalize }}</strong></div> <div class="d-sm-block d-lg-inline">{{ invoice.recipient.name }} </div> <em class="text-secondary">{{ invoice.description|custom_truncate:10 }}</em> <div class="d-sm-block d-flex float-right">{{ invoice.amount }} {{ invoice.currency }}</div></a>
+                      <a href="/invoices/detail/{{invoice.id}}" class='w-100'><div class="d-sm-block d-lg-inline"><strong>{{ invoice.iid|unlocalize }}</strong></div> <div class="d-sm-block d-lg-inline">{{ invoice.recipient.surname }} {{ invoice.recipient.name }} </div> <em class="text-secondary">{{ invoice.description|custom_truncate:10 }}</em> <div class="d-sm-block d-flex float-right">{{ invoice.amount }} {{ invoice.currency }}</div></a>
                 </li>
               {% endfor %}
           </ul>

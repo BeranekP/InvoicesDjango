@@ -34,7 +34,7 @@ background-color: #f1f1f1;
               <option value="" disabled selected>Vyberte odběratele</option>
               {% for recipient in recipients %}
               <option value="{{recipient.id}}">
-                {{recipient}}
+                {{recipient.surname}} {{recipient.name}} - {{recipient.street}}, {{recipient.zipcode}}, {{recipient.town}}
               </option>
               {% endfor %}
             </select>

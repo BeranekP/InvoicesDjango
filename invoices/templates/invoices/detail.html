@@ -173,7 +173,7 @@
             <div class="col-sm-12 col-lg-6">
               <h5 class="text-center">Odběratel:</h5>
               <p class="lead text-center">
-                {{invoice.recipient.name}} <br />
+                {{invoice.recipient.name}} {{invoice.recipient.surname}}<br />
                 {{invoice.recipient.street}} <br />
                 {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
                 {% ifnotequal invoice.recipient.state 'Česká republika'%}

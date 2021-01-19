@@ -278,7 +278,7 @@
                     <div>
                       <h5 class="title">Odběratel:</h5>
                       <p>
-                        {{invoice.recipient.name}} <br />
+                        {{invoice.recipient.name}}{{invoice.recipient.surname}}<br />
                         {{invoice.recipient.street}} <br />
                         {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
                         {% ifnotequal invoice.recipient.state 'Česká republika'%}

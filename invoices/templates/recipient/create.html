@@ -17,16 +17,40 @@ background-color: #f1f1f1;
   <h2 class="mt-2, pb-5">Nový odběratel</h2>
   <form action="./" method="POST">
     {% csrf_token %}
-    <div class="form-group">
-      <label for="recipientInput">Jméno</label>
-      <input
-        type="text"
-        class="form-control"
-        id="recipientInput"
-        name="name"
-        placeholder="John Doe"
-        required
-      />
+    <div class="mb-3">
+      <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="form" id="inlineRadio1" value="person" checked>
+      <label class="form-check-label" for="inlineRadio1" >Fyzická osoba</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" name="form" id="inlineRadio2" value="company">
+      <label class="form-check-label" for="inlineRadio2">Firma</label>
+    </div>
+    </div>
+    <div class="form-group row">
+     
+      <div class='col-sm-12 col-md-6' id="person">
+        <label for="recipientInput">Jméno</label>
+        <input
+          type="text"
+          class="form-control"
+          id="recipientInput"
+          name="name"
+          placeholder="John"
+        />
+      </div>
+      
+      <div class='col-sm-12 col-lg-6' id="company">
+        <label for="recipientSurname" id ="surname">Příjmení</label>
+        <input
+          type="text"
+          class="form-control"
+          id="recipientSurname"
+          name="surname"
+          placeholder="Doe"
+          required
+        />
+      </div>
     </div>
     <div class="form-group">
       <label for="street">Ulice a čp.</label>
@@ -95,3 +119,39 @@ background-color: #f1f1f1;
   </form>
 </div>
 {% endblock %}
+{% block scripts %}
+<script>
+let person = document.getElementById('inlineRadio1');
+let company = document.getElementById('inlineRadio2');
+company.addEventListener('change',()=>{
+  if (company.checked){
+    document.getElementById('person').classList.add('d-none');
+    document.getElementById('surname').innerHTML = "Název";
+    document.getElementById('company').classList.remove('col-lg-6');
+    document.getElementById('company').classList.add('col-lg-12');
+    document.getElementById('recipientSurname').placeholder = "Firma s.r.o";
+  }
+  else{
+    document.getElementById('person').classList.remove('d-none')
+  }
+ 
+})
+person.addEventListener('change',()=>{
+  if (person.checked){
+    document.getElementById('person').classList.remove('d-none');
+    document.getElementById('surname').innerHTML = "Příjmení";
+    document.getElementById('company').classList.remove('col-lg-12');
+    document.getElementById('company').classList.add('col-lg-6');
+    document.getElementById('recipientSurname').placeholder = "Doe";
+    
+    
+  }
+  else{
+    document.getElementById('person').classList.add('d-none')
+    
+  }
+ 
+})
+</script>
+{% endblock %}
+

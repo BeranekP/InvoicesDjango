@@ -168,7 +168,7 @@ class InvoiceView(LoginRequiredMixin, View):
         dt = timedelta(days=14)
         rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
         recipients = Recipient.objects.filter(
-            owner=request.user).order_by('name')
+            owner=request.user).order_by('surname')
         invoices_id = Invoice.objects.filter(
             owner=request.user).values_list('iid', flat=True)
         if invoices_id and max(invoices_id) // 10000 == d.year:
@@ -266,7 +266,7 @@ class AdvanceView(LoginRequiredMixin, View):
         dt = timedelta(days=14)
         rates = get_exchange_rates(d.strftime('%d.%m.%Y'))
         recipients = Recipient.objects.filter(
-            owner=request.user).order_by('name')
+            owner=request.user).order_by('surname')
         invoices_id = Advance.objects.filter(
             owner=request.user).values_list('iid', flat=True)
         if invoices_id and max(invoices_id) // 10000 == d.year:
@@ -733,6 +733,8 @@ class RecipientView(LoginRequiredMixin, View):
 
         recipient = Recipient()
         recipient.name = request.POST.get('name')
+        recipient.surname = request.POST.get('surname')
+        recipient.form = request.POST.get('form')
         recipient.street = request.POST.get('street')
         recipient.town = request.POST.get('town')
         recipient.zipcode = request.POST.get('zipcode')
@@ -848,7 +850,7 @@ class RecipientOverView(LoginRequiredMixin, View):
             logo = None
 
         recipients = Recipient.objects.filter(
-            owner=request.user).order_by('name')
+            owner=request.user).order_by('surname')
 
         years = []
         try:
@@ -915,6 +917,8 @@ class RecipientUpdateView(LoginRequiredMixin, View):
     def post(self, request, id):
         recipient = Recipient.objects.get(id=id, owner=request.user)
         recipient.name = request.POST['name']
+        recipient.surname = request.POST.get('surname')
+        recipient.form = request.POST.get('form')
         recipient.street = request.POST['street']
         recipient.town = request.POST['town']
         recipient.zipcode = request.POST['zipcode']
@@ -927,7 +931,7 @@ class RecipientUpdateView(LoginRequiredMixin, View):
 
         recipient.save()
         messages.success(
-            request, mark_safe(f'Odběratel <em>{recipient.name}</em> aktualizován.'))
+            request, mark_safe(f'Odběratel <em>{recipient.surname}{recipient.name}</em> aktualizován.'))
         ref = request.COOKIES.get('ref')
         return redirect(ref)
 

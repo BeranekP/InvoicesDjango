@@ -1,3 +1,5 @@
+from invoices.ares import ARES
+import json
 from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse
@@ -1153,3 +1155,17 @@ class PrintAdvanceView(LoginRequiredMixin, View):
             return response
 
         return None
+
+
+class CheckICOView(LoginRequiredMixin, View):
+    login_url = '/'
+    redirect_field_name = '/'
+
+    def get(self, request):
+        ic = request.GET['ic']
+        validator = ARES(ic=ic)
+        response = validator.check_ic()
+        return HttpResponse(
+            json.dumps(response),
+            content_type='application/javascript; charset=utf8'
+        )

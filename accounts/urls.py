@@ -54,6 +54,7 @@ urlpatterns = [
     path('dash/', views.DashView.as_view()),
     path('mailcopy/', views.MailCopy.as_view()),
     path('print/', views.PrintInvoiceView.as_view()),
+    path('checkic/', views.CheckICOView.as_view()),
     path('', views.HomeView.as_view()),
     path('robots.txt', views.robots),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

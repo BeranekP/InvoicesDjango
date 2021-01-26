@@ -1,5 +1,4 @@
-{% extends "../base/base.html" %} {% load i18n %} {% load l10n %} {% load static
-%}{% load zipcode %} 
+{% extends "../base/base.html" %} {% load i18n %} {% load l10n %} {% load static%}{% load zipcode %} 
 {% block style %}
 <style>
 body{
@@ -29,7 +28,7 @@ background-color: #f1f1f1;
     </div>
     <div class="form-group row">
      
-      <div class='col-sm-12 col-md-6' id="person">
+      <div class='col-sm-12 col-lg-6' id="person">
         <label for="recipientInput">Jméno</label>
         <input
           type="text"
@@ -38,6 +37,8 @@ background-color: #f1f1f1;
           name="name"
           placeholder="John"
         />
+        <div class="text-primary ares" id='name-ares'>
+        </div>
       </div>
       
       <div class='col-sm-12 col-lg-6' id="company">
@@ -50,6 +51,8 @@ background-color: #f1f1f1;
           placeholder="Doe"
           required
         />
+        <div class="text-primary ares" id='surname-ares'>
+        </div>
       </div>
     </div>
     <div class="form-group">
@@ -62,6 +65,8 @@ background-color: #f1f1f1;
         placeholder="Street 22"
         required
       />
+      <div class="text-primary ares" id='street-ares'>
+      </div>
     </div>
     <div class="form-group">
       <label for="town">Město</label>
@@ -73,6 +78,8 @@ background-color: #f1f1f1;
         placeholder="London"
         required
       />
+      <div class="text-primary ares" id='town-ares'>
+      </div>
     </div>
     <div class="form-group">
       <label for="zipcode">PSČ</label>
@@ -85,6 +92,8 @@ background-color: #f1f1f1;
         step="1"
         required
       />
+      <div class="text-primary ares" id='zipcode-ares'>
+      </div>
     </div>
     <div class="form-group">
       <label for="state">Stát</label>
@@ -101,6 +110,8 @@ background-color: #f1f1f1;
       <div class="col-6">
         <label for="icInput">IČ</label>
         <input type="text" class="form-control" id="icInput" name="ic" />
+        <div class="text-primary" id='ic-ares'>
+        </div>
       </div>
       <div class="col-6">
         <label for="dicInput">DIČ</label>
@@ -152,6 +163,9 @@ person.addEventListener('change',()=>{
   }
  
 })
+</script>
+<script src= "{% static 'js/ares.js' %}">
+  
 </script>
 {% endblock %}
 

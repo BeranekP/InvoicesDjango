@@ -26,8 +26,8 @@ class ARES():
                 'street': self.subject_street, 'house_no': self.subject_house_no, 'zipcode': self.subject_zipcode, 'pf': self.subject_pf}
                 or Not found
         '''
-        response = requests.get(
-            'https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=' + self.ic)
+        url = 'https://wwwinfo.mfcr.cz/cgi-bin/ares/darv_std.cgi?ico=' + self.ic
+        response = requests.get(url)
         xml = ET.fromstring(response.content.decode('utf-8'))
         tree = ET.ElementTree(xml)
         root = tree.getroot()

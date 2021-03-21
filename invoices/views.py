@@ -253,8 +253,7 @@ class InvoiceView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Faktura {invoice.iid} úspěšně vytvořena.')
-        ref = request.COOKIES.get('ref')
-        return redirect(ref)
+        return redirect('/invoices/')
 
 
 class AdvanceView(LoginRequiredMixin, View):
@@ -328,8 +327,7 @@ class AdvanceView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Záloha {invoice.iid} úspěšně vytvořena.')
-        ref = request.COOKIES.get('ref')
-        return redirect(ref)
+        return redirect('/advance/')
 
 
 class InvoiceDetailView(LoginRequiredMixin, View):
@@ -507,12 +505,11 @@ class InvoiceDeleteView(LoginRequiredMixin, View):
     redirect_field_name = 'invoices/'
 
     def post(self, request, id):
-        ref = request.META['HTTP_REFERER']
         invoice = Invoice.objects.filter(
             owner=request.user).get(id=id)
         invoice.delete()
         messages.warning(request, f'Faktura {invoice.iid} odstraněna.')
-        return redirect(ref)
+        return redirect('/invoices/')
 
 
 class AdvanceDeleteView(LoginRequiredMixin, View):
@@ -520,12 +517,11 @@ class AdvanceDeleteView(LoginRequiredMixin, View):
     redirect_field_name = 'advances/'
 
     def post(self, request, id):
-        ref = request.META['HTTP_REFERER']
         invoice = Advance.objects.filter(
             owner=request.user).get(id=id)
         invoice.delete()
         messages.warning(request, f'Záloha {invoice.iid} odstraněna.')
-        return redirect(ref)
+        return redirect('/advance/')
 
 
 class InvoiceUpdateView(LoginRequiredMixin, View):
@@ -626,8 +622,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Faktura {invoice.iid} aktualizována.')
-        ref = request.COOKIES.get('ref')
-        return redirect(ref)
+        return redirect('/invoices/')
 
 
 class AdvanceUpdateView(LoginRequiredMixin, View):
@@ -715,8 +710,8 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
             except:
                 pass
         messages.success(request, f'Záloha {invoice.iid} aktualizována.')
-        ref = request.COOKIES.get('ref')
-        return redirect(ref)
+
+        return redirect('/advance/')
 
 
 class RecipientView(LoginRequiredMixin, View):

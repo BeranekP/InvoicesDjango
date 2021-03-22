@@ -40,8 +40,6 @@ urlpatterns = [
             views.RecipientUpdateView.as_view()),
     re_path(r'^invoices/print/(?P<id>\w+)/$',
             views.PrintInvoiceView.as_view()),
-    re_path(r'^advance/print/(?P<id>\w+)/$',
-            views.PrintAdvanceView.as_view()),
     path('invoices/create/', views.InvoiceView.as_view()),
     path('advance/create/', views.AdvanceView.as_view()),
     path('recipient/create/', views.RecipientView.as_view()),

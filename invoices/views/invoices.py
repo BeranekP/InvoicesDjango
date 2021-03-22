@@ -181,7 +181,7 @@ class InvoiceOverView(LoginRequiredMixin, View):
                    'total': total,
                    'years': sorted(list(set(years)), reverse=True),
                    'selected_year': str(yr),
-                   'type': 'Přehled faktur'}
+                   'type': 'faktura'}
         return render(request, self.template_name, context)
 
 

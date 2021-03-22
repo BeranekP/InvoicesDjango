@@ -149,7 +149,13 @@
       <hr />
       
       <div class="w-75 d-flex justify-content-between align-items-center mt-5 overview" >
-        <h2 class="d-none d-lg-block d-print-block">{{type}}</h2>
+        <h2 class="d-none d-lg-block d-print-block">
+          {% if type == 'faktura'%}
+              Přehled faktur
+          {% else %}
+              Přehled záloh
+          {% endif %}
+        </h2>
         <form action="./" method="GET" id="year" class="d-print-none">
           <select
             name="yr"
@@ -299,8 +305,8 @@
                     {label: 'Upravit', icon: "{% static 'ico/baseline_build_white_18dp.png' %}", onClick: () => {window.location.href='./edit/'.concat(id)}},
                     {label: 'Odstranit', icon: "{% static 'ico/baseline_delete_forever_white_18dp.png' %}", onClick: () => {deleteInvoice(id);$('#delete-modal').modal('show');}},
                     {type: 'seperator'},
-                    {label: 'PDF', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.open('./print/'.concat(id,'/?sign=0'))}},
-                    {label: 'PDF s podpisem', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.open('./print/'.concat(id,'/?sign=1'))}},
+                    {label: 'PDF', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.open('/invoices/print/'.concat(id,'/?sign=0', '&asset=', "{{type}}"))}},
+                    {label: 'PDF s podpisem', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.open('/invoices/print/'.concat(id,'/?sign=1', '&asset=', "{{type}}"))}},
                     
                 ]
                 

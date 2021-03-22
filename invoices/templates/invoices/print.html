@@ -278,7 +278,7 @@
                     <div>
                       <h5 class="title">Odběratel:</h5>
                       <p>
-                        {{invoice.recipient.name}}{{invoice.recipient.surname}}<br />
+                        {{invoice.recipient.name}} {{invoice.recipient.surname}}<br />
                         {{invoice.recipient.street}} <br />
                         {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
                         {% ifnotequal invoice.recipient.state 'Česká republika'%}
@@ -368,7 +368,7 @@
             <div class="placeholder">
             &nbsp;
             </div>
-          {% endif %}
+        {% endif %}
 
         <table class = 'main'>
           <tbody>

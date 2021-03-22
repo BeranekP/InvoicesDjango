@@ -1,4 +1,6 @@
 from ._modules import *
+from .utils import link_callback
+import cairosvg
 
 
 class PrintInvoiceView(LoginRequiredMixin, View):
@@ -13,11 +15,18 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             asset = request.GET['asset']
         except:
             asset = None
-        name = "faktura"
-        if asset == 'advance':
+
+        if asset == 'advance' or asset.lower() == 'záloha':
             name = 'záloha'
+        else:
+            name = "faktura"
+
         if id:
-            invoice = Invoice.objects.get(id=id, owner=request.user)
+            if asset == 'advance' or asset.lower() == 'záloha':
+                invoice = Advance.objects.get(id=id, owner=request.user)
+            else:
+                invoice = Invoice.objects.get(id=id, owner=request.user)
+
             if invoice.has_items:
                 items = InvoiceItem.objects.filter(invoice=invoice)
             else:
@@ -30,11 +39,15 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             img = generator.make_image()
             svg_output = os.path.join(os.path.dirname(
                 user.logo.name), 'conversionQR.svg')
-            img.save(svg_output)
-            user_qr = svg2rlg(svg_output)
             qr_png = os.path.join(os.path.dirname(
                 user.logo.name), 'conversionQR.png')
-            renderPM.drawToFile(user_qr, qr_png, fmt="PNG")
+            img.save(svg_output)
+
+            #user_qr = svg2rlg(svg_output)
+            # renderPM.drawToFile(user_qr, qr_png, fmt="PNG") # broken, results in artifacts,switch to cairo
+
+            svg2rlg(svg_output)
+            cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=15)
 
         else:
             user = UserProfile.objects.get(user=request.user)
@@ -126,61 +139,6 @@ class PrintInvoiceView(LoginRequiredMixin, View):
                     messages.warning(
                         request, f'Při odesílání emailu došlo k chybě.')
                     print('**', e)
-            return response
-
-        return None
-
-
-class PrintAdvanceView(LoginRequiredMixin, View):
-    template_name = 'invoices/print.html'
-    login_url = '/'
-    redirect_field_name = '/'
-
-    def get(self, request, id):
-        template = get_template(self.template_name)
-        invoice = Advance.objects.get(id=id, owner=request.user)
-        sign = request.GET['sign']
-        if invoice.has_items:
-            items = InvoiceItem.objects.filter(invoice=invoice)
-        else:
-            items = []
-
-        user = UserProfile.objects.get(user=invoice.owner)
-        generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
-                                      message=f'ZALOHA {invoice.iid}', due_date=invoice.datedue)
-        iban = generator._account[4:-1]
-        img = generator.make_image()
-
-        logo = user.logo.name
-        with open(logo) as l:
-            user_logo = l.read()
-
-        svg_output = os.path.join(os.path.dirname(
-            user.logo.name), 'conversionQR.svg')
-        img.save(svg_output)
-
-        user_logo_png = svg2rlg(user.logo.name)
-        user_qr = svg2rlg(svg_output)
-        qr_png = os.path.join(os.path.dirname(
-            user.logo.name), 'conversionQR.png')
-        logo_png = os.path.join(
-            os.path.dirname(user.logo.name), 'conversionLG.png')
-        renderPM.drawToFile(user_logo_png, logo_png, fmt="PNG")
-        renderPM.drawToFile(user_qr, qr_png, fmt="PNG")
-
-        context = {"invoice": invoice, "user": user, 'logo': logo_png,
-                   "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': "Záloha"}
-
-        html = template.render(context)
-        result = BytesIO()
-        pdf = pisa.pisaDocument(
-            BytesIO(html.encode("utf-8")), result, encoding='UTF-8', link_callback=link_callback)
-
-        if not pdf.err:
-            response = HttpResponse(
-                result.getvalue(), content_type='application/pdf')
-            response['Content-Disposition'] = f'filename="Z{invoice.iid}.pdf"'
-
             return response
 
         return None

@@ -84,8 +84,8 @@
                 Tisk
               </a>
               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#" onclick=printPage(0)>PDF</a>
-                <a class="dropdown-item" href="#" onclick=printPage(1)>PDF s podpisem</a>
+                <a class="dropdown-item" href="#" onclick='printPage(0, "{{type}}")'>PDF </a>
+                <a class="dropdown-item" href="#" onclick='printPage(1, "{{type}}")'>PDF s podpisem</a>
               </div>
             </li>
           </ul>
@@ -369,10 +369,10 @@
     {% endblock  %}
     {% block scripts %}
     <script>
-      function printPage(val){
+      function printPage(val,type){
         sign = document.getElementById('sign')
         id = {{invoice.pk}}
-        window.open('../../print/'+ id + '/?sign='+ val)
+        window.open('/invoices/print/'+ id + '/?sign='+ val + '&asset=' + type)
       }
       function printBlankPage(val, type){
         window.open('/print/?sign='+ val + '&asset='+ type)

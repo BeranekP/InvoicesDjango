@@ -21,7 +21,7 @@ class AdvanceView(LoginRequiredMixin, View):
             iid = d.year * 10000 + 1
         default_dates = {'created': d, 'due': d + dt}
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'záloha', 'ref': ref}
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': "záloha", 'ref': ref}
         response = render(request, self.template_name, context)
         response.set_cookie(key='ref', value=ref)
         return response
@@ -154,7 +154,7 @@ class AdvanceOverView(LoginRequiredMixin, View):
                    'total': total,
                    'years': sorted(list(set(years)), reverse=True),
                    'selected_year': str(yr),
-                   'type': 'Přehled záloh'}
+                   'type': 'záloha'}
         return render(request, self.template_name, context)
 
 

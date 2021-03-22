@@ -94,6 +94,8 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         user = User.objects.get(id=request.user.id)
         password1 = request.POST['password']
         password2 = request.POST['password-confirm']
+        ref = request.COOKIES.get('ref')
+
         if password1 and password2:
             if password1 == password2:
                 user.set_password(password1)
@@ -107,5 +109,5 @@ class UserProfileUpdateView(LoginRequiredMixin, View):
         user_profile.save()
         messages.success(
             request, 'Vaše údaje byly aktualizovány.')
-        ref = request.COOKIES.get('ref')
+
         return redirect(ref)

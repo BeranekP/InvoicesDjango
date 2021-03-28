@@ -141,7 +141,7 @@
             class="form-control form-control-lg"
             id="yearSelect"
           >
-            <option value="all">All</option>
+            <option value="all">Všichni</option>
             {% for year in years %} 
               {% ifequal year selected_year %}
                 <option value="{{year}}" selected="selected">{{year}}</option>
@@ -185,7 +185,36 @@
 
         <tbody class="">
           {% for recipient in recipients %}
-          {% if recipient.invoices|length > 0 %}
+          {% if recipient.invoices|length > 0 and selected_year != 'all'%}
+          <tr id="{{ recipient.id }}" class="recipient-row" title='Klikněte pravým tlačítkem myši.'>
+            {% localize off %}
+            
+            <td>
+              <strong>{{ recipient.surname }} {{ recipient.name }}</strong>
+              
+            </td>
+            
+            <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: left;">
+              {{recipient.street}}, {{recipient.zipcode|zipcode}}
+                {{recipient.town }}
+            </td>
+
+            <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: center;">
+                {{ recipient.invoices|length }}
+            </td>
+            {% endlocalize %}
+            <td class="d-none d-lg-table-cell d-print-table-cell" style="text-align: center;">
+              {{ recipient.total}} Kč 
+            </td>
+          </tr>
+          <tr id="hidden-{{recipient.id}}" class='hidden'>
+            <td colspan=4>
+            {% for invoice in recipient.invoices %}
+                <a href="/invoices/detail/{{invoice.pk}}" class = 'btn btn-outline-secondary mx-1 '> {{ invoice.iid|unlocalize }} </a>
+                {% endfor %}
+            </td>
+          </tr>
+          {% elif selected_year == 'all'%}
           <tr id="{{ recipient.id }}" class="recipient-row" title='Klikněte pravým tlačítkem myši.'>
             {% localize off %}
             

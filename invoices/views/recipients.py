@@ -30,7 +30,7 @@ class RecipientView(LoginRequiredMixin, View):
         recipient.owner = request.user
         recipient.save()
         messages.success(
-            request, mark_safe(f'Odběratel <em>{recipient.surname}{recipient.name}</em> úspěšně přidán.'))
+            request, mark_safe(f'Odběratel <em>{recipient.surname} {recipient.name}</em> úspěšně přidán.'))
         ref = request.COOKIES.get('ref')
         return redirect(ref)
 
@@ -133,6 +133,6 @@ class RecipientUpdateView(LoginRequiredMixin, View):
 
         recipient.save()
         messages.success(
-            request, mark_safe(f'Odběratel <em>{recipient.surname}{recipient.name}</em> aktualizován.'))
+            request, mark_safe(f'Odběratel <em>{recipient.surname} {recipient.name}</em> aktualizován.'))
         ref = request.COOKIES.get('ref')
         return redirect(ref)

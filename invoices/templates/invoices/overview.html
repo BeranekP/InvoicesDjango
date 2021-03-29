@@ -9,116 +9,15 @@
  
   {% block title %} Invoice Factory - Přehled {% endblock %}
     
-  {% block content %} 
+  {% block content %}
+  {% include "../base/navbar.html" with type=type %}   
     <div class="container d-flex justify-content-center">
     <div class="heading d-none d-print-block text-muted pb-2 w-100 text-center">
       {% localize off %}
       {{profile.name}}, {{profile.street}}, {{profile.zipcode|zipcode}} {{profile.town}}, IČ: {{profile.ic}}, {{profile.email}}, {{profile.web}}
       {% endlocalize %}
       <hr>
-
     </div>
-      <nav
-        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between fixed-top px-5 py-3 my-0"
-      >
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-brand d-none d-lg-block d-print-none">
-            <a href="/dash">
-              <svg height="40" width="40" style=" fill: white; stroke:white;">
-                {{logo|safe}}
-              </svg>
-            </a> 
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% ifequal type 'Přehled faktur' %} active {% endifequal %} font-weight-bold" href="/invoices"
-                >Faktury</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% ifequal type 'Přehled záloh' %} active {% endifequal %} font-weight-bold" href="/advance"
-                >Zálohy</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="/recipient"
-                >Odběratelé</a
-              >
-            </li>
-            <li class="nav-item dropdown font-weight-bold">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Nový
-              </a>
-              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="/invoices/create">Faktura</a>
-                <a class="dropdown-item" href="/advance/create">Záloha</a>
-                <a class="dropdown-item" href="/recipient/create">Odběratel</a>
-              </div>
-            </li>
-            <li class="nav-item dropdown font-weight-bold">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Fomuláře
-              </a>
-              <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#" onclick=printPage(0,"invoice")> 
-                    <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Faktura
-                </a> 
-                <a class="dropdown-item" href="#" onclick=printPage(0,"advance")> 
-                     <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Záloha
-                </a> 
-              </div>
-            </li>
-          </ul>
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown">
-              <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Nastavení
-              </a>
-              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item disabled" href="#">{{profile.name}}</a>
-                <a class="dropdown-item disabled text-info" href="#">{{profile.email}}</a>
-                <div class="dropdown-divider"></div>
-                <a class=" mx-2 dropdown-item" href="/users/edit/{{profile.id}}">Profil</a>
-                <div class="mx-2 dropdown-item custom-control custom-checkbox">
-                <form action="../mailcopy/" method='POST' id="mailcopy-form">{% csrf_token %}
-                  <input
-                  type="checkbox"
-                  class="custom-control-input align-self-end "
-                  id="mailcopy"
-                  name="mailcopy"
-                  {% if profile.mailcopy %}
-                  value=true
-                  checked
-                  {% else %}
-                  value=false
-                  {% endif %}
-                  />
-                  <label for="mailcopy" class="custom-control-label align-self-start"
-                  >Faktury e-mailem <img src="{% static 'ico/baseline_attach_email_black_18dp.png' %}" alt=""></label
-                  >
-                </form>
-                </div>
-                
-              </div>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../logout">Odhlásit se</a>
-            </li>
-          </ul>
-        </div>
-      </nav>
     </div>
     <div class="modal d-print-none" tabindex="-1" role="dialog" id="delete-modal">
       <div class="modal-dialog" role="document">
@@ -135,17 +34,8 @@
         </div>
       </div>
     </div>
-    <div>
-      {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} text-center w-50 mx-auto mt-5 fixed-top alert-dismissible fade show" role="alert">
-            <p>{{ message }}</p>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      </div>
-      {% endfor %}
-    </div>
-    <div class="container-fluid d-flex justify-content-between align-items-center mt-5 overview"> 
+    {% include "../base/flash_message.html" %}
+    <div class="container-fluid d-flex justify-content-between align-items-center overview"> 
       <hr />
       
       <div class="w-75 d-flex justify-content-between align-items-center mt-5 overview" >

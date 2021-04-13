@@ -118,6 +118,10 @@ class InvoiceDetailView(LoginRequiredMixin, View):
             items = []
 
         user = UserProfile.objects.get(user=invoice.owner)
+        try:
+            logo = user.logo.read()
+        except:
+            logo = None
 
         generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
                                       message=f'FAKTURA {invoice.iid}', due_date=invoice.datedue)
@@ -128,7 +132,7 @@ class InvoiceDetailView(LoginRequiredMixin, View):
         img.save(svg_output)
 
         context = {"invoice": invoice, "user": user,
-                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Faktura", 'advance': advance, 'ref': ref}
+                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Faktura", 'advance': advance, 'ref': ref, 'logo': logo}
 
         return render(request, self.template_name, context)
 

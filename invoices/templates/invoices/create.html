@@ -1,26 +1,27 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}
 {% block style %}
-<style>
-body{
-  background: #343a40;
-  color: #f8f9fa;
-}
-.form-control{
-background-color: #f1f1f1;
-}
+  <style>
+  body{
+    background: #343a40;
+    color: #f8f9fa;
+  }
+  .form-control{
+  background-color: #f1f1f1;
+  }
 
-</style>
+  </style>
 {% endblock %}
-    {% block title %}
-    Invoice Factory - Nová {{type}}
-    {% endblock %} 
+    
+{% block title %}
+    Invoice Factory - Nová faktura
+{% endblock %} 
+
 {% block content %}
 
-{% include "../base/flash_message.html" %}
 
     <div class="container mt-3">
-      <h2 class="mt-2, pb-5">Nová {{type}}</h2>
+      <h2 class="mt-2, pb-5">Nová faktura</h2>
       <form action="./" method="POST">
         {% csrf_token %}
         <div class="form-group">
@@ -35,12 +36,12 @@ background-color: #f1f1f1;
               <option value="" disabled selected>Vyberte odběratele</option>
               {% for recipient in recipients %}
               <option value="{{recipient.id}}">
-                {{recipient.surname}} {{recipient.name}} - {{recipient.street}}, {{recipient.zipcode}}, {{recipient.town}}
+                {{recipient}}
               </option>
               {% endfor %}
             </select>
             <a
-              class="btn btn-outline-info ml-1"
+              class="btn btn-primary ml-1"
               href="../../recipient/create/"
               title="Přidat odběratele"
               >+</a
@@ -137,36 +138,16 @@ background-color: #f1f1f1;
               required
             />
           
-            <label for="paidInput">Uhrazeno</label>
-            <input type="date" class="form-control" id="paidInput" name="paid"
-          value="{{invoice.paid|date:"Y-m-d"}}" />
-            </div>
-      {% if type == "faktura" %}
-        <div class="form-group mt-3 mb-3 w-100">
-          <label for="advanceInput">Připojit zálohu</label>
-          <select
-              class="form-control"
-              id="advanceInput"
-              name="advance"
-            >
-              <option value="" disabled selected>Vyberte zálohu</option>
-              {% for advance in advances %}
-              <option value="{{advance.id}}">
-                {% localize off %}{{advance.iid}}{% endlocalize %}, {{advance.recipient.name}}
-              </option>
-              {% endfor %}
-            </select>
-          <div>
-      {% endif %}
+        </div>
 
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"
         >
-          <a href="{{ref}}" class="btn btn-outline-light mr-5 mt-sm-1 mt-md-5 w-sm-50 w-md-25 btn-lg"
+          <a href="../" class="btn btn-warning mr-5 mt-sm-1 mt-md-5 w-sm-50 w-md-25 btn-lg"
             >Zpět</a
           >
           <input
-            class="btn btn-outline-success mt-sm-1 mt-md-5 w-md-25 w-sm-50 btn-lg"
+            class="btn btn-success mt-sm-1 mt-md-5 w-md-25 w-sm-50 btn-lg"
             type="submit"
             value="Vystavit"
           />
@@ -176,17 +157,5 @@ background-color: #f1f1f1;
     {% endblock  %}
     {% block scripts %}
     <script src="{% static 'js/addInvoice.js'%}"></script>
-    <script>
-      date1 = document.getElementById('createdInput');
-      date2 = document.getElementById('dueInput');
-
-      date1.addEventListener('input',(e)=>{
-        d = new Date(e.target.value);
-        delta = new Date();
-        delta.setDate(d.getDate() + 14);
-        date2.value = delta.toISOString().substring(0, 10);
-      })
-      
-    </script>
     {% endblock  %}
 

@@ -1,6 +1,7 @@
 from ._modules import *
 from .utils import link_callback
 import cairosvg
+from invoices.views.email_template import template as t
 
 
 class PrintInvoiceView(LoginRequiredMixin, View):
@@ -87,31 +88,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
                     from_email=EMAIL,
                     to_emails=EMAIL,
                     subject=f'{name.title()} č. {invoice.iid}',
-                    html_content=f'''
-                    {name.title()} za provedené služby je přílohou tohoto emailu.
-                    <table style='width:75%;border: 1px solid black; margin-top:10px;border-collapse:collapse;'>
-                        <tr style="padding: 5px 10px">
-                            <td>
-                                <h3 style='padding-left:5px; padding-bottom:10px; border-bottom: 1px solid black;'>Faktura č. {invoice.iid}</h3>
-                                <ul style='list-style: none;'>
-                                    <li>{invoice.recipient.name}</li>
-                                    <li>{invoice.recipient.street}, {invoice.recipient.zipcode} {invoice.recipient.town}</li>
-
-                                    <li style='padding-top:10px;padding-bottom:10px;'><em>{invoice.description}</em></li>
-                                    
-                                    <li style='padding-top:10px;padding-bottom:10px;'><h4>Splatnost: {invoice.datedue.strftime("%d.%m.%Y")}</h4></li>
-
-                                    <li><h4>Celkem: {invoice.amount} {invoice.currency}</h4></li>
-                                </ul>
-                            </td>
-                            <td>
-                                <img src="cid:qr_code"/>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <div style='font-size:8px;padding-top:10px;'><em>Tento email je generován automaticky.</em></div>
-                    '''
+                    html_content=t(name, invoice)
                 )
                 attachedFile = Attachment(
                     FileContent(encoded_file),

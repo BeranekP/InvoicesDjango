@@ -137,8 +137,30 @@
               value="{{ default_dates.due|date:'Y-m-d'}}"
               required
             />
+            <label for="paidInput">Uhrazeno</label>
+             <input 
+              type="date"
+              class="form-control" id="paidInput" name="paid"
+              value="{{invoice.paid|date:"Y-m-d"}}" />
           
         </div>
+        {% if type == "faktura" %}
+        <div class="form-group mt-3 mb-3 w-100">
+          <label for="advanceInput">Připojit zálohu</label>
+          <select
+              class="form-control"
+              id="advanceInput"
+              name="advance"
+            >
+              <option value="" disabled selected>Vyberte zálohu</option>
+              {% for advance in advances %}
+              <option value="{{advance.id}}">
+                {% localize off %}{{advance.iid}}{% endlocalize %}, {{advance.recipient.name}}
+              </option>
+              {% endfor %}
+            </select>
+          <div>
+        {% endif %}
 
         <div
           class="form-group d-flex w-100 align-items-center justify-content-center"

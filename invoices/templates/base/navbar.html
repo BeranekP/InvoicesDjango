@@ -81,19 +81,21 @@
               </div>
             </li>
             {% endif %}
-            {% if  view  == 'pdf' %}
-             <li class="nav-item dropdown font-weight-bold">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Sdílet</a
-              >
-               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                <form action="/pdf/" method="post" id="own-mail-form">{% csrf_token %}<a href="#" class="dropdown-item" id='own-mail' ><span class="ico"><img src="{% static '/ico/baseline_attach_email_black_18dp.png' %}" alt=""></span> <span class="text-primary">{{profile.email}}</span></a></form>
-              </div>
-            </li>
+            {% if  view  == 'pdf'%}
+              {% if  pk %}
+                <li class="nav-item dropdown font-weight-bold">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Sdílet</a
+                  >
+                  <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                    <form action="/pdf/" method="post" id="own-mail-form">{% csrf_token %}<a href="#" class="dropdown-item" id='own-mail' ><span class="ico"><img src="{% static '/ico/baseline_attach_email_black_18dp.png' %}" alt=""></span> <span class="text-primary">{{profile.email}}</span></a></form>
+                  </div>
+                </li>
+            {% endif %}
             <li class="nav-item">
-              <a class="nav-link font-weight-bold" href="#" id="download-pdf"
-                >Uložit</a
-              >
+                <a class="nav-link font-weight-bold" href="#" id="download-pdf"
+                  >Uložit</a
+                >
             </li>
             {% endif %}
           </ul>

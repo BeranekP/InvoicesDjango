@@ -15,12 +15,16 @@ class PDFView(LoginRequiredMixin, View):
         pdf = request.session['pdf']
         filename = request.session['filename']
         doctype = request.session['type']
+        try:
+            pk = request.session['invoice']
+        except:
+            pk = None
         user = UserProfile.objects.get(user=request.user)
         try:
             logo = user.logo.read()
         except:
             logo = None
-        return render(request, self.template_name, {'user': user, 'logo': logo, 'pdf': pdf, 'filename': filename, 'type': doctype})
+        return render(request, self.template_name, {'user': user, 'logo': logo, 'pdf': pdf, 'filename': filename, 'type': doctype, 'pk': pk})
 
     def post(self, request):
         asset = request.session['asset']
@@ -107,6 +111,10 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             qr_png = os.path.join(os.path.dirname(
                 user.logo.name), 'conversionQR.png')
             img.save(svg_output)
+            svg2rlg(svg_output)
+            cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=8)
+            request.session['qr'] = base64.b64encode(
+                open(qr_png, "rb").read()).decode()
 
         else:
             user = UserProfile.objects.get(user=request.user)
@@ -124,11 +132,6 @@ class PrintInvoiceView(LoginRequiredMixin, View):
 
         svg2rlg(user.logo.name)
         cairosvg.svg2png(url=user.logo.name, write_to=logo_png, scale=5)
-
-        svg2rlg(svg_output)
-        cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=8)
-        request.session['qr'] = base64.b64encode(
-            open(qr_png, "rb").read()).decode()
 
         context = {"invoice": invoice, "user": user, 'logo': logo_png,
                    "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': name.title()}

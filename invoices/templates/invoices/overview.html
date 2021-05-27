@@ -195,8 +195,8 @@
                     {label: 'Upravit', icon: "{% static 'ico/baseline_build_white_18dp.png' %}", onClick: () => {window.location.href='./edit/'.concat(id)}},
                     {label: 'Odstranit', icon: "{% static 'ico/baseline_delete_forever_white_18dp.png' %}", onClick: () => {deleteInvoice(id);$('#delete-modal').modal('show');}},
                     {type: 'seperator'},
-                    {label: 'PDF', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.open('/invoices/print/'.concat(id,'/?sign=0', '&asset=', "{{type}}"))}},
-                    {label: 'PDF s podpisem', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.open('/invoices/print/'.concat(id,'/?sign=1', '&asset=', "{{type}}"))}},
+                    {label: 'PDF', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.location='/invoices/print/'.concat(id,'/?sign=0', '&asset=', "{{type}}")}},
+                    {label: 'PDF s podpisem', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.location='/invoices/print/'.concat(id,'/?sign=1', '&asset=', "{{type}}")}},
                     
                 ]
                 

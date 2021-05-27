@@ -108,11 +108,6 @@ class PrintInvoiceView(LoginRequiredMixin, View):
                 user.logo.name), 'conversionQR.png')
             img.save(svg_output)
 
-            svg2rlg(svg_output)
-            cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=15)
-            request.session['qr'] = base64.b64encode(
-                open(qr_png, "rb").read()).decode()
-
         else:
             user = UserProfile.objects.get(user=request.user)
             invoice = Invoice()
@@ -124,11 +119,16 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             iban = None
             items = []
 
-        user_logo_png = svg2rlg(user.logo.name)
+        logo_png = os.path.join(os.path.dirname(
+            user.logo.name), 'conversionLG.png')
 
-        logo_png = os.path.join(
-            os.path.dirname(user.logo.name), 'conversionLG.png')
-        renderPM.drawToFile(user_logo_png, logo_png, fmt="PNG")
+        svg2rlg(user.logo.name)
+        cairosvg.svg2png(url=user.logo.name, write_to=logo_png, scale=5)
+
+        svg2rlg(svg_output)
+        cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=8)
+        request.session['qr'] = base64.b64encode(
+            open(qr_png, "rb").read()).decode()
 
         context = {"invoice": invoice, "user": user, 'logo': logo_png,
                    "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': name.title()}

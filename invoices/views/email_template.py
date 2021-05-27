@@ -52,7 +52,7 @@ def template(name, invoice):
                     </head>
                     
                     <body>
-                        <p>{name.title()} za provedené služby je přílohou tohoto emailu.</p>
+                        <p>{name} za provedené služby je přílohou tohoto emailu.</p>
                             <center>
                                 <table class='bg'>
                                     <tr>

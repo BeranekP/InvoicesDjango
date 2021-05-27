@@ -245,15 +245,5 @@
       
     {% endblock  %}
     {% block scripts %}
-    <script>
-      function printPage(val,type){
-        sign = document.getElementById('sign')
-        id = {{invoice.pk}}
-        window.open('/invoices/print/'+ id + '/?sign='+ val + '&asset=' + type)
-      }
-      function printBlankPage(val, type){
-        window.open('/print/?sign='+ val + '&asset='+ type)
-      }
-    </script>
-    <script src="{% static 'js/mailCopy.js' %}"></script>
+   <script src= "{% static 'js/printPage.js' %}"></script>
     {% endblock  %}

@@ -26,7 +26,7 @@ import base64
 from qrplatba import QRPlatbaGenerator
 from xhtml2pdf import pisa
 from datetime import datetime, timedelta
-from io import BytesIO
+from io import BytesIO, StringIO
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 

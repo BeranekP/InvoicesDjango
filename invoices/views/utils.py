@@ -146,3 +146,10 @@ def link_callback(uri, rel):
         )
     #print('****', path)
     return path
+
+
+def clear_pdf(path):
+    for parent, dirnames, filenames in os.walk(path):
+        for fn in filenames:
+            if fn.lower().endswith('.pdf'):
+                os.remove(os.path.join(parent, fn))

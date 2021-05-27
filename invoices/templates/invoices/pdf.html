@@ -1,0 +1,28 @@
+{% extends "../base/base.html" %}
+{% load i18n %} {% load l10n %} {% load static %}{% load filename %}{% load zipcode %} {% load multiply %}{% load divide %}{% load subtract %}
+{% block display %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+{% endblock %}
+
+{% block title %}
+    {% localize off %}{{type}} č. {{filename}} {% endlocalize %}
+{% endblock %}
+    
+{% block content %}
+    {% include "../base/navbar.html" with type=type view='pdf' fixed=True profile=user%} 
+    {% include "../base/flash_message.html" %}
+    <div class="container-fluid text-center mt-5">
+        <canvas id="pdf" class='shadow-lg'>
+           
+        </canvas>
+    </div>
+{% endblock  %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+<script>
+let pdfUrl=atob("{{pdf|safe}}")
+let fileName = "{{filename}}"
+</script>
+<script src="{% static 'js/pdf.js'%}"></script>
+
+{% endblock  %}

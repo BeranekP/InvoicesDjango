@@ -73,12 +73,27 @@
             </li>
             <li class="nav-item dropdown font-weight-bold">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Tisk
+                PDF
               </a>
               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="#" onclick='printPage(0, "{{type}}")'>PDF </a>
-                <a class="dropdown-item" href="#" onclick='printPage(1, "{{type}}")'>PDF s podpisem</a>
+                <a class="dropdown-item" href="#" onclick='printPage(0, "{{type}}", {{invoice.pk}})'>PDF </a>
+                <a class="dropdown-item" href="#" onclick='printPage(1, "{{type}}", {{invoice.pk}})'>PDF s podpisem</a>
               </div>
+            </li>
+            {% endif %}
+            {% if  view  == 'pdf' %}
+             <li class="nav-item dropdown font-weight-bold">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Sdílet</a
+              >
+               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
+                <form action="/pdf/" method="post" id="own-mail-form">{% csrf_token %}<a href="#" class="dropdown-item" id='own-mail' ><span class="ico"><img src="{% static '/ico/baseline_attach_email_black_18dp.png' %}" alt=""></span> <span class="text-primary">{{profile.email}}</span></a></form>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link font-weight-bold" href="#" id="download-pdf"
+                >Uložit</a
+              >
             </li>
             {% endif %}
           </ul>
@@ -92,25 +107,6 @@
                 <a class="dropdown-item disabled text-info" href="#">{{profile.email}}</a>
                 <div class="dropdown-divider"></div>
                 <a class=" mx-2 dropdown-item" href="/users/edit/{{profile.id}}">Profil</a>
-                <div class="mx-2 dropdown-item custom-control custom-checkbox">
-                <form action="/mailcopy/" method='POST' id="mailcopy-form">{% csrf_token %}
-                  <input
-                  type="checkbox"
-                  class="custom-control-input align-self-end "
-                  id="mailcopy"
-                  name="mailcopy"
-                  {% if profile.mailcopy %}
-                  value=true
-                  checked
-                  {% else %}
-                  value=false
-                  {% endif %}
-                  />
-                  <label for="mailcopy" class="custom-control-label align-self-start"
-                  >Faktury e-mailem <img src="{% static 'ico/baseline_attach_email_black_18dp.png' %}" alt=""></label
-                  >
-                </form>
-                </div>
                 
               </div>
             </li>

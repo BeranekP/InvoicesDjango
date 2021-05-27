@@ -54,7 +54,6 @@ class UserProfile(models.Model):
     logo = models.ImageField(
         upload_to=get_path, blank=True, null=True)
     sign = models.ImageField(upload_to=get_path, blank=True, null=True)
-    mailcopy = models.BooleanField(default=False, null=True)
 
     def __str__(self):
         return ', '.join([self.name, self.user.username, self.email])

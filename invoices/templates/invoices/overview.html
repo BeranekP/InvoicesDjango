@@ -221,10 +221,7 @@
           invoice.classList.toggle('open');
         }
       });
-      function printPage(val, type){
-        window.open('/print/?sign='+ val + '&asset='+ type)
-      }
     </script>
-    <script src="{% static 'js/mailCopy.js' %}"></script>
+    <script src= "{% static 'js/printPage.js' %}"></script>
     {% endblock %}
 

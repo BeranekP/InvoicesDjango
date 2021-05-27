@@ -108,9 +108,6 @@ class PrintInvoiceView(LoginRequiredMixin, View):
                 user.logo.name), 'conversionQR.png')
             img.save(svg_output)
 
-            # user_qr = svg2rlg(svg_output)
-            # renderPM.drawToFile(user_qr, qr_png, fmt="PNG") # broken, results in artifacts,switch to cairo
-
             svg2rlg(svg_output)
             cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=15)
             request.session['qr'] = base64.b64encode(

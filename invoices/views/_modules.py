@@ -28,7 +28,6 @@ from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPM
 
 # sendgrid mail modules
 from sendgrid import SendGridAPIClient

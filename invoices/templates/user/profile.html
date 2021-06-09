@@ -1,4 +1,16 @@
 {% extends "../base/base.html" %}
+{% block style %}
+<style>
+body{
+  background: #343a40;
+  color: #f8f9fa;
+}
+.form-control{
+background-color: #f1f1f1;
+}
+
+</style>
+{% endblock %}
 {% load i18n %} {% load l10n %} {% load static %} {% load filename %}
 {% block title %}
 Upravit profil
@@ -9,9 +21,9 @@ Upravit profil
       <h2 class="mt-2, pb-5">Upravit profil <em>{{profile.name}}</em></h2>
       <form action="./" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form-group row">
-            <div class="col-lg-4">
-                <label for="recipientInput">Jméno</label>
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+            <div class="form-floating col-12 col-md-4 flex-fill">
+                
                 <input
                 type="text"
                 class="form-control"
@@ -20,9 +32,9 @@ Upravit profil
                 placeholder="John Doe"
                 value="{{profile.name}}"
                 />
+                <label for="recipientInput" class='text-dark'>Jméno</label>
             </div>
-            <div class="col-lg-4 mt-2 mt-lg-0">
-                <label for="email">Email</label>
+            <div class="form-floating col-12 col-md-4 flex-fill">
                 <input
                 type="email"
                 class="form-control"
@@ -31,9 +43,9 @@ Upravit profil
                 name="email"
                 value="{{profile.email}}"
                 />
+                <label for="email" class='text-dark'>Email</label>
             </div>
-            <div class="col-lg-4 mt-2 mt-lg-0">
-                <label for="web">Web</label>
+            <div class="form-floating col-12 col-md-4 flex-fill">
                 <input
                 type="text"
                 class="form-control"
@@ -44,12 +56,12 @@ Upravit profil
                     value="{{profile.web}}"
                 {% endif %}
                 />
+                <label for="web" class='text-dark'>Web</label>
             </div>
         </div>
-        <div class="row">
-          <div class="col-lg-6  mt-2 mt-lg-0">
-            <div class="form-group">
-              <label for="street">Ulice</label>
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+          <div class="col-12 col-md-6">
+            <div class="form-floating flex-fill mb-3">
               <input
                 type="street"
                 class="form-control"
@@ -58,9 +70,9 @@ Upravit profil
                 placeholder="Street 22"
                 value="{{profile.street}}"
               />
+              <label for="street" class='text-dark'>Ulice</label>
             </div>
-            <div class="form-group">
-              <label for="town">Město</label>
+            <div class="form-floating flex-fill mb-3">
               <input
               type="text"
                 class="form-control"
@@ -68,10 +80,10 @@ Upravit profil
                 name="town"
                 placeholder="London"
                 value="{{profile.town}}"
-              ></input>
+              />
+              <label for="town" class='text-dark'>Město</label>
             </div>
-            <div class="form-group">
-              <label for="zipcode">PSČ</label>
+            <div class="form-floating flex-fill">
               <input
                 type="number"
                 class="form-control"
@@ -79,27 +91,24 @@ Upravit profil
                 placeholder="66666"
                 name="zipcode"
                 step="1"
-                value="{{profile.zipcode}}"
-              />
+                value="{{profile.zipcode}}"/>
+              <label for="zipcode" class='text-dark'>PSČ</label>
+              
             </div>
           </div>
-          <div class="col-lg-6  mt-2 mt-lg-0">
-            <div class="w-100 d-flex align-items-center justify-content-center">
-              <img src="{% static profile.logo.name|filename %}" alt="Logo" class="img-thumbnail mx-auto mt-3" id="logo" width=200px>
+          <div class="col-12 col-lg-6 flex-fill">
+            <div class="w-100 d-flex align-items-center justify-content-center mb-2">
+              <img src="{% static profile.logo.name|filename %}" alt="Logo" class="img-thumbnail mx-auto mt-3" id="logo" width=150>
             </div>
-            <div class="custom-file d-flex justify-content-center align-items-center w-100">
-              
-              <label for="logoInput" class="custom-file-label mt-3 w-50 mx-auto" >Aktuální logo</label>
-              <input type="file" id='logoInput' class="custom-file-input" name='logo' oninput="getPreview('logoInput', 'logo')">
+            <div class="d-flex justify-content-center align-items-center w-75 mx-auto">
+              <input type="file" id='logoInput' class="form-control" name='logo' oninput="getPreview('logoInput', 'logo')">
             </div>
           </div>
       </div>
         
-        <div class="form-group row">
-          <div class="col-lg-6  mt-5 mt-lg-0">
-            <div class="row">
-              <div class="col-12 form-group">
-                  <label for="ic">IČ</label>
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+          <div class="col-12 col-md-6">
+              <div class="form-floating flex-fill mb-3">
                   <input
                   type="text"
                   class="form-control"
@@ -108,9 +117,9 @@ Upravit profil
                   name="ic"
                   value="{{profile.ic}}"
                   />
+                  <label for="ic" class='text-dark'>IČ</label>
               </div>
-              <div class="col-12 form-group">
-                  <label for="ic">DIČ</label>
+              <div class="form-floating flex-fill mb-3">
                   <input
                   type="text"
                   class="form-control"
@@ -121,9 +130,9 @@ Upravit profil
                   value="{{profile.dic}}"
                   {% endif %}
                   />
+                  <label for="ic" class='text-dark'>DIČ</label>
               </div>
-              <div class="col-12 form-group">
-                <label for="bank">Bankovní účet</label>
+              <div class="form-floating flex-fill mb-3">
                 <input
                   type="text"
                   class="form-control"
@@ -132,55 +141,51 @@ Upravit profil
                   name="bank"
                   value="{{profile.bank}}"
                 />
+                <label for="bank" class='text-dark'>Bankovní účet</label>
               </div>
-            </div>
           </div>
-          <div class="col-lg-6">
+          <div class="col-12 col-lg-6">
             <div class="col-12 form-group">
-              <div class="w-100 d-flex align-items-center justify-content-center">
-                <img src="{% static profile.sign.name|filename %}" alt="Signature" class="img-thumbnail mx-auto w-50 mt-3" id="sign">
+              <div class="w-100 d-flex align-items-center justify-content-center mb-2">
+                <img src="{% static profile.sign.name|filename %}" alt="Signature" class="img-thumbnail mx-auto mt-3" id="sign" width=200>
               </div>
-              <div class="custom-file d-flex justify-content-center align-items-center w-100">
-                
-                <label for="signInput" class="custom-file-label w-50 mt-3 mx-auto" >Aktuální podpis</label>
-                <input type="file" id='signInput' class="custom-file-input" name='sign' oninput="getPreview('signInput', 'sign')">
+              <div class="d-flex justify-content-center align-items-center w-75 mx-auto">
+                <input type="file" id='signInput' class="form-control" name='sign' oninput="getPreview('signInput', 'sign')">
               </div>
             </div>
           </div>
         </div>
         
         <hr>
-        <div class="form-group">
-            <div class="row">
-                <div class="col-lg-6">
-                    <label for="passwordInput">Heslo</label>
+            <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+                <div class="form-floating flex-fill col-12 col-lg-6">
                     <input
                         type="password"
                         class="form-control"
                         id="passwordInput"
                         name="password"
                     />
+                    <label for="passwordInput" class='text-dark'>Heslo</label>
                 </div>
-                <div class="col-lg-6">
-                    <label for="passwordInput">Potvrzení hesla</label>
+                <div class="form-floating flex-fill col-12 col-lg-6">
                     <input
                         type="password"
                         class="form-control"
                         id="passwordConfirmInput"
                         name="password-confirm"
                     />
+                    <label for="passwordInput" class='text-dark'>Potvrzení hesla</label>
                 </div>
             </div>
-        </div>
 
         <div
-          class="form-group d-flex w-100 align-items-center justify-content-center"
+          class="container-fluid d-flex w-75 align-items-center justify-content-around mt-3 gap-4 mb-3"
         >
-        <a href="{{ref}}" class="btn btn-warning mt-5 mr-5 w-50"
+        <a href="{{ref}}" class="btn btn-lg btn-outline-light w-50"
             >Zpět</a
           >
           <input
-            class="btn btn-success mt-5 w-50"
+            class="btn btn-lg btn-outline-success w-50"
             type="submit"
             ,
             value="Uložit"

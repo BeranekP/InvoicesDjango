@@ -1,14 +1,17 @@
 {% load static %}
 
-<div>
-<nav
-        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between px-5 py-3 my-0 {% if  fixed%}fixed-top{% endif %}" 
-      >
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between px-5 py-3 my-0 {% if  fixed%}fixed-top{% endif %} d-print-none">
+  <div class="container-fluid">
+            <a href="/dash" class="navbar-brand d-print-none">
+              <svg height="40" width="40" style=" fill: white; stroke:white;">
+                {{logo|safe}}
+              </svg>
+            </a> 
         <button
           class="navbar-toggler"
           type="button"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContent"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
           aria-controls="navbarSupportedContent"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -17,14 +20,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mr-auto">
-            <li class="nav-brand d-none d-lg-block d-print-none">
-            <a href="/dash">
-              <svg height="40" width="40" style=" fill: white; stroke:white;">
-                {{logo|safe}}
-              </svg>
-            </a> 
-            </li>
+          <ul class="navbar-nav me-auto">
             <li class="nav-item">
               <a class="nav-link {% if type == 'faktura' %} active {% endif %} font-weight-bold" href="/invoices"
                 >Faktury</a
@@ -41,7 +37,7 @@
               >
             </li>
             <li class="nav-item dropdown font-weight-bold">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Nový
               </a>
               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
@@ -51,15 +47,15 @@
               </div>
             </li>
             <li class="nav-item dropdown font-weight-bold">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Formuláře
               </a>
               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item" href="#" onclick=printPage(0,"invoice")> 
-                    <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Faktura
+                    <img src="{% static 'ico/baseline_picture_as_pdf_white_18dp.png' %}" alt=""> Faktura
                 </a> 
                 <a class="dropdown-item" href="#" onclick=printPage(0,"advance")> 
-                     <img src="{% static 'ico/baseline_picture_as_pdf_black_18dp.png' %}" alt=""> Záloha
+                     <img src="{% static 'ico/baseline_picture_as_pdf_white_18dp.png' %}" alt=""> Záloha
                 </a> 
               </div>
             </li>
@@ -72,7 +68,7 @@
               >
             </li>
             <li class="nav-item dropdown font-weight-bold">
-              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 PDF
               </a>
               <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
@@ -84,11 +80,11 @@
             {% if  view  == 'pdf'%}
               {% if  pk %}
                 <li class="nav-item dropdown font-weight-bold">
-                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Sdílet</a
                   >
                   <div class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdown">
-                    <form action="/pdf/" method="post" id="own-mail-form">{% csrf_token %}<a href="#" class="dropdown-item" id='own-mail' ><span class="ico"><img src="{% static '/ico/baseline_attach_email_black_18dp.png' %}" alt=""></span> <span class="text-primary">{{profile.email}}</span></a></form>
+                    <form action="/pdf/" method="post" id="own-mail-form">{% csrf_token %}<a href="#" class="dropdown-item" id='own-mail' ><span class="ico"><img src="{% static '/ico/baseline_attach_email_white_18dp.png' %}" alt=""></span> <span class="text-white-50">{{profile.email}}</span></a></form>
                   </div>
                 </li>
             {% endif %}
@@ -101,14 +97,14 @@
           </ul>
           <ul class="navbar-nav">
             <li class="nav-item dropdown">
-              <a class="nav-link" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <a class="nav-link" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Nastavení
               </a>
               <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a class="dropdown-item disabled" href="#">{{profile.name}}</a>
                 <a class="dropdown-item disabled text-info" href="#">{{profile.email}}</a>
                 <div class="dropdown-divider"></div>
-                <a class=" mx-2 dropdown-item" href="/users/edit/{{profile.id}}">Profil</a>
+                <a class="dropdown-item" href="/users/edit/{{profile.id}}">Profil</a>
                 
               </div>
             </li>
@@ -117,5 +113,5 @@
             </li>
           </ul>
         </div>
-      </nav>
-</div>
+  </div>
+</nav>

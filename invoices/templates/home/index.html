@@ -21,7 +21,7 @@
       </div>
     {% endfor %}
     
-    <div class="jumbotron mt-5 shadow">
+    <div class="p-2 p-md-5 mt-5 shadow text-white rounded" style='backdrop-filter: blur(15px); background: rgba(0,0,0,0.4)'>
       <h1 class="display-4">Invoice Factory</h1>
       <p class="lead">
         Vytvořte jednoduchou fakturu, mějte přehled o svých fakturách.
@@ -45,8 +45,8 @@
         <button
           type="button"
           class="btn btn-success btn-lg mt-3 ml-3"
-          data-toggle="modal"
-          data-target="#exampleModal"
+          data-bs-toggle="modal"
+          data-bs-target="#exampleModal"
         >
           Přihlášení
         </button>
@@ -57,7 +57,7 @@
   </div>
   <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
+      <div class="modal-content bg-dark text-white-50">
         <div class="modal-header">
           <h5>Zadejte přihlašovací údaje</h5>
         </div>
@@ -69,13 +69,13 @@
                 <div
                   class="username d-flex align-items-center justify-content-center"
                 >
-                  <div class="form-group w-75">
+                  <div class="input-group w-75 mb-2">
                     <label for="user" class="d-block">Uživatelské jméno</label>
                     <input
                       type="text"
                       id="user"
                       name="username"
-                      class="w-100"
+                      class="w-100 form-control"
                       required
                     />
                   </div>
@@ -83,12 +83,12 @@
                 <div
                   class="password d-flex align-items-center justify-content-center"
                 >
-                  <div class="form-group w-75">
+                  <div class="input-group w-75">
                     <label for="pass" class="d-block">Heslo</label>
                     <input
                       type="password"
                       id="pass"
-                      class="w-100"
+                      class="w-100 form-control"
                       name="password"
                       required
                     />
@@ -99,7 +99,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
             Zavřít
           </button>
           <button type="submit" class="btn btn-success" form="login">

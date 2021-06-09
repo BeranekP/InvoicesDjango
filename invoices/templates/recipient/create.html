@@ -26,10 +26,8 @@ background-color: #f1f1f1;
       <label class="form-check-label" for="inlineRadio2">Firma</label>
     </div>
     </div>
-    <div class="form-group row">
-     
-      <div class='col-sm-12 col-lg-6' id="person">
-        <label for="recipientInput">Jméno</label>
+    <div class="d-flex flex-column flex-md-row gap-3 mb-3"> 
+      <div class='form-floating col-12 col-md-6 flex-fill' id="person">
         <input
           type="text"
           class="form-control"
@@ -37,12 +35,12 @@ background-color: #f1f1f1;
           name="name"
           placeholder="John"
         />
+        <label for="recipientInput" class='text-dark'>Jméno</label>
         <div class="text-primary ares" id='name-ares'>
         </div>
       </div>
       
-      <div class='col-sm-12 col-lg-6' id="company">
-        <label for="recipientSurname" id ="surname">Příjmení</label>
+      <div class='form-floating col-12 col-md-6 flex-fill' id="company">
         <input
           type="text"
           class="form-control"
@@ -51,12 +49,12 @@ background-color: #f1f1f1;
           placeholder="Doe"
           required
         />
+        <label for="recipientSurname" id ="surname" class='text-dark'>Příjmení</label>
         <div class="text-primary ares" id='surname-ares'>
         </div>
       </div>
     </div>
-    <div class="form-group">
-      <label for="street">Ulice a čp.</label>
+    <div class="form-floating mb-3">
       <input
         type="text"
         class="form-control"
@@ -65,11 +63,11 @@ background-color: #f1f1f1;
         placeholder="Street 22"
         required
       />
+      <label for="street" class='text-dark'>Ulice a čp.</label>
       <div class="text-primary ares" id='street-ares'>
       </div>
     </div>
-    <div class="form-group">
-      <label for="town">Město</label>
+    <div class="form-floating mb-3">
       <input
         type="text"
         class="form-control"
@@ -78,11 +76,12 @@ background-color: #f1f1f1;
         placeholder="London"
         required
       />
+      <label for="town" class='text-dark'>Město</label>
       <div class="text-primary ares" id='town-ares'>
       </div>
     </div>
-    <div class="form-group">
-      <label for="zipcode">PSČ</label>
+    <div class="form-floating mb-3">
+      
       <input
         type="number"
         class="form-control"
@@ -90,42 +89,46 @@ background-color: #f1f1f1;
         placeholder="66666"
         name="zipcode"
         step="1"
+        min=10000
+        max=99999
         required
       />
+      <label for="zipcode" class='text-dark'>PSČ</label>
       <div class="text-primary ares" id='zipcode-ares'>
       </div>
     </div>
-    <div class="form-group">
-      <label for="state">Stát</label>
+    <div class="form-floating mb-3">
       <input
         type="text"
         class="form-control"
         id="state"
         value="Česká republika"
+        placeholder="Česká republika"
         name="state"
         required
       />
+      <label for="state" class='text-dark'>Stát</label>
     </div>
-    <div class="form-group row">
-      <div class="col-6">
-        <label for="icInput">IČ</label>
-        <input type="text" class="form-control" id="icInput" name="ic" />
+    <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+      <div class="form-floating col-12 col-md-6 flex-fill">
+        <input type="text" class="form-control" id="icInput" name="ic" placeholder='12345678'/>
+        <label for="icInput" class='text-dark'>IČ</label>
         <div class="text-primary" id='ic-ares'>
         </div>
       </div>
-      <div class="col-6">
-        <label for="dicInput">DIČ</label>
-        <input type="text" class="form-control" id="dicInput" name="dic" />
+      <div class="form-floating col-12 col-md-6 flex-fill">
+        <input type="text" class="form-control" id="dicInput" name="dic" placeholder='CZ12345678'/>
+        <label for="dicInput" class='text-dark'>DIČ</label>
       </div>
     </div>
 
     <div
-      class="form-group d-flex w-100 align-items-center justify-content-center"
+      class="d-flex align-items-center justify-content-center gap-2 gap-md-5 flex-column flex-md-row mt-3"
     >
-      <a href="{{ref}}" class="btn btn-outline-light mt-5 mr-5 w-25"
+      <a href="{{ref}}" class="btn btn-lg btn-outline-light w-50"
         >Zpět</a
       >
-      <input class="btn btn-outline-success mt-5 w-25" type="submit" value="Uložit" />
+      <input class="btn btn-lg btn-outline-success w-50" type="submit" value="Uložit" />
     </div>
   </form>
 </div>

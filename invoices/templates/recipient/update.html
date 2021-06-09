@@ -30,10 +30,10 @@ background-color: #f1f1f1;
             <label class="form-check-label" for="inlineRadio2">Firma</label>
           </div>
         </div>
-        <div class="form-group row">
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
      
-          <div class='col-sm-12 col-md-6' id="person">
-            <label for="recipientInput">Jméno</label>
+          <div class='form-floating col-12 col-md-6 flex-fill' id="person">
+            
             <input
               type="text"
               class="form-control"
@@ -43,10 +43,11 @@ background-color: #f1f1f1;
               placeholder="John"
               
             />
+            <label for="recipientInput" class='text-dark'>Jméno</label>
           </div>
           
-            <div class='col-sm-12 col-lg-6' id="company">
-              <label for="recipientSurname" id ="surname">Příjmení</label>
+            <div class='form-floating col-12 col-md-6 flex-fill' id="company">
+              
               <input
                 type="text"
                 class="form-control"
@@ -55,10 +56,10 @@ background-color: #f1f1f1;
                 value="{{recipient.surname}}"
                 required
               />
+              <label for="recipientSurname" class='text-dark' id ="surname">Příjmení</label>
             </div>
         </div>
-        <div class="form-group">
-          <label for="street">Ulice a čp.</label>
+        <div class="form-floating mb-3">
           <input
             type="text"
             class="form-control"
@@ -66,9 +67,9 @@ background-color: #f1f1f1;
             name="street"
             value="{{recipient.street}}"
           />
+           <label for="street" class='text-dark'>Ulice a čp.</label>
         </div>
-        <div class="form-group">
-          <label for="town">Město</label>
+        <div class="form-floating mb-3">
           <input
             type="text"
             class="form-control"
@@ -77,9 +78,9 @@ background-color: #f1f1f1;
             
             value="{{recipient.town}}"
           />
+           <label for="town" class='text-dark'>Město</label>
         </div>
-        <div class="form-group">
-          <label for="zipcode">PSČ</label>
+        <div class="form-floating mb-3">
           <input
             type="number"
             class="form-control"
@@ -89,9 +90,9 @@ background-color: #f1f1f1;
             step="1"
             value="{{recipient.zipcode}}"
           />
+          <label for="zipcode" class='text-dark'>PSČ</label>
         </div>
-        <div class="form-group">
-          <label for="state">Stát</label>
+        <div class="form-floating mb-3">
           <input
             type="text"
             class="form-control"
@@ -99,26 +100,27 @@ background-color: #f1f1f1;
             value="{{recipient.state}}"
             name="state"
           />
+          <label for="state" class='text-dark'>Stát</label>
         </div>
-        <div class="form-group row">
-          <div class="col-6">
-            <label for="icInput">IČ</label>
+        <div class="d-flex flex-column flex-md-row gap-3 mb-3">
+          <div class="form-floating col-12 col-md-6 flex-fill">
             <input type="text" class="form-control" id="icInput" name="ic" value="{{recipient.ic|default_if_none:""}}"/>
+            <label for="icInput" class='text-dark'>IČ</label>
           </div>
-          <div class="col-6">
-            <label for="dicInput">DIČ</label>
+          <div class="form-floating col-12 col-md-6 flex-fill">
             <input type="text" class="form-control" id="dicInput" name="dic" value="{{recipient.dic|default_if_none:"" }}"/>
+            <label for="dicInput" class='text-dark'>DIČ</label>
           </div>
         </div>
 
         <div
-          class="form-group d-flex w-100 align-items-center justify-content-center"
+          class="d-flex align-items-center justify-content-center gap-2 gap-md-5 flex-column flex-md-row mt-3"
         >
-          <a href="{{ref}}" class="btn btn-outline-light mt-5 mr-5 w-25"
+          <a href="{{ref}}" class="btn btn-lg btn-outline-light w-50"
             >Zpět</a
           >
           <input
-            class="btn btn-outline-success mt-5 w-25"
+            class="btn btn-lg btn-outline-success w-50"
             type="submit"
             value="Uložit"
           />

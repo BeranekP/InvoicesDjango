@@ -11,7 +11,7 @@
   {% block content %}
   {% include "../base/navbar.html" with type='recipient' %}   
     <div class="container d-flex justify-content-center">
-    <div class="heading d-none d-print-block text-muted">
+    <div class="heading d-none d-print-block text-muted ">
       {% localize off %}
       {{profile.name}}, {{profile.street}}, {{profile.zipcode|zipcode}} {{profile.town}}, IČ: {{profile.ic}}, {{profile.email}}, {{profile.web}}
       {% endlocalize %}
@@ -45,7 +45,7 @@
     </div>
     <div class="container-fluid">
       <table class="table mt-2">
-        <thead class="thead-dark">
+        <thead class="table-dark">
           <tr>
             <th scope="col" style="text-align: center;">Jméno</th>
             <th

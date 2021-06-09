@@ -18,17 +18,21 @@
 {% include "../base/flash_message.html" %}
 <div class="container-fluid justify-content-center">
   <div class="row d-flex justify-content-around mt-3">
-      <div class='history col-md-8 col-sm-12 '> 
-          <ul class='last'>
+      <div class='history col-md-8 col-sm-12  shadow'> 
+          <ul class='last list-group '>
               <h6>Poslední faktury</h6>
               {% for invoice in data|slice:":3" %}
-                <li class='d-flex align-items-center '>
-                      <a href="/invoices/detail/{{invoice.id}}" class='w-100'><div class="d-sm-block d-lg-inline"><strong>{{ invoice.iid|unlocalize }}</strong></div> <div class="d-sm-block d-lg-inline">{{ invoice.recipient.surname }} {{ invoice.recipient.name }} </div> <em class="text-secondary">{{ invoice.description|custom_truncate:10 }}</em> <div class="d-sm-block d-flex float-right">{{ invoice.amount }} {{ invoice.currency }}</div></a>
+                <li class=''>
+                      <a href="/invoices/detail/{{invoice.id}}" class='px-1 px-md-2 w-100 d-flex flex-column flex-md-row gap-0 gap-md-2'><div class='col-12 col-md-1'><strong>{{ invoice.iid|unlocalize }}</strong></div> <div class='col-12 col-md-2'>{{ invoice.recipient.surname }} {{ invoice.recipient.name }} </div> <em class="text-secondary col-12 col-md-7">{{ invoice.description|custom_truncate:10 }}</em> <div class='col-12 col-md-1 text-end'>{{ invoice.amount }} {% if invoice.currency == 'CZK'  %}
+                      Kč
+                      {% else %}
+                      {{ invoice.currency }}
+                      {% endif %} </div></a>
                 </li>
               {% endfor %}
           </ul>
       </div>
-      <div class='history col-md-3 col-sm-12 d-flex justify-content-center align-items-center'>
+      <div class='history col-md-3 col-sm-12 d-flex justify-content-center align-items-center  shadow'>
           <div class='pt-3'>
               <h6 class="w-100">Průběžný součet {% now "Y" %}</h6>
               <h2 class="display-6 text-center w-100">{{total}} Kč</h2>
@@ -36,7 +40,7 @@
       </div>
   </div>
   <div class="row justify-content-around ">
-    <div id="chart-container" class="col-md-8 col-sm-12 ">
+    <div id="chart-container" class="col-md-8 col-sm-12  shadow">
       <canvas id="myChart" class=""></canvas>
     </div>
     <div  class="col-md-3 col-sm-12 ml-2">

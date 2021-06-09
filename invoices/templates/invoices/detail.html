@@ -11,10 +11,10 @@
     
     {% block content %}
     {% localize off %}
-    <div class="container px-0 mx-auto">
+    <div class="container mx-auto">
     {% include "../base/navbar.html" with type=type view='detail' fixed=True profile=user%} 
     {% include "../base/flash_message.html" %}
-      <div class="jumbotron w-100 mb-0 pb-5 overflow-hidden">
+      <div class="mt-5 w-100 mb-0 px-2 pb-5 overflow-hidden shadow-lg" style='background-color:rgba(0, 100, 200, 0.15);'>
         <div class="container w-100 pt-5">
           <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>
           <hr class="my-4 w-100 mx-0" />
@@ -180,19 +180,19 @@
           <hr class="my-4" />
 
           <div class="row">
-            <div class="col-lg-9 d-flex align-items-center text-center">
-              <h2 class="mt-5">
+            <div class="col-md-9 d-flex align-items-center text-center col-12">
+              <h2 class="mt-5 mx-auto mx-md-5">
                 Celkem k úhradě:
                 <span>
-                <span class="ml-lg-3 px-2 border border-dark d-sm-flex d-md-inline"
+                <span class="ml-lg-3 px-2 border border-dark d-flex d-md-inline mt-2 mt-sm-0"
                   >{{invoice.amount|floatformat:2}} 
                   {% ifequal invoice.currency 'CZK' %}
                   Kč
                   {% else %}
                   {{invoice.currency}}</span> 
-                  <div class='h6 mt-3 ml-5'>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
+                  <div class='h6 mt-3 ml-5 '>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
                   {% endifequal %}
-                  </span>
+                </span>
                   
               </h2>
             </div>

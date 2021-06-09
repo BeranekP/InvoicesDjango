@@ -144,3 +144,5 @@ MESSAGE_TAGS = {message_constants.DEBUG: 'debug',
                 message_constants.SUCCESS: 'success',
                 message_constants.WARNING: 'warning',
                 message_constants.ERROR: 'danger'}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

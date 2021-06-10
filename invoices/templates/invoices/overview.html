@@ -186,13 +186,14 @@
       rows[row].addEventListener('contextmenu', e => {
         (function(id){
             e.preventDefault();
+            let modal = new bootstrap.Modal(document.getElementById('delete-modal'))
             new Contextual({
                 isSticky: false,
                 items: [
                     {label: 'Nová', icon: "{% static 'ico/baseline_note_add_white_18dp.png' %}", onClick: () => {window.location.href='./create/'}},
                     {label: 'Zobrazit', icon: "{% static 'ico/baseline_search_white_18dp.png' %}", onClick: () => {window.location.href='./detail/'.concat(id)}},
                     {label: 'Upravit', icon: "{% static 'ico/baseline_build_white_18dp.png' %}", onClick: () => {window.location.href='./edit/'.concat(id)}},
-                    {label: 'Odstranit', icon: "{% static 'ico/baseline_delete_forever_white_18dp.png' %}", onClick: () => {deleteInvoice(id);$('#delete-modal').modal('show');}},
+                    {label: 'Odstranit', icon: "{% static 'ico/baseline_delete_forever_white_18dp.png' %}", onClick: () => {deleteInvoice(id); modal.show();}},
                     {type: 'seperator'},
                     {label: 'PDF', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.location='/invoices/print/'.concat(id,'/?sign=0', '&asset=', "{{type}}")}},
                     {label: 'PDF s podpisem', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.location='/invoices/print/'.concat(id,'/?sign=1', '&asset=', "{{type}}")}},

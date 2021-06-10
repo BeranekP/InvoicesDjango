@@ -28,7 +28,13 @@
     {% endblock %} 
     {% block scripts %}
     {% endblock %}
-    <script src="{% static 'js/jquery-3.6.0.slim.min.js'%}"></script>
     <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
+    <script>
+    let alerts = document.querySelectorAll('.alert')
+    for (alert of alerts){
+        var bsAlert = new bootstrap.Alert(alert)
+        window.setTimeout(() => bsAlert.close(), 2000)
+    }
+    </script>
   </body>
 </html>

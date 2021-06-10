@@ -31,6 +31,10 @@
     transition: padding 0.2s linear;
 }
 
+.offcanvas-ul {
+    list-style: none;
+}
+
 .hidden ul {
     list-style: none;
     max-height: 0;

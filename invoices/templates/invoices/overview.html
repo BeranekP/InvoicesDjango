@@ -1,10 +1,7 @@
 {% extends "../base/base.html" %}
 {% load i18n %} {% load l10n %} {% load static %}{% load zipcode %}{% load multiply %}{% load divide %}
   {% block style %}
-     <link rel="stylesheet" type="text/css" href="{% static 'css/contextual.theme.css' %}"/>
-     <link rel="stylesheet" type="text/css" href="{% static 'css/contextual.css' %}"/>
      <link rel="stylesheet" type="text/css" href="{% static 'css/overview.css' %}"/>
-     <script src="{% static 'js/contextual.js' %}"></script>
   {% endblock style %}
  
   {% block title %} Invoice Factory - Přehled {% endblock %}
@@ -18,8 +15,8 @@
         {% endlocalize %}
       </div>
     </div>
-    <div class="modal d-print-none" tabindex="-1" role="dialog" id="delete-modal">
-      <div class="modal-dialog" role="document">
+    <div class="modal fade d-print-none" id="delete-modal" data-bs-backdrop="static">
+      <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body" >
             <p id='delete-body'>Opravdu chcete odstranit fakturu?</p>
@@ -27,7 +24,7 @@
           <div class="modal-footer">
           <form action="" method="POST" id="delete">{% csrf_token %}
           </form>
-            <button type="submit" class="btn btn-primary btn-danger" id='delete-invoice'>Ano</button>
+            <button type="submit" class="btn btn-primary btn-danger" id='delete-invoice' form="delete">Ano</button>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zpět</button>
           </div>
         </div>
@@ -73,8 +70,8 @@
         <thead class="table-dark" id='thead'>
           <tr>
             <th scope="col" style="text-align: center;" >
-              <input id='show_all' class="d-print-none" type="checkbox" title="Rozbalit vše"></input>
-              <span class='d-none d-print-inline-block'>#</span>
+              <!--<input id='show_all' class="d-print-none" type="checkbox" title="Rozbalit vše"></input>-->
+              <span class='d-inline-block'>#</span>
             </th>
             <th scope="col" style="text-align: center;">Odběratel</th>
             <th
@@ -108,7 +105,7 @@
           </tr>
           {% endif %}
           {% for invoice in invoices %}
-          <tr id="{{ invoice.id }}" class="invoice" title='Klikněte pravým tlačítkem myši.'>
+          <tr id="{{ invoice.id }}" class="invoice" title='Klikněte levým tlačítkem myši - menu'>
             {% localize off %}
             <td scope="row" style="text-align: center;">
               {{ invoice.iid }}
@@ -154,10 +151,71 @@
         </tbody>
       </table>
     </div>
+    <div class="offcanvas offcanvas-start shadow-lg bg-dark text-light" tabindex="-1" id="offcanvas" aria-labelledby="offcanvasLabel" data-bs-backdrop="true" style='width:600px'>
+      <div class="offcanvas-header border-bottom">
+        <h5 id="offcanvasLabel"></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"  aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body" id='offcanvas-recipient'>
+      
+      </div>
+      <div class="offcanvas-body" id='offcanvasBody'>
+      </div>
+      <ul class="offcanvas-body nav flex-column w-100 gap-2">
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100" aria-current="page" href="#" id='view'>Náhled</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100" href="#" id='edit'>Upravit</a>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-outline-danger w-100" id='remove'>Odstranit</button>
+        </li>
+        <hr>
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100" href="#" id='pdf' onClick='dimPage()'>PDF</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-light w-100" href="#" id='pdf-sign'  onClick='dimPage()'>PDF s podpisem</a>
+        </li>
+      </ul>
+    </div>
     {% endblock %}
     
     {% block scripts %}
+    <script>
     
+    function deleteInvoice(invoiceId){
+      let form = document.querySelector('#delete');
+      form.action = './delete/'.concat(invoiceId,'/');
+    }
+
+    let modal =  new bootstrap.Modal(document.getElementById('delete-modal'))
+
+    table = document.querySelector("#invoices");
+    table.addEventListener('click',e=>{
+          e.preventDefault();
+          e.stopPropagation();
+          let invoice = e.target.closest('tr');
+          if (invoice.nodeName=='TR'){
+            let id = invoice.id;
+            document.querySelector('#offcanvasLabel').innerText = "{{type|capfirst}} " + invoice.children[0].innerText
+            document.querySelector('#offcanvasBody').innerHTML = document.querySelector('#hidden-'+ id +'> td' ).innerHTML;
+            document.querySelector('#offcanvas-recipient').innerHTML = `${invoice.children[1].innerHTML}  <div class='display-6 text-center mt-3'>${invoice.children[2].innerHTML}</div>`
+            document.querySelector('#offcanvasBody > ul').classList.add('list-group', 'list-group-flush', 'offcanvas-ul')
+            document.querySelector('#view').href = './detail/'.concat(id)
+            document.querySelector('#edit').href ='./edit/'.concat(id)
+            document.querySelector('#remove').addEventListener('click', (ev) => {ev.preventDefault(); deleteInvoice(id); modal.show();})
+            document.querySelector('#pdf').href ='/invoices/print/'.concat(id,'/?sign=0', '&asset=', "{{type}}")
+            document.querySelector('#pdf-sign').href = '/invoices/print/'.concat(id,'/?sign=1', '&asset=', "{{type}}")
+            var myOffcanvas = document.getElementById('offcanvas')
+            var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas)
+            bsOffcanvas.show()
+          }
+    });
+    
+    
+    </script>
     <script>
       // Submit select input after selection
       function yearSubmit() {
@@ -171,41 +229,15 @@
 
     </script>
     <script>
-    
-    rows = document.getElementsByClassName("invoice");
-    function deleteInvoice(id){
-      let form = document.getElementById('delete');
-      form.action = './delete/'.concat(id,'/');
-
-    }
-    btnDel = document.getElementById('delete-invoice');
-    btnDel.addEventListener('click',()=>{
-      document.getElementById('delete').submit();
-    })
+    let rows = document.querySelectorAll('.invoice')
     for (let row=0; row<rows.length; row++){
-      rows[row].addEventListener('contextmenu', e => {
-        (function(id){
-            e.preventDefault();
-            let modal = new bootstrap.Modal(document.getElementById('delete-modal'))
-            new Contextual({
-                isSticky: false,
-                items: [
-                    {label: 'Nová', icon: "{% static 'ico/baseline_note_add_white_18dp.png' %}", onClick: () => {window.location.href='./create/'}},
-                    {label: 'Zobrazit', icon: "{% static 'ico/baseline_search_white_18dp.png' %}", onClick: () => {window.location.href='./detail/'.concat(id)}},
-                    {label: 'Upravit', icon: "{% static 'ico/baseline_build_white_18dp.png' %}", onClick: () => {window.location.href='./edit/'.concat(id)}},
-                    {label: 'Odstranit', icon: "{% static 'ico/baseline_delete_forever_white_18dp.png' %}", onClick: () => {deleteInvoice(id); modal.show();}},
-                    {type: 'seperator'},
-                    {label: 'PDF', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.location='/invoices/print/'.concat(id,'/?sign=0', '&asset=', "{{type}}")}},
-                    {label: 'PDF s podpisem', icon: "{% static 'ico/baseline_print_white_18dp.png' %}", onClick: () => {window.location='/invoices/print/'.concat(id,'/?sign=1', '&asset=', "{{type}}")}},
-                    
-                ]
-                
-            });
-          })(rows[row].id);
-        });
-    }
-    for (let row=0; row<rows.length; row++){
-      rows[row].addEventListener('click', e => {
+      window.addEventListener('beforeprint', e => {
+         (function(id){
+          let hidden_row = document.getElementById(id);
+          hidden_row.classList.toggle('open');
+         })('hidden-'.concat(rows[row].id));
+          });
+      window.addEventListener('afterprint', e => {
          (function(id){
           let hidden_row = document.getElementById(id);
           hidden_row.classList.toggle('open');
@@ -213,15 +245,7 @@
           });
     }
     </script>
-    <script>
-      let showAll = document.getElementById('show_all');
-      showAll.addEventListener('change', e => {
-        let invoices = document.getElementsByClassName('hidden');
-        for (invoice of invoices){
-          invoice.classList.toggle('open');
-        }
-      });
-    </script>
+ 
     <script src= "{% static 'js/printPage.js' %}"></script>
     {% endblock %}
 

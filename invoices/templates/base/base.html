@@ -27,10 +27,11 @@
   </head>
   <body>
     {% block content %}
-    {% endblock %} 
-    {% block scripts %}
     {% endblock %}
     <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
-    <script src="{% static 'js/alertAutoDismiss.js'%}"></script>
+    <script src="{% static 'js/alertAutoDismiss.js'%}"></script> 
+    {% block scripts %}
+    {% endblock %}
+    
   </body>
 </html>

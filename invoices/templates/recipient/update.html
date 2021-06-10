@@ -17,7 +17,7 @@ background-color: #f1f1f1;
   {% block content %}
   {% localize off %}
     <div class="container mt-3">
-      <h2 class="mt-2, pb-5">Editovat odběratele <em>{{ recipient.name }}</em></h2>
+      <h2 class="mt-2, pb-5">Editovat odběratele <em>{{ recipient.name }} {{ recipient.surname }}</em></h2>
       <form action="./" method="POST">
         {% csrf_token %}
         <div class="mb-3">

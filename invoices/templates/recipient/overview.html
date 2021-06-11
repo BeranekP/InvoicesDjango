@@ -72,7 +72,7 @@
         <tbody id="recipients">
           {% for recipient in recipients %}
           {% if recipient.invoices|length > 0 and selected_year != 'all'%}
-          <tr id="{{ recipient.id }}" class="recipient-row" title='Klikněte pravým tlačítkem myši.'>
+          <tr id="{{ recipient.id }}" class="recipient-row" title='Klikněte levým tlačítkem myši - menu'>
             {% localize off %}
             
             <td>

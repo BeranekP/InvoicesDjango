@@ -3,10 +3,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between px-5 py-3 my-0 {% if  fixed%}fixed-top{% endif %} d-print-none">
   <div class="container-fluid">
             <a href="/dash" class="navbar-brand d-print-none">
+            {% spaceless %}
               <svg height="40" width="40" style=" fill: white; stroke:white;">
                 {{logo|safe}}
               </svg>
-            </a> 
+            </a>
+            {% endspaceless %} 
         <button
           class="navbar-toggler"
           type="button"

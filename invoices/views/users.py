@@ -1,22 +1,24 @@
 from ._modules import *
+mime = magic.Magic(mime=True)
 
 
-class SignupView(LoginRequiredMixin, View):
-    template_name = 'signup/form.html'
+class SignupView(View):
+    template_name = 'user/profile.html'
     login_url = '/'
     redirect_field_name = ''
 
     def get(self, request):
         if request.user.is_authenticated:
             return redirect('/invoices')
-        return render(request, self.template_name)
+        return render(request, self.template_name, {'profile': None, 'create': True})
 
     def post(self, request):
-        username = request.POST['username']
-        password = request.POST['password']
-        user = User.objects.create_user(username, '', password)
+        username = request.POST['name']
+        password1 = request.POST['password']
+        password2 = request.POST['password-confirm']
+
         user_profile = UserProfile()
-        user_profile.user = user
+
         user_profile.email = request.POST['email']
         user_profile.web = request.POST['web']
         user_profile.name = request.POST['name']
@@ -24,12 +26,48 @@ class SignupView(LoginRequiredMixin, View):
         user_profile.town = request.POST['town']
         user_profile.zipcode = request.POST['zipcode']
         user_profile.ic = request.POST['ic']
-        user_profile.logo = request.FILES['logo']
-        user_profile.sign = request.FILES['sign']
+        if UserProfile.objects.filter(ic=user_profile.ic).exists():
+            messages.warning(request, f'Uživatel s tímto IČ již existuje')
+            return redirect('/signup')
+        try:
+            user_profile.logo = request.FILES['logo']
+            mime_type = mime.from_buffer(user_profile.logo.read())
+            if mime_type != 'image/svg+xml':
+                messages.warning(request, 'Vložte logo v SVG formátu.')
+                return redirect('/signup/')
+        except:
+            pass
+        try:
+            user_profile.sign = request.FILES['sign']
+            mime_type = mime.from_buffer(user_profile.sign.read())
+            if mime_type != 'image/png' and mime_type != 'image/jpeg':
+                messages.warning(
+                    request, 'Vložte podpis v JPG nebo PNG formátu.')
+                return redirect('/signup/')
+        except:
+            pass
         user_profile.rnd_id = randstring(25)
+
         if request.POST['dic']:
             user_profile.dic = request.POST['dic']
+
         user_profile.bank = request.POST['bank']
+
+        if password1 and password2:
+            if password1 == password2:
+                if User.objects.filter(username=user_profile.email).exists():
+                    messages.warning(
+                        request, f'Uživatel {user_profile.email} již existuje')
+                    return redirect('/signup/')
+                user = User.objects.create_user(
+                    user_profile.email, '', password1)
+            else:
+                messages.warning(request, 'Hesla se neshodují.')
+                return redirect('/signup/')
+        else:
+            messages.warning(request, 'Neplatné heslo')
+            return redirect('/signup/')
+        user_profile.user = user
 
         user_profile.save()
         user.save()

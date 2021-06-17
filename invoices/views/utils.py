@@ -25,8 +25,9 @@ class DashView(LoginRequiredMixin, View):
             userprofile = None
 
         try:
-            logo = userprofile.logo.read()
-        except:
+            logo = userprofile.logo.read().decode()
+        except Exception as e:
+            print(e)
             logo = None
 
         data = Invoice.objects.filter(
@@ -55,10 +56,12 @@ class DashView(LoginRequiredMixin, View):
                 if val != 'null':
                     running_total += val
                 graph_data[year]['total'][i] = running_total
-
-        if datetime.now().year == year:
-            total = graph_data[year]['total'][-1]
-        else:
+        try:
+            if datetime.now().year == year:
+                total = graph_data[year]['total'][-1]
+            else:
+                total = 0
+        except UnboundLocalError:
             total = 0
         context = {"data": data, "logo": logo,
                    "profile": userprofile, "total": total if total != 'null' else 0, "graphdata": graph_data}

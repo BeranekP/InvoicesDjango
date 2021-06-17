@@ -17,8 +17,13 @@ Upravit profil
 {% endblock  %}
 {% block content %}
 {% localize off %}
+    {% include "../base/flash_message.html" %}
     <div class="container mt-3">
-      <h2 class="mt-2, pb-5">Upravit profil <em>{{profile.name}}</em></h2>
+      <h2 class="mt-2, pb-5"> {% if  create%}
+      Registrace
+      {% else %}
+      Upravit profil <em>{{profile.name}}</em>
+      {% endif %} </h2>
       <form action="./" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="d-flex flex-column flex-md-row gap-3 mb-3">
@@ -30,7 +35,7 @@ Upravit profil
                 id="recipientInput"
                 name="name"
                 placeholder="John Doe"
-                value="{{profile.name}}"
+                {% if profile %} value="{{profile.name}}" {% endif %}
                 />
                 <label for="recipientInput" class='text-dark'>Jméno</label>
             </div>
@@ -39,9 +44,9 @@ Upravit profil
                 type="email"
                 class="form-control"
                 id="email"
-                placeholder=""
+                placeholder="john.doe@email.com"
                 name="email"
-                value="{{profile.email}}"
+                {% if profile %}value="{{profile.email}}" {% endif %}
                 />
                 <label for="email" class='text-dark'>Email</label>
             </div>
@@ -50,9 +55,9 @@ Upravit profil
                 type="text"
                 class="form-control"
                 id="web"
-                placeholder=""
+                placeholder="www.website.com"
                 name="web"
-                {% if profile.web %}
+                {% if profile %}
                     value="{{profile.web}}"
                 {% endif %}
                 />
@@ -68,7 +73,9 @@ Upravit profil
                 id="street"
                 name="street"
                 placeholder="Street 22"
-                value="{{profile.street}}"
+                {% if profile %}
+                  value="{{profile.street}}"
+                {% endif %}
               />
               <label for="street" class='text-dark'>Ulice</label>
             </div>
@@ -79,7 +86,9 @@ Upravit profil
                 id="town"
                 name="town"
                 placeholder="London"
-                value="{{profile.town}}"
+                {% if profile %}
+                  value="{{profile.town}}"
+                {% endif %}
               />
               <label for="town" class='text-dark'>Město</label>
             </div>
@@ -91,17 +100,28 @@ Upravit profil
                 placeholder="66666"
                 name="zipcode"
                 step="1"
-                value="{{profile.zipcode}}"/>
+                {% if profile %}
+                  value="{{profile.zipcode}}"
+                {% endif %}
+                />
+                
               <label for="zipcode" class='text-dark'>PSČ</label>
               
             </div>
           </div>
           <div class="col-12 col-lg-6 flex-fill">
             <div class="w-100 d-flex align-items-center justify-content-center mb-2">
-              <img src="{% static profile.logo.name|filename %}" alt="Logo" class="img-thumbnail mx-auto mt-3" id="logo" width=150>
+            
+              <img 
+                src="{% static profile.logo.name|filename %}"
+                alt="Vložte SVG logo." title="Vložte SVG logo." class="img-thumbnail mx-auto mt-3 border-secondary" 
+                style='background:none' id="logo" width=180 height=150
+                onerror="this.src='/static/ico/outline_add_white_48dp.png'"
+                >
+            
             </div>
             <div class="d-flex justify-content-center align-items-center w-75 mx-auto">
-              <input type="file" id='logoInput' class="form-control" name='logo' oninput="getPreview('logoInput', 'logo')">
+              <input type="file" id='logoInput' class="form-control" name='logo' oninput="getPreview('logoInput', 'logo')" accept=".svg" >
             </div>
           </div>
       </div>
@@ -113,9 +133,11 @@ Upravit profil
                   type="text"
                   class="form-control"
                   id="ic"
-                  placeholder=""
+                  placeholder="123456789"
                   name="ic"
-                  value="{{profile.ic}}"
+                  {% if profile %}
+                    value="{{profile.ic}}"
+                  {% endif %}
                   />
                   <label for="ic" class='text-dark'>IČ</label>
               </div>
@@ -124,13 +146,13 @@ Upravit profil
                   type="text"
                   class="form-control"
                   id="dic"
-                  placeholder=""
+                  placeholder="XY123456789"
                   name="dic"
                   {% if profile.dic %}
-                  value="{{profile.dic}}"
+                    value="{{profile.dic}}"
                   {% endif %}
                   />
-                  <label for="ic" class='text-dark'>DIČ</label>
+                  <label for="dic" class='text-dark'>DIČ</label>
               </div>
               <div class="form-floating flex-fill mb-3">
                 <input
@@ -139,18 +161,27 @@ Upravit profil
                   id="bank"
                   placeholder="xxxxxxxxx/xxxx"
                   name="bank"
-                  value="{{profile.bank}}"
+                  {% if profile %}
+                    value="{{profile.bank}}"
+                  {% endif %}
                 />
                 <label for="bank" class='text-dark'>Bankovní účet</label>
               </div>
           </div>
           <div class="col-12 col-lg-6">
-            <div class="col-12 form-group">
+            <div class="col-12 input-group">
               <div class="w-100 d-flex align-items-center justify-content-center mb-2">
-                <img src="{% static profile.sign.name|filename %}" alt="Signature" class="img-thumbnail mx-auto mt-3" id="sign" width=200>
+              
+                <img 
+                  src="{% static profile.sign.name|filename %}"
+                  alt="Podpis" class="img-thumbnail mx-auto mt-3 border-secondary"
+                  style='background:none' id="sign" width=180 height=150
+                  onerror="this.src='/static/ico/outline_add_white_48dp.png'"
+                  >
+              
               </div>
               <div class="d-flex justify-content-center align-items-center w-75 mx-auto">
-                <input type="file" id='signInput' class="form-control" name='sign' oninput="getPreview('signInput', 'sign')">
+                <input type="file" id='signInput' class="form-control" name='sign' oninput="getPreview('signInput', 'sign')" accept=".png, .jpg">
               </div>
             </div>
           </div>
@@ -164,6 +195,7 @@ Upravit profil
                         class="form-control"
                         id="passwordInput"
                         name="password"
+                        placeholder=' '
                     />
                     <label for="passwordInput" class='text-dark'>Heslo</label>
                 </div>
@@ -172,6 +204,7 @@ Upravit profil
                         type="password"
                         class="form-control"
                         id="passwordConfirmInput"
+                        placeholder=' '
                         name="password-confirm"
                     />
                     <label for="passwordInput" class='text-dark'>Potvrzení hesla</label>
@@ -181,7 +214,7 @@ Upravit profil
         <div
           class="container-fluid d-flex w-75 align-items-center justify-content-around mt-3 gap-4 mb-3"
         >
-        <a href="{{ref}}" class="btn btn-lg btn-outline-light w-50"
+        <a href="/" class="btn btn-lg btn-outline-light w-50"
             >Zpět</a
           >
           <input

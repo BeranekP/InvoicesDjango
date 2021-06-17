@@ -30,7 +30,15 @@
     {% block content %}
     {% endblock %}
     <script src="{% static 'js/bootstrap.bundle.min.js'%}"></script>
-    <script src="{% static 'js/alertAutoDismiss.js'%}"></script>s 
+    <script src="{% static 'js/alertAutoDismiss.js'%}"></script> 
+    <script>
+    svgs = document.querySelectorAll('svg>svg')
+    for (svg of svgs){
+      svg.width.baseVal.newValueSpecifiedUnits(SVGLength.SVG_LENGTHTYPE_PX, 40)
+      svg.height.baseVal.newValueSpecifiedUnits(SVGLength.SVG_LENGTHTYPE_PX, 40)
+    }
+
+    </script>
     {% block scripts %}
     {% endblock %}
     

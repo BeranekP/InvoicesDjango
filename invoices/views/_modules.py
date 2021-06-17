@@ -28,6 +28,7 @@ from xhtml2pdf import pisa
 from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 from svglib.svglib import svg2rlg
+import magic
 
 # sendgrid mail modules
 from sendgrid import SendGridAPIClient

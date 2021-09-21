@@ -28,7 +28,7 @@ class SignupView(View):
         user_profile.ic = request.POST['ic']
         if UserProfile.objects.filter(ic=user_profile.ic).exists():
             messages.warning(request, f'Uživatel s tímto IČ již existuje')
-            return redirect('/signup')
+            return redirect('/signup/')
         try:
             user_profile.logo = request.FILES['logo']
             mime_type = mime.from_buffer(user_profile.logo.read())

@@ -156,3 +156,10 @@ def clear_pdf(path):
         for fn in filenames:
             if fn.lower().endswith('.pdf'):
                 os.remove(os.path.join(parent, fn))
+
+def clear_session_data(request):
+    request.session['pdf'] = None
+    request.session['filename'] = None
+    request.session['type'] = None
+    request.session['invoice'] = None
+    request.session['asset'] = None

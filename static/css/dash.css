@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     background: rgb(204, 203, 203);
 }
@@ -55,7 +59,8 @@ h6 {
     background: rgb(228, 228, 228);
     height: 50vh;
     padding: 0;
-    margin-top: 2rem;
+    margin-top: 1em;
+
 
 }
 

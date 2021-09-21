@@ -1,5 +1,5 @@
 from ._modules import *
-from .utils import link_callback, clear_pdf
+from .utils import link_callback, clear_pdf, clear_session_data
 import cairosvg
 from invoices.views.email_template import template as t
 from django.core import serializers
@@ -15,15 +15,15 @@ class PDFView(LoginRequiredMixin, View):
         pdf = request.session['pdf']
         filename = request.session['filename']
         doctype = request.session['type']
-        try:
-            pk = request.session['invoice']
-        except:
-            pk = None
+
+        pk = request.session.get('invoice', None)
         user = UserProfile.objects.get(user=request.user)
+        
         try:
             logo = user.logo.read()
         except:
             logo = None
+        
         return render(request, self.template_name, {'user': user, 'logo': logo, 'pdf': pdf, 'filename': filename, 'type': doctype, 'pk': pk})
 
     def post(self, request):
@@ -79,12 +79,11 @@ class PrintInvoiceView(LoginRequiredMixin, View):
 
     def get(self, request, id=None):
         template = get_template(self.template_name)
-        sign = request.GET['sign']
-        try:
-            asset = request.GET['asset']
-        except:
-            asset = None
+        clear_session_data(request)
 
+        sign = request.GET.get('sign', None)
+        asset = request.GET.get('asset', None)
+   
         if asset == 'advance' or asset.lower() == 'záloha':
             name = 'záloha'
         else:
@@ -143,6 +142,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
         pdf = pisa.pisaDocument(
             BytesIO(html.encode("utf-8")), result, encoding='UTF-8', link_callback=link_callback)
         clear_pdf(os.path.dirname(user.logo.name))
+        
 
         if not pdf.err:
             response = HttpResponse(

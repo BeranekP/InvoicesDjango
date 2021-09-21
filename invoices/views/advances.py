@@ -124,10 +124,9 @@ class AdvanceOverView(LoginRequiredMixin, View):
 
         total = 0
         years = []
-        try:
-            yr = request.GET['yr']
-        except:
-            yr = datetime.now().year
+        
+        yr = request.GET.get('yr', datetime.now().year)
+      
 
         if yr and not yr == 'all':
             invoices = Advance.objects.filter(

@@ -55,11 +55,8 @@ class RecipientOverView(LoginRequiredMixin, View):
             owner=request.user).order_by('surname')
 
         years = []
-        try:
-            yr = request.GET['yr']
-        except:
-            yr = datetime.now().year
-
+        yr = request.GET.get('yr', datetime.now().year)
+    
         if yr and not yr == 'all':
             invoices = Invoice.objects.filter(
                 date__year=yr, owner=request.user).order_by('-iid')

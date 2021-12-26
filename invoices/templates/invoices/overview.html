@@ -52,11 +52,11 @@
           >
             <option value="all">Všechny</option>
             {% for year in years %} 
-              {% ifequal year selected_year %}
+              {% if year == selected_year %}
                 <option value="{{year}}" selected="selected">{{year}}</option>
               {% else %}
                 <option value="{{year}}">{{year}}</option>
-              {% endifequal %} 
+              {% endif %} 
             {% endfor %}
           </select>
         </form>

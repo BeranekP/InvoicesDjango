@@ -86,11 +86,11 @@ background-color: #f1f1f1;
             
             <select name="currency" id="currencyInput" class="form-select">
             {% for rate in rates.keys %}
-              {% ifequal invoice.currency rate %}
+              {if invoice.currency == rate %}
                 <option value='{{rate}}' selected="selected" >{{rate}}</option>
               {% else %}
                 <option value='{{rate}}' >{{rate}}</option>
-              {% endifequal %}
+              {% endif %}
 
             {% endfor %}
             </select>
@@ -101,16 +101,16 @@ background-color: #f1f1f1;
             <select name="payment" id="paymentInput" class="form-select">
               <option
                 value="bankovním převodem"
-                {% ifequal invoice.payment "bankovním převodem" %}
+                {% if invoice.payment == "bankovním převodem" %}
                 selected="selected"
-                {% endifequal %}
+                {% endif %}
                 >bankovním převodem</option
               >
               <option
                 value="hotově"
-                {% ifequal invoice.payment "hotově" %}
+                {% if invoice.payment == "hotově" %}
                 selected="selected"
-                {% endifequal %}
+                {% endif %}
                 >hotově</option
               >
             </select>

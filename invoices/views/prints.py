@@ -107,10 +107,10 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             img = generator.make_image()
             svg_output = os.path.join(os.path.dirname(
                 user.logo.name), 'conversionQR.svg')
+            print('***', svg_output)
             qr_png = os.path.join(os.path.dirname(
                 user.logo.name), 'conversionQR.png')
             img.save(svg_output)
-            svg2rlg(svg_output)
             cairosvg.svg2png(url=svg_output, write_to=qr_png, scale=8)
             request.session['qr'] = base64.b64encode(
                 open(qr_png, "rb").read()).decode()
@@ -128,8 +128,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
 
         logo_png = os.path.join(os.path.dirname(
             user.logo.name), 'conversionLG.png')
-
-        svg2rlg(user.logo.name)
+            
         cairosvg.svg2png(url=user.logo.name, write_to=logo_png, scale=5)
 
         context = {"invoice": invoice, "user": user, 'logo': logo_png,

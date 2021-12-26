@@ -28,7 +28,7 @@ SECRET_KEY = KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '10.0.0.140']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.2.103']
 LOGIN_URL = ''
 
 # Application definition
@@ -85,7 +85,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -133,6 +132,7 @@ PROJECT_DIR = os.path.dirname(__file__)
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static"),
                     '/var/www/static/', ]

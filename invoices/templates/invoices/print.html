@@ -10,15 +10,15 @@
     
     @font-face {
         font-family: Roboto;
-        src: url("D:\python\WEB\faktury\accounts\static\fonts\Roboto-Regular.ttf");
+        src: url("E:\python\WEB\faktury\accounts\static\fonts\Roboto-Regular.ttf");
         }
     @font-face {
         font-family: RobotoBold;
-        src: url("D:\python\WEB\faktury\accounts\static\fonts\Roboto-Bold.ttf");
+        src: url("E:\python\WEB\faktury\accounts\static\fonts\Roboto-Bold.ttf");
         }
     @font-face {
         font-family: RobotoItalic;
-        src: url("D:\python\WEB\faktury\accounts\static\fonts\Roboto-Italic.ttf");
+        src: url("E:\python\WEB\faktury\accounts\static\fonts\Roboto-Italic.ttf");
         }
     @page {
         size: A4; /* DIN A4 standard, Europe */
@@ -281,9 +281,9 @@
                         {{invoice.recipient.name}} {{invoice.recipient.surname}}<br />
                         {{invoice.recipient.street}} <br />
                         {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
-                        {% ifnotequal invoice.recipient.state 'Česká republika'%}
+                        {% if invoice.recipient.state != 'Česká republika'%}
                         {{invoice.recipient.state}}<br />
-                        {% endifnotequal %}
+                        {% endif %}
                         {% if invoice.recipient.ic %}
                         <br />
                         IČ: {{invoice.recipient.ic}} <br />
@@ -303,7 +303,7 @@
                     <div>
                       
                       <p>Číslo účtu:&nbsp; <span class='bold right'> {{user.bank}} </span></p>
-                      {% ifnotequal invoice.currency 'CZK' %}<p>IBAN:&nbsp; <span class='bold right'>{{iban}}</span></p>{% endifnotequal %}
+                      {% if invoice.currency != 'CZK' %}<p>IBAN:&nbsp; <span class='bold right'>{{iban}}</span></p>{% endif %}
                       <p>Konstatní symbol:&nbsp; <span class='right'> 0308 </span></p>
                       <p>Variabilní symbol:&nbsp; <span class='bold right'>{{invoice.iid}}</span> </p>
                     </div>
@@ -341,14 +341,14 @@
                   Počet [ks]
                 </th>
                 <th class ="itemhead">
-                  Cena [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  Cena [{% if invoice.currency == 'CZK' %}Kč{% else %}
                   {{invoice.currency}}
-                  {% endifequal %}/ks]
+                  {% endif %}/ks]
                 </th>
                 <th class ="itemhead">
-                  Celkem [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  Celkem [{% if invoice.currency == 'CZK' %}Kč{% else %}
                   {{invoice.currency}}
-                  {% endifequal %}]
+                  {% endif %}]
                 </th>
               </tr>
             </thead>
@@ -379,7 +379,7 @@
                       <span id="total">
                       {% if invoice.amount %}
                         {{invoice.amount|floatformat:2}} 
-                        {% ifequal invoice.currency 'CZK' %}
+                        {% if invoice.currency == 'CZK' %}
                         Kč
                      
                       </span>
@@ -387,7 +387,7 @@
                         {{invoice.currency}}
                       </span>                  
                         <div class='conversion'>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
-                      {% endifequal %}
+                      {% endif %}
                       {% endif %}
                 
               </td>
@@ -421,13 +421,13 @@
               </td>
               <td>
                 <div id="stamp">
-                {% ifequal sign '1' %}          
+                {% if sign == '1' %}          
                   <img src={{user.sign.name}} alt="" id="signature">
                 {% else %}
                   <div id="signature">
                   &nbsp;
                   </div>  
-                {% endifequal %} 
+                {% endif %} 
                   <p class='signline'>
                     Razítko a podpis dodavatele
                   </p>

@@ -147,7 +147,6 @@ def link_callback(uri, rel):
         raise Exception(
             'media URI must start with %s or %s' % (sUrl, mUrl)
         )
-    #print('****', path)
     return path
 
 
@@ -158,6 +157,23 @@ def clear_pdf(path):
                 os.remove(os.path.join(parent, fn))
 
 def clear_session_data(request):
+    user = UserProfile.objects.get(user=request.user)
+    if user:
+        svg_output = os.path.join(os.path.dirname(user.logo.name), 'conversionQR.svg')
+        qr_png = os.path.join(os.path.dirname(user.logo.name), 'conversionQR.png')
+
+        try:
+            os.remove(svg_output)
+        except FileNotFoundError:
+            pass
+
+        try:
+            os.remove(qr_png)
+        except FileNotFoundError:
+            pass
+        
+
+    request.session['qr']  = None        
     request.session['pdf'] = None
     request.session['filename'] = None
     request.session['type'] = None

@@ -53,9 +53,9 @@
                 {{invoice.recipient.name}} {{invoice.recipient.surname}}<br />
                 {{invoice.recipient.street}} <br />
                 {{invoice.recipient.zipcode|zipcode}} {{invoice.recipient.town}}<br />
-                {% ifnotequal invoice.recipient.state 'Česká republika'%}
+                {% if invoice.recipient.state != 'Česká republika'%}
                 {{invoice.recipient.state}}<br />
-                {% endifnotequal %}
+                {% endif %}
                 {% if invoice.recipient.ic %}
                 <br />
                 IČ: {{invoice.recipient.ic}} <br />
@@ -75,14 +75,14 @@
             <div class="row">
               <div class="col-5 col-lg-6">
                 Číslo účtu: <br />
-                {% ifnotequal invoice.currency 'CZK' %}IBAN: <br />{% endifnotequal %}
+                {% if invoice.currency != 'CZK' %}IBAN: <br />{% endif %}
                 Konstatní symbol: <br />
                 Variabilní symbol: <br />
               </div>
 
               <div class="col-7 px-0 col-lg-6">
                 <strong>{{user.bank}} </strong><br />
-                {% ifnotequal invoice.currency 'CZK' %}<strong>{{iban}}</strong> <br />{% endifnotequal %}
+                {% if invoice.currency != 'CZK' %}<strong>{{iban}}</strong> <br />{% endif %}
                 0308 <br />
                 <strong>{{invoice.iid}}</strong>
               </div>
@@ -145,9 +145,9 @@
                     text-align: center;
                   "
                 >
-                  Cena [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  Cena [{% if invoice.currency == 'CZK' %}Kč{% else %}
                   {{invoice.currency}}
-                  {% endifequal %}/ks]
+                  {% endif %}/ks]
                 </th>
                 <th
                   style="
@@ -156,9 +156,9 @@
                     text-align: center;
                   "
                 >
-                  Celkem [{% ifequal invoice.currency 'CZK' %}Kč{% else %}
+                  Celkem [{% if invoice.currency == 'CZK' %}Kč{% else %}
                   {{invoice.currency}}
-                  {% endifequal %}]
+                  {% endif %}]
                 </th>
               </tr>
             </thead>
@@ -186,12 +186,12 @@
                 <span>
                 <span class="ml-lg-3 px-2 border border-dark d-flex d-md-inline mt-2 mt-sm-0"
                   >{{invoice.amount|floatformat:2}} 
-                  {% ifequal invoice.currency 'CZK' %}
+                  {% if invoice.currency == 'CZK' %}
                   Kč
                   {% else %}
                   {{invoice.currency}}</span> 
                   <div class='h6 mt-3 ml-5 '>({{ invoice.amount |multiply:invoice.exchange_rate.rate|divide:invoice.exchange_rate.amount|floatformat:2 }} Kč; kurz ČNB k {{invoice.exchange_rate.date}}: {{invoice.exchange_rate.rate|floatformat:3}} Kč/{{invoice.exchange_rate.amount}} {{invoice.currency}})</div>
-                  {% endifequal %}
+                  {% endif %}
                 </span>
                   
               </h2>

@@ -16,6 +16,7 @@ from django.utils.safestring import mark_safe
 from django.views import View
 from django.views.decorators.http import require_GET
 
+
 # api keys
 from protected import SENDGRID_API_KEY, EMAIL  # ,OTHER_EMAIL
 
@@ -29,6 +30,9 @@ from datetime import datetime, timedelta
 from io import BytesIO, StringIO
 from svglib.svglib import svg2rlg
 import magic
+
+import logging
+logger = logging.getLogger(__name__)
 
 # sendgrid mail modules
 from sendgrid import SendGridAPIClient

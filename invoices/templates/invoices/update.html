@@ -14,14 +14,14 @@ background-color: #f1f1f1;
 {% endblock %} 
 {% block title %}
   {% localize off %}
-  Upravit {% if type == 'faktura' %} fakturu {% else %} zálohu {% endif %} č. {{invoice.iid}}
+  Upravit {% if type == 'invoice' %} fakturu {% elif type == 'advance' %} zálohu {% endif %} č. {{invoice.iid}}
   {% endlocalize %}
 {% endblock  %}
 
 {% block content %}
     {% localize off %}
     <div class="container mt-3 mx-auto">
-      <h2 class="mt-2, pb-5">Upravit {% if type == 'faktura' %} fakturu {% else %} zálohu {% endif %} č. {{invoice.iid}}</h2>
+      <h2 class="mt-2, pb-5">Upravit {% if type == 'invoice' %} fakturu {% elif type == 'advance' %} zálohu {% endif %} č. {{invoice.iid}}</h2>
       <form action="./" method="POST">
         {% csrf_token %}
         <div class="form-floating mb-3">
@@ -137,7 +137,7 @@ background-color: #f1f1f1;
           
           
         </div>
-        {% if type == "faktura" %}
+        {% if type == "invoice" %}
         <div class="form-floating mb-5 w-100">
           <select
               class="form-select"
@@ -153,7 +153,7 @@ background-color: #f1f1f1;
             </select>
             <label for="advanceInput" class="text-dark">Připojit zálohu</label>
           <div>
-          {% elif type == "záloha" %}
+          {% elif type == "advance" %}
             {% if invoice.linked %}
               <div class='text-success'>Připojeno ✓ </div>
             {% else %}

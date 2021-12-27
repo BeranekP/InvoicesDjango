@@ -14,14 +14,14 @@
 {% endblock %}
     
 {% block title %}
-    Invoice Factory - Nová {{type}}
+    Invoice Factory - Nová {% if type == 'invoice' %} faktura {% elif type == 'advance' %} záloha {% endif %}
 {% endblock %} 
 
 {% block content %}
 
 
     <div class="container mt-3">
-      <h2 class="mt-2, pb-5">Nová {{type}}</h2>
+      <h2 class="mt-2, pb-5">Nová {% if type == 'invoice' %} faktura {% elif type == 'advance' %} záloha {% endif %}</h2>
       <form action="./" method="POST">
         {% csrf_token %}
           <div class="w-100 d-flex align-items-center justify-content-between mb-3">

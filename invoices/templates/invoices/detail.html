@@ -6,7 +6,7 @@
 
     
     {% block title %}
-      {% localize off %}{{type}} č. {{invoice.iid}} {% endlocalize %}
+      {% localize off %}{% if type == 'invoice' %} Faktura {%endif%} {% if type == 'advance' %} Záloha {%endif%} č. {{invoice.iid}} {% endlocalize %}
     {% endblock %}
     
     {% block content %}
@@ -16,7 +16,9 @@
     {% include "../base/flash_message.html" %}
       <div class="mt-5 w-100 mb-0 px-2 pb-5 overflow-hidden shadow-lg" style='background-color:rgba(0, 100, 200, 0.15);'>
         <div class="container w-100 pt-5">
-          <h2 class="display-6">{{type}} č. {{invoice.iid}}</h2>
+        <!-- title -->
+          <h2 class="display-6">{% if type == 'invoice' %} Faktura {%endif%} {% if type == 'advance' %} Záloha {%endif%} č. {{invoice.iid}}</h2>
+        <!-- title -->
           <hr class="my-4 w-100 mx-0" />
           <div class="row">
             <div class="col-2 d-flex justify-content-start">

@@ -25,7 +25,7 @@ class InvoiceView(LoginRequiredMixin, View):
             owner=request.user, linked=False)
 
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': ref}
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': 'invoice', 'advances': advances, 'ref': ref}
         response = render(request, self.template_name, context)
         response.set_cookie(key='ref', value=ref)
         return response
@@ -92,7 +92,7 @@ class InvoiceView(LoginRequiredMixin, View):
                         i += 1
                     else:
                         break
-            except:
+            except Exception:
                 pass
         messages.success(request, f'Faktura {invoice.iid} úspěšně vytvořena.')
         return redirect('/invoices/')
@@ -120,7 +120,7 @@ class InvoiceDetailView(LoginRequiredMixin, View):
         user = UserProfile.objects.get(user=invoice.owner)
         try:
             logo = user.logo.read()
-        except:
+        except Exception:
             logo = None
 
         generator = QRPlatbaGenerator(user.bank, invoice.amount, x_vs=invoice.iid, currency=invoice.currency,
@@ -132,7 +132,7 @@ class InvoiceDetailView(LoginRequiredMixin, View):
         img.save(svg_output)
 
         context = {"invoice": invoice, "user": user,
-                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Faktura", 'advance': advance, 'ref': ref, 'logo': logo}
+                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "invoice", 'advance': advance, 'ref': ref, 'logo': logo}
 
         return render(request, self.template_name, context)
 
@@ -145,19 +145,20 @@ class InvoiceOverView(LoginRequiredMixin, View):
     def get(self, request):
         try:
             userprofile = UserProfile.objects.get(user=request.user)
-        except:
+        except Exception:
             userprofile = None
 
         try:
             logo = userprofile.logo.read()
-        except:
+        except Exception:
             logo = None
 
         total = 0
         years = []
+        
         try:
             yr = request.GET['yr']
-        except:
+        except Exception:
             yr = datetime.now().year
 
         if yr and not yr == 'all':
@@ -185,7 +186,7 @@ class InvoiceOverView(LoginRequiredMixin, View):
                    'total': total,
                    'years': sorted(list(set(years)), reverse=True),
                    'selected_year': str(yr),
-                   'type': 'faktura'}
+                   'type': 'invoice'}
         return render(request, self.template_name, context)
 
 
@@ -221,7 +222,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         # d = datetime.strptime(invoice.date, '%Y-%m-%d')
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': rates, 'type': 'faktura', 'advances': advances, 'ref': ref}
+                   'rates': rates, 'type': 'invoice', 'advances': advances, 'ref': ref}
 
         response = render(request, self.template_name, context)
         response.set_cookie(key='ref', value=ref)
@@ -272,7 +273,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
         if invoice.has_items:
             try:
                 items_db = InvoiceItem.objects.filter(invoice=invoice)
-            except:
+            except Exception:
                 items_db = []
             try:
                 i = 0
@@ -298,7 +299,7 @@ class InvoiceUpdateView(LoginRequiredMixin, View):
                         i += 1
                     else:
                         break
-            except:
+            except Exception:
                 pass
         messages.success(request, f'Faktura {invoice.iid} aktualizována.')
         return redirect('/invoices/')

@@ -21,7 +21,7 @@ class AdvanceView(LoginRequiredMixin, View):
             iid = d.year * 10000 + 1
         default_dates = {'created': d, 'due': d + dt}
         context = {'recipients': recipients, 'iid': iid,
-                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': "záloha", 'ref': ref}
+                   'user': request.user, 'default_dates': default_dates, 'rates': rates, 'type': "advance", 'ref': ref}
         response = render(request, self.template_name, context)
         response.set_cookie(key='ref', value=ref)
         return response
@@ -69,7 +69,7 @@ class AdvanceView(LoginRequiredMixin, View):
                         i += 1
                     else:
                         break
-            except:
+            except Exception:
                 pass
         messages.success(request, f'Záloha {invoice.iid} úspěšně vytvořena.')
         return redirect('/advance/')
@@ -101,7 +101,7 @@ class AdvanceDetailView(LoginRequiredMixin, View):
         img.save(svg_output)
 
         context = {"invoice": invoice, "user": user,
-                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "Záloha", 'ref': ref}
+                   "items": items, 'iban': iban, "svg": mark_safe(svg_output.getvalue().decode()), 'type': "advance", 'ref': ref}
 
         return render(request, self.template_name, context)
 
@@ -114,12 +114,12 @@ class AdvanceOverView(LoginRequiredMixin, View):
     def get(self, request):
         try:
             userprofile = UserProfile.objects.get(user=request.user)
-        except:
+        except Exception:
             userprofile = None
 
         try:
             logo = userprofile.logo.read()
-        except:
+        except Exception:
             logo = None
 
         total = 0
@@ -153,7 +153,7 @@ class AdvanceOverView(LoginRequiredMixin, View):
                    'total': total,
                    'years': sorted(list(set(years)), reverse=True),
                    'selected_year': str(yr),
-                   'type': 'záloha'}
+                   'type': 'advance'}
         return render(request, self.template_name, context)
 
 
@@ -185,7 +185,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
 
         rates = get_exchange_rates(invoice.date.strftime('%d.%m.%Y'))
         context = {'invoice': invoice, "items": items,
-                   'rates': rates, 'type': 'záloha', 'ref': ref}
+                   'rates': rates, 'type': 'advance', 'ref': ref}
 
         response = render(request, self.template_name, context)
         response.set_cookie(key='ref', value=ref)
@@ -225,7 +225,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
         if invoice.has_items:
             try:
                 items_db = InvoiceItem.objects.filter(invoice=invoice)
-            except:
+            except Exception:
                 items_db = []
             try:
                 i = 0
@@ -251,7 +251,7 @@ class AdvanceUpdateView(LoginRequiredMixin, View):
                         i += 1
                     else:
                         break
-            except:
+            except Exception:
                 pass
         messages.success(request, f'Záloha {invoice.iid} aktualizována.')
 

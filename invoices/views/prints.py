@@ -21,7 +21,7 @@ class PDFView(LoginRequiredMixin, View):
         
         try:
             logo = user.logo.read()
-        except:
+        except Exception:
             logo = None
         
         return render(request, self.template_name, {'user': user, 'logo': logo, 'pdf': pdf, 'filename': filename, 'type': doctype, 'pk': pk})
@@ -30,9 +30,9 @@ class PDFView(LoginRequiredMixin, View):
         asset = request.session['asset']
         pk = request.session['invoice']
         encoded_file = request.session['pdf']
-        if asset == 'advance' or asset == 'záloha':
+        if asset.lower() == 'advance':
             invoice = Advance.objects.get(pk=pk, owner=request.user)
-        else:
+        if asset.lower() == 'invoice':
             invoice = Invoice.objects.get(pk=pk, owner=request.user)
 
         base64_png = request.session['qr']
@@ -67,7 +67,7 @@ class PDFView(LoginRequiredMixin, View):
             messages.success(request, f'Email odeslán.')
         except Exception as e:
             messages.warning(request, f'Při odesílání emailu došlo k chybě.')
-            print('**', e)
+            #print('**', e)
 
         return redirect('/pdf/')
 
@@ -83,16 +83,17 @@ class PrintInvoiceView(LoginRequiredMixin, View):
 
         sign = request.GET.get('sign', None)
         asset = request.GET.get('asset', None)
-   
-        if asset == 'advance' or asset.lower() == 'záloha':
+
+        name = None
+        if asset.lower() == 'advance':
             name = 'záloha'
-        else:
+        if asset.lower() == 'invoice':
             name = "faktura"
 
         if id:
-            if asset == 'advance' or asset.lower() == 'záloha':
+            if asset.lower() == 'advance':
                 invoice = Advance.objects.get(id=id, owner=request.user)
-            else:
+            if asset.lower() == 'invoice':
                 invoice = Invoice.objects.get(id=id, owner=request.user)
 
             if invoice.has_items:
@@ -132,7 +133,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
         cairosvg.svg2png(url=user.logo.name, write_to=logo_png, scale=5)
 
         context = {"invoice": invoice, "user": user, 'logo': logo_png,
-                   "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': name.title()}
+                   "items": items, 'iban': iban, "qr": qr_png, 'sign': sign,  'type': asset.lower()}
 
         html = template.render(context)
         result = BytesIO()
@@ -151,7 +152,7 @@ class PrintInvoiceView(LoginRequiredMixin, View):
             encoded_file = base64.b64encode(bytes).decode()
             request.session['pdf'] = encoded_file
             request.session['filename'] = f"{invoice.iid if invoice.iid else name}"
-            request.session['type'] = name.title()
+            request.session['type'] = asset.lower()
             request.session['invoice'] = invoice.pk
             request.session['asset'] = asset.lower()
 

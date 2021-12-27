@@ -36,9 +36,9 @@
       
       <div class="w-75 d-flex justify-content-between align-items-center mt-3 overview" >
         <h2 class="d-none d-lg-block d-print-block">
-          {% if type == 'faktura'%}
+          {% if type == 'invoice' %}
               Přehled faktur
-          {% else %}
+          {% elif type == 'advance' %}
               Přehled záloh
           {% endif %}
         </h2>
@@ -192,15 +192,17 @@
     }
 
     let modal =  new bootstrap.Modal(document.getElementById('delete-modal'))
+    let assetType = "{{type}}" === "invoice" ? "Faktura" : "Záloha"
 
     table = document.querySelector("#invoices");
     table.addEventListener('click',e=>{
           e.preventDefault();
           e.stopPropagation();
           let invoice = e.target.closest('tr');
+          
           if (invoice.nodeName=='TR'){
             let id = invoice.id;
-            document.querySelector('#offcanvasLabel').innerText = "{{type|capfirst}} " + invoice.children[0].innerText
+            document.querySelector('#offcanvasLabel').innerText = `${assetType} ${invoice.children[0].innerText}`
             document.querySelector('#offcanvasBody').innerHTML = document.querySelector('#hidden-'+ id +'> td' ).innerHTML;
             document.querySelector('#offcanvas-recipient').innerHTML = `${invoice.children[1].innerHTML}  <div class='display-6 text-center mt-3'>${invoice.children[2].innerHTML}</div>`
             document.querySelector('#offcanvasBody > ul').classList.add('list-group', 'list-group-flush', 'offcanvas-ul')

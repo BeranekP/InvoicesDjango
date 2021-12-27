@@ -21,13 +21,12 @@ class DashView(LoginRequiredMixin, View):
     def get(self, request):
         try:
             userprofile = UserProfile.objects.get(user=request.user)
-        except:
+        except Exception:
             userprofile = None
 
         try:
             logo = userprofile.logo.read().decode()
-        except Exception as e:
-            print(e)
+        except Exception:
             logo = None
 
         data = Invoice.objects.filter(
@@ -77,7 +76,7 @@ class MailCopy(LoginRequiredMixin, View):
         user_profile = UserProfile.objects.get(user=request.user)
         try:
             mail = bool(request.POST['mailcopy'])
-        except:
+        except Exception:
             mail = False
 
         if mail:

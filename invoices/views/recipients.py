@@ -43,12 +43,12 @@ class RecipientOverView(LoginRequiredMixin, View):
     def get(self, request):
         try:
             userprofile = UserProfile.objects.get(user=request.user)
-        except:
+        except Exception:
             userprofile = None
 
         try:
             logo = userprofile.logo.read()
-        except:
+        except Exception:
             logo = None
 
         recipients = Recipient.objects.filter(

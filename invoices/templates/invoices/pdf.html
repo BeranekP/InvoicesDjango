@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block title %}
-    {% localize off %}{{type}} č. {{filename}} {% endlocalize %}
+    {% localize off %}{% if type == 'invoice' %} Faktura {% elif type == 'advance' %} Záloha {% endif %} č. {{filename}} {% endlocalize %}
 {% endblock %}
     
 {% block content %}

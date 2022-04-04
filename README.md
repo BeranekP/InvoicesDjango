@@ -3,7 +3,9 @@
 Simple app for creating and managing invoices build with Django
 
 
-##Demo 
+## Demo 
 http://beranekp.pythonanywhere.com/
+
 Login: test@test.cz
+
 Password: 12345

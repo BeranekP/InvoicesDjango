@@ -8,4 +8,4 @@ http://beranekp.pythonanywhere.com/
 
 Login: test@test.cz
 
-Password: 12345
+Password: 123456
